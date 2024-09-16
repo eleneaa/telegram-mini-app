@@ -77,10 +77,12 @@ WSGI_APPLICATION = 'anatomy_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'anatomy_main',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'tg_bd',
         'HOST': 'localhost',
-        'PORT': 27017,
+        'PORT': 5432,
+        'USER': 'postgres',
+        "PASSWORD": 'changeme'
     }
 }
 

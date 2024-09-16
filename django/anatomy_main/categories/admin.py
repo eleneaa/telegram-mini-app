@@ -1,5 +1,3 @@
-import copy
-
 from django.contrib import admin
 
 from categories.models import Catalog
@@ -13,14 +11,19 @@ class CatalogAdmin(admin.ModelAdmin):
 
     is_invalid = False
 
+    def child_ids(self, obj):
+        return obj.child_ids()
+    child_ids.short_description = 'Имена дочерних элементов'
+
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'child':
             if request.resolver_match.kwargs.get("object_id"):
                 current_instance = self.get_object(request, request.resolver_match.kwargs['object_id'])
                 if current_instance:
+                    # Исключается возможность добавлять "самого себя" во вложенные каталоги
                     kwargs['queryset'] = Catalog.objects.exclude(id=current_instance.id)
 
-                    if not current_instance.is_main:
-                        kwargs['queryset'] = kwargs['queryset'].exclude(is_main__in=[True])
+                    # Исключается возможность добавлять главные каталоги во вложенные каталоги
+                    kwargs['queryset'] = kwargs['queryset'].exclude(is_main=True)
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
