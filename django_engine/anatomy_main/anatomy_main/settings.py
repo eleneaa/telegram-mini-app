@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'anatomy_main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tg_bd1',
+        'NAME': 'tg_bd',
         'HOST': 'localhost',
         'PORT': 5432,
         'USER': 'postgres',

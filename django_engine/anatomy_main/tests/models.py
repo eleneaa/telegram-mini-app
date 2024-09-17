@@ -8,9 +8,10 @@ class Variant(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     name = models.CharField(max_length=50)
 
-    class Meta:
-        verbose_name = 'Вариант ответа'
-        verbose_name_plural = 'Варианты ответа'
+    # TODO С Meta почему-то не отображается вариант в "Списке правильных ответов" при добавлении нового варианта
+    # class Meta:
+    #     verbose_name = 'Вариант ответа'
+    #     verbose_name_plural = 'Варианты ответа'
 
     def __str__(self):
         return self.name
