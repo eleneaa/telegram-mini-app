@@ -1,29 +1,36 @@
 from django.contrib import admin
 
-from .models import User
-from anatomy_main.utils import links_to_catalogs, links_to_questions, links_to_articles, links_to_tests
+from .models import User, TestUserRel
+from anatomy_main.utils import links_to_catalogs, links_to_questions, links_to_articles, links_to_tests_rel
+
+
+class TestUserInline(admin.TabularInline):
+    model = TestUserRel
+    extra = 1
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'questions_ids', 'catalog_ids', 'articles_ids', 'tests_ids', 'finished_tests_ids']
+    list_display = ['username', 'favorite_tests_ids', 'completed_tests_ids', 'favorite_questions_ids',
+                    'favorite_articles_ids', 'favorite_catalogs_ids']
+    inlines = [TestUserInline]
 
-    def questions_ids(self, obj):
-        return links_to_questions(obj.questions_ids())
-    questions_ids.short_description = 'Избранные вопросы'
+    def favorite_tests_ids(self, obj):
+        return links_to_tests_rel(obj.favorite_tests_ids())
+    favorite_tests_ids.short_description = 'Избранные тесты'
 
-    def catalog_ids(self, obj):
-        return links_to_catalogs(obj.catalog_ids())
-    catalog_ids.short_description = 'Избранные темы'
+    def completed_tests_ids(self, obj):
+        return links_to_tests_rel(obj.completed_tests_ids())
+    completed_tests_ids.short_description = 'Пройденные тесты'
 
-    def articles_ids(self, obj):
-        return links_to_articles(obj.articles_ids())
-    articles_ids.short_description = 'Избранные статьи'
+    def favorite_questions_ids(self, obj):
+        return links_to_questions(obj.favorite_questions_ids())
+    favorite_questions_ids.short_description = 'Избранные вопросы'
 
-    def tests_ids(self, obj):
-        return links_to_tests(obj.tests_ids())
-    tests_ids.short_description = 'Избранные тесты'
+    def favorite_articles_ids(self, obj):
+        return links_to_articles(obj.favorite_articles_ids())
+    favorite_articles_ids.short_description = 'Избранные статьи'
 
-    def finished_tests_ids(self, obj):
-        return links_to_tests(obj.finished_tests_ids())
-    finished_tests_ids.short_description = 'Пройденные тесты'
+    def favorite_catalogs_ids(self, obj):
+        return links_to_catalogs(obj.favorite_catalogs_ids())
+    favorite_catalogs_ids.short_description = 'Избранные темы'

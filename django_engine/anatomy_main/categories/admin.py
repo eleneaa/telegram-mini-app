@@ -6,12 +6,16 @@ from anatomy_main.utils import links_to_catalogs, links_to_tests, links_to_artic
 
 class TestInline(admin.TabularInline):
     model = Catalog.tests.through
-    extra = 0
+    extra = 1
+    verbose_name = 'Тест'
+    verbose_name_plural = 'Тесты'
 
 
 class ArticleInline(admin.TabularInline):
     model = Catalog.articles.through
-    extra = 0
+    extra = 1
+    verbose_name = 'Статья'
+    verbose_name_plural = 'Статьи'
 
 
 @admin.register(Catalog)
