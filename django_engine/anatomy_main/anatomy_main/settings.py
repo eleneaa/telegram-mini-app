@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'categories',
     'tests',
     'articles',
+    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'anatomy_main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tg_bd',
+        'NAME': 'tg_bd1',
         'HOST': 'localhost',
         'PORT': 5432,
         'USER': 'postgres',
@@ -106,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'file_storage')
 

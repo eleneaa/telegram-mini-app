@@ -28,6 +28,10 @@ class Catalog(models.Model):
             articles_array = [article for article in self.articles.all()]
             return articles_array
 
+    class Meta:
+        verbose_name = 'Каталог темы'
+        verbose_name_plural = 'Темы'
+
     def __eq__(self, other):
         return other == self.id
 

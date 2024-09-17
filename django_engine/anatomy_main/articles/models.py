@@ -17,5 +17,9 @@ class Article(models.Model):
             catalogs_array = [catalog for catalog in self.catalogs.all()]
             return catalogs_array
 
+    class Meta:
+        verbose_name = 'Статья'
+        verbose_name_plural = 'Статьи'
+
     def __str__(self):
         return self.label

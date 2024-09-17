@@ -40,9 +40,6 @@ class QuestionAdmin(admin.ModelAdmin):
         return obj.correct_answers_ids()
     correct_answers_ids.short_description = 'Правильные ответы'
 
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        # Обнулять список доступных вариантов только при создании нового вопроса
-        if 'add' in request.path:
-            if db_field.name in ['variants', 'correct_variants']:
-                kwargs['queryset'] = Variant.objects.none()
-        return super().formfield_for_dbfield(db_field, request, **kwargs)
+    # def formfield_for_dbfield(self, db_field, request, **kwargs):
+    #     # Обнулять список доступных вариантов только при создании нового вопроса
+    #     return super().formfield_for_dbfield(db_field, request, **kwargs)
