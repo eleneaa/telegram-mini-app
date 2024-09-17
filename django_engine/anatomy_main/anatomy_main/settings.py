@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'anatomy_main',
     'categories',
+    'tests',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

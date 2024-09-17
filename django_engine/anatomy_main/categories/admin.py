@@ -3,9 +3,15 @@ from django.contrib import admin
 from categories.models import Catalog
 
 
+class TestInline(admin.TabularInline):
+    model = Catalog.catalogs_list.through
+    extra = 0
+
+
 @admin.register(Catalog)
 class CatalogAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_main', 'child_ids']
+    list_display = ['name', 'is_main', 'child_ids', 'tests_ids']
+    inlines = [TestInline]
     search_fields = ('name',)
     exclude = ['id']
 
@@ -14,6 +20,10 @@ class CatalogAdmin(admin.ModelAdmin):
     def child_ids(self, obj):
         return obj.child_ids()
     child_ids.short_description = 'Имена дочерних элементов'
+
+    def tests_ids(self, obj):
+        return obj.tests_ids()
+    tests_ids.short_description = 'Список тестов'
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'child':

@@ -18,6 +18,11 @@ class Catalog(models.Model):
             childs_array = [cls.objects.get(id=child.id) for child in self.child.all()]
             return childs_array
 
+    def tests_ids(self):
+        if self.tests.all():
+            tests_array = [test for test in self.tests.all()]
+            return tests_array
+
     def __eq__(self, other):
         return other == self.id
 
