@@ -4,7 +4,7 @@ from categories.models import Catalog
 
 
 class TestInline(admin.TabularInline):
-    model = Catalog.catalogs_list.through
+    model = Catalog.tests.through
     extra = 0
 
 
