@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import User, TestUserRel
-from anatomy_main.utils import links_to_catalogs, links_to_questions, links_to_articles, links_to_tests_rel
+from .models import User, TestUserRel, QuestionUserRel, ArticleUserRel, CatalogUserRel
+from anatomy_main.utils import links_to_catalogs_rel, links_to_questions_rel, links_to_articles_rel, links_to_tests_rel
 
 
 class TestUserInline(admin.TabularInline):
@@ -9,11 +9,26 @@ class TestUserInline(admin.TabularInline):
     extra = 1
 
 
+class QuestionUserInline(admin.TabularInline):
+    model = QuestionUserRel
+    extra = 1
+
+
+class ArticleUserInline(admin.TabularInline):
+    model = ArticleUserRel
+    extra = 1
+
+
+class CatalogUserInline(admin.TabularInline):
+    model = CatalogUserRel
+    extra = 1
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'favorite_tests_ids', 'completed_tests_ids', 'favorite_questions_ids',
                     'favorite_articles_ids', 'favorite_catalogs_ids']
-    inlines = [TestUserInline]
+    inlines = [TestUserInline, QuestionUserInline, ArticleUserInline, CatalogUserInline]
 
     def favorite_tests_ids(self, obj):
         return links_to_tests_rel(obj.favorite_tests_ids())
@@ -24,13 +39,13 @@ class UserAdmin(admin.ModelAdmin):
     completed_tests_ids.short_description = 'Пройденные тесты'
 
     def favorite_questions_ids(self, obj):
-        return links_to_questions(obj.favorite_questions_ids())
+        return links_to_questions_rel(obj.favorite_questions_ids())
     favorite_questions_ids.short_description = 'Избранные вопросы'
 
     def favorite_articles_ids(self, obj):
-        return links_to_articles(obj.favorite_articles_ids())
+        return links_to_articles_rel(obj.favorite_articles_ids())
     favorite_articles_ids.short_description = 'Избранные статьи'
 
     def favorite_catalogs_ids(self, obj):
-        return links_to_catalogs(obj.favorite_catalogs_ids())
+        return links_to_catalogs_rel(obj.favorite_catalogs_ids())
     favorite_catalogs_ids.short_description = 'Избранные темы'
