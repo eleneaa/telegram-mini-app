@@ -23,6 +23,11 @@ class Catalog(models.Model):
             tests_array = [test for test in self.tests.all()]
             return tests_array
 
+    def articles_ids(self):
+        if self.articles.all():
+            articles_array = [article for article in self.articles.all()]
+            return articles_array
+
     def __eq__(self, other):
         return other == self.id
 

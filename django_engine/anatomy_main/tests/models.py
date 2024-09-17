@@ -38,7 +38,7 @@ class Test(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     label = models.CharField(max_length=50, verbose_name='Название теста')
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
-    catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогу", related_name='tests')
+    catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам", related_name='tests')
 
     def questions_ids(self):
         if self.questions_list.all():

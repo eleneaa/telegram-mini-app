@@ -2,6 +2,8 @@ from django.contrib import admin
 
 from tests.models import Variant, Question, Test
 
+from anatomy_main.utils import links_to_catalogs, links_to_questions
+
 
 # Register your models here.
 
@@ -11,11 +13,11 @@ class TestAdmin(admin.ModelAdmin):
     exclude = ("id", )
 
     def catalog_ids(self, obj):
-        return obj.catalog_ids()
-    catalog_ids.short_description = 'Находится в каталогах'
+        return links_to_catalogs(obj.catalog_ids())
+    catalog_ids.short_description = 'Принадлежит каталогам'
 
     def questions(self, obj):
-        return obj.questions_ids()
+        return links_to_questions(obj.questions_ids())
     questions.short_description = 'Список вопросов'
 
 
@@ -39,6 +41,8 @@ class QuestionAdmin(admin.ModelAdmin):
     correct_answers_ids.short_description = 'Правильные ответы'
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
-        if db_field.name in ['variants', 'correct_variants']:
-            kwargs['queryset'] = Variant.objects.none()
+        # Обнулять список доступных вариантов только при создании нового вопроса
+        if 'add' in request.path:
+            if db_field.name in ['variants', 'correct_variants']:
+                kwargs['queryset'] = Variant.objects.none()
         return super().formfield_for_dbfield(db_field, request, **kwargs)
