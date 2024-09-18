@@ -59,7 +59,7 @@ ROOT_URLCONF = 'anatomy_main.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["file_storage/articles_storage"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
