@@ -1,0 +1,10 @@
+<h1>{{ test.label }}</h1>
+<h2>{{ question.label }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {% for variant in variants %}
+    <input type="checkbox" name="answer[]" value="{{ variant.id }}">{{ variant }}</input><br/>
+    {% endfor %}
+    <button type="submit">Ответить</button>
+</form>
+

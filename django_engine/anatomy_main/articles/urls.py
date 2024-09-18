@@ -1,11 +1,12 @@
 from django.urls import path
+from . import views
 
-from django_engine.anatomy_main.articles.views import article_view, add_favorite_view
-
-app_name = "articles"
+app_name = 'articles'
 
 urlpatterns = [
-
-    path('open/<str:uuid>', article_view, name='article'),
-    path('favorite/<str:uuid>', add_favorite_view, name='add_favorite_article'),
+    path('', views.main, name='main'),
+    path('find/', views.find, name='find'),
+    path('find/<string:article_id>/', views.find_article, name='find_article'),
+    path('open/<str:article_id>/', views.open_article, name='open_article'),
+    path('favorite_articles/', views.favorite_articles, name='favorite_articles'),
 ]
