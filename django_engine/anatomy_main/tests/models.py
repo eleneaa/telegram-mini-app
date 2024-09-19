@@ -1,9 +1,15 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
+class QuestionType(models.TextChoices):
+    single_choice = 'radio', _("Один правильный ответ")
+    multipy_choice = 'checkbox', _("Несколько правильных ответов")
+    input_type = 'input', _("Ввод текста")
+
 
 class QuestionVariantRel(models.Model):
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='question_id')
@@ -37,6 +43,8 @@ class Question(models.Model):
     variants = models.ManyToManyField("Variant", verbose_name="Список правильных ответов", symmetrical=False,
                                       related_name='correct_variants',
                                       through='QuestionVariantRel')
+    question_type = models.CharField(choices=QuestionType.choices, verbose_name="Тип вопроса",
+                                     default=QuestionType.multipy_choice, max_length=50)
 
     def answers_ids(self):
         if self.variants.all():
@@ -67,11 +75,13 @@ class Test(models.Model):
         if self.questions_list.all():
             childs_array = [questions for questions in self.questions_list.all()]
             return childs_array
+        return []
 
     def catalog_ids(self):
         if self.catalogs.all():
             childs_array = [catalog for catalog in self.catalogs.all()]
             return childs_array
+        return []
 
     class Meta:
         verbose_name = 'Тест'

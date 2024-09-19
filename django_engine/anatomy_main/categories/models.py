@@ -11,22 +11,27 @@ class Catalog(models.Model):
                                    symmetrical=False,
                                    verbose_name="ID вложенных каталогов",
                                    )
+    image = models.ImageField(verbose_name="Заглавное изображение каталога", blank=True, upload_to='images_storage')
+    description = models.CharField(max_length=1000, verbose_name="Описание каталога", blank=True)
 
     def child_ids(self):
         cls = type(self)
         if self.child.all():
             childs_array = [cls.objects.get(id=child.id) for child in self.child.all()]
             return childs_array
+        return []
 
     def tests_ids(self):
         if self.tests.all():
             tests_array = [test for test in self.tests.all()]
             return tests_array
+        return []
 
     def articles_ids(self):
         if self.articles.all():
             articles_array = [article for article in self.articles.all()]
             return articles_array
+        return []
 
     class Meta:
         verbose_name = 'Каталог темы'
