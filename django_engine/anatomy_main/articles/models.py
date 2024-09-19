@@ -16,6 +16,7 @@ class Article(models.Model):
         if self.catalogs.all():
             catalogs_array = [catalog for catalog in self.catalogs.all()]
             return catalogs_array
+        return []
 
     class Meta:
         verbose_name = 'Статья'
