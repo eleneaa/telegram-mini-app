@@ -1,12 +1,12 @@
-<div id="item-{{ question.id }}">
-    <button class="favorite-button" data-item-id="{{ question.id }}">
+
+    <button class="btn btn-warning favorite-button w-100" data-item-id="{{ question.id }}">
         {% if is_favorite %}
-        Удалить из избранного
+        unfav
         {% else %}
-        Добавить в избранное
+        fav
         {% endif %}
     </button>
-</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% csrf_token %}
 <script>
@@ -14,7 +14,7 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 </script>
 <script>
     $(document).ready(function() {
-        $('.favorite-button').click(function() {
+        $('.favorite-button ').click(function() {
             var button = $(this);
             var questionId = button.data('item-id');
 
@@ -26,9 +26,9 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 },
                 success: function(response) {
                     if (response.action === 'added') {
-                        button.text('Удалить из избранного');
+                        button.text('unfav');
                     } else {
-                        button.text('Добавить в избранное');
+                        button.text('fav');
                     }
                 },
                 error: function(xhr, status, error) {

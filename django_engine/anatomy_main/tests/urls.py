@@ -4,7 +4,7 @@ from . import views
 app_name = 'tests'
 
 urlpatterns = [
-    # path('', views.main, name='main'),
+    path('', views.test_results, name='main'),
     # path('find/', views.find, name='find'),
     # path('find/<string:catalog_id>/', views.find_catalog_tests, name='find_catalog_tests'),
     # path('favorite_tests/', views.favorite_tests, name='favorite_tests'),
