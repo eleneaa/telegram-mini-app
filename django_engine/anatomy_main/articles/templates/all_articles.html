@@ -1,0 +1,38 @@
+{% extends "article_base.html" %}
+
+{% load static %}
+
+{% block title %}
+	Статьи
+{% endblock %}
+
+{% block content %}
+    <h2><a href="{% url 'articles:find' %}">Поиск по темам</a></h2>
+    <h2>Каталоги</h2>
+    {% for cat in categories %}
+        {% if cat.is_main %}
+            <h3><a href="{% url 'categories:open_catalog' catalog_id=cat.id %}">{{ cat.name }}</a></h3>
+            {% if cat.image %}
+                <img width="100" height="100" src="{% static cat.image.url %}" alt="Фото категории">
+            {% endif %}
+            <p>{{ cat.description }}</p>
+        {% endif %}
+    {% endfor %}
+    <h2>Популярные статьи</h2>
+    {% for article in popular_articles %}
+
+        {% include 'articles_card.html' %}
+
+    {% endfor %}
+
+    <p><a href="{% url 'articles:favorite_articles' %}">Избранный статьи</a></p>
+    {% if favorite_articles|length != 0 %}
+
+        {% for article in favorite_articles %}
+
+            {% include 'articles_card.html' %}
+
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

@@ -1,13 +1,24 @@
-from articles.models import Article
-from django.db.models import FileField
+from django.db.models import FileField, Q
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 
+from articles.models import Article
+from categories.models import Catalog
 from users.models import ArticleUserRel
 
 
 # Create your views here.
+
+def main(request: HttpRequest):
+    popular_articles = Article.get_popular(10)
+    favorite_articles = Article.get_favorite_articles(request.user)
+    categories = Catalog.objects.all()
+    return render(request, 'all_articles.html', {
+        'popular_articles': popular_articles,
+        'favorite_articles': favorite_articles,
+        'categories': categories
+    })
 
 
 def open_article(request: HttpRequest,
@@ -37,3 +48,15 @@ def toggle_favorite(request: HttpRequest,
     else:
         article_user_rel.delete()
         return JsonResponse({"action": "removed"})
+
+
+def favorite_articles(request: HttpRequest):
+    return render(request, 'article_favorite.html', {
+        'favorite_articles': Article.get_favorite_articles(request.user)
+    })
+
+
+def find(request: HttpRequest):
+    queries = request.GET
+    articles = Article.objects.filter(Q(label__icontains=queries.get('label', '')))
+    return render(request, 'article_find.html', {'articles': articles})

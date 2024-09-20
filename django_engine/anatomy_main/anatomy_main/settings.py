@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tg_bd',
-        'HOST': 'localhost',
+        'HOST': '192.168.10.65',
         'PORT': 5432,
         'USER': 'postgres',
         "PASSWORD": 'changeme'
@@ -128,6 +128,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "file_storage",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
