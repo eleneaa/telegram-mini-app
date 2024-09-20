@@ -1,17 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <body>
 
-<h1>My First Heading</h1>
+<h1>{{ article.label }}</h1>
 <p>My first paragraph.</p>
-{% if is_favorite %}
-    <p>FAVORITE!!!</p>
-{% endif %} 
-<form action="/articles/favorite/{{ article_uuid }}"
-      method="post">
-    {% csrf_token %}
-    <input type="submit" value="Like">
-</form>
+<div id="item-{{ question.id }}">
+    <button class="favorite-button" data-item-id="{{ article.id }}">
+        {% if is_favorite %}
+        Удалить из избранного
+        {% else %}
+        Добавить в избранное
+        {% endif %}
+    </button>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% csrf_token %}
+<script>
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
+<script>
+    $(document).ready(function() {
+        $('.favorite-button').click(function() {
+            var button = $(this);
+            var articleId = button.data('item-id');
+
+            $.ajax({
+                url: '/articles/favorite/' + articleId + '/',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    if (response.action === 'added') {
+                        button.text('Удалить из избранного');
+                    } else {
+                        button.text('Добавить в избранное');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Ошибка:", error);
+                }
+            });
+        });
+    });
+</script>
+
+
 <p>{% block content %} {% endblock %}</p>
 </body>
 </html>

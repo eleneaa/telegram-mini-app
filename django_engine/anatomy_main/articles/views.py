@@ -1,9 +1,8 @@
 from articles.models import Article
-from django.core.exceptions import PermissionDenied
 from django.db.models import FileField
-from django.http import HttpRequest
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.http import HttpRequest, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from users.models import ArticleUserRel
 
@@ -11,31 +10,30 @@ from users.models import ArticleUserRel
 # Create your views here.
 
 
-def article_view(request: HttpRequest,
-                 uuid: str):
-    if not request.user.is_authenticated:
-        raise PermissionDenied
-    article = get_object_or_404(Article, id=uuid)
+def open_article(request: HttpRequest,
+                 article_id: str):
+    article = get_object_or_404(Article, id=article_id)
     file: FileField = article.article_file
     article_user_rel: ArticleUserRel = ArticleUserRel.objects.get_or_create(user=request.user,
-                                                                            article_id=uuid)[0]
+                                                                            article_id=article_id)[0]
     return render(request,
                   file.name.split('/')[-1],
                   {
-                      "article_uuid": article.id,
+                      "article": article,
                       "is_favorite": article_user_rel.is_favorite
                   })
 
 
-def add_favorite_view(request: HttpRequest,
-                      uuid: str):
-    if request.method != "POST":
-        return redirect(reverse("articles:article", args=[uuid]))
+@require_POST
+def toggle_favorite(request: HttpRequest,
+                    question_id: str):
     user = request.user
-    if not user.is_authenticated:
-        raise PermissionDenied
-    article_user_rel: ArticleUserRel = ArticleUserRel.objects.get_or_create(user=user, article_id=uuid)[0]
-    article_user_rel.is_favorite = True
-    article_user_rel.save()
-    return redirect(reverse("articles:article", args=[uuid]))
-
+    article_user_rel, created = ArticleUserRel.objects.get_or_create(user=user,
+                                                                     article_id=question_id)
+    if created:
+        article_user_rel.is_favorite = True
+        article_user_rel.save()
+        return JsonResponse({"action": "added"})
+    else:
+        article_user_rel.delete()
+        return JsonResponse({"action": "removed"})
