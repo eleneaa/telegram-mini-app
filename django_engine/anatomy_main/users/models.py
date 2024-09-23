@@ -7,6 +7,7 @@ class TestUserRel(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_test_id')
     is_completed = models.BooleanField(default=False, verbose_name='Тест пройден?')
     is_favorite = models.BooleanField(default=False, verbose_name='Тест в избранном?')
+    note = models.CharField(default='', blank=True, verbose_name='Заметка к тесту', max_length=150)
 
     class Meta:
         db_table = 'tests_user'
@@ -37,6 +38,7 @@ class QuestionUserRel(models.Model):
                                  verbose_name='Вопрос')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_qu_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Вопрос в избранном?')
+    note = models.CharField(default='', blank=True, verbose_name='Заметка к вопросу', max_length=150)
 
     class Meta:
         db_table = 'question_user'
@@ -52,6 +54,7 @@ class ArticleUserRel(models.Model):
                                 verbose_name='Статья')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_ar_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Статья в избранном?')
+    note = models.CharField(default='', blank=True, verbose_name='Заметка к статье', max_length=150)
 
     class Meta:
         db_table = 'articles_user'
@@ -84,7 +87,6 @@ class User(AbstractUser):
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():
-            # print(TestUserRel.objects.filter(is_favorite=True, user_id=self.id)
             childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user_id=self.id)]
             return childs_array
         return []
