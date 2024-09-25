@@ -1,5 +1,9 @@
 import uuid
+
 from django.db import models
+from django.urls import reverse
+
+from users.models import CatalogUserRel
 
 
 class Catalog(models.Model):
@@ -33,9 +37,38 @@ class Catalog(models.Model):
             return articles_array
         return []
 
+    def get_absolute_url(self):
+        return reverse("categories:open_catalog", kwargs={"catalog_id": self.id})
+
     class Meta:
         verbose_name = 'Каталог темы'
         verbose_name_plural = 'Темы'
+
+    @classmethod
+    def get_favorite_catalogs(cls, user):
+        return cls.objects.filter(
+            id__in=CatalogUserRel
+            .objects
+            .filter(user=user, is_favorite=True)
+            .values('catalog_id')
+        )
+
+    @classmethod
+    def get_popular(cls,
+                    count: int):
+        res = cls.objects.raw(
+            """
+            select categories_catalog.*
+            from categories_catalog
+            left join (select catalog_user.catalog_id,
+                         count(catalog_user.catalog_id) as fav_count
+                  from catalog_user
+                  where catalog_user.is_favorite
+                  group by catalog_user.catalog_id) as F on F.catalog_id = categories_catalog.id
+            order by F.fav_count DESC 
+            """
+        )
+        return res[:count]
 
     def __eq__(self, other):
         return other == self.id

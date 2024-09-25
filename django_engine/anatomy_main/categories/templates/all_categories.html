@@ -1,0 +1,16 @@
+{% extends 'categories_base.html' %}
+
+{% block title %}
+	Все категории
+{% endblock %}
+
+{% block content %}
+    <h1>Популярные категории</h1>
+    <ul>
+        {% for catalog in popular_catalogs %}
+            <li><a href="{{ catalog.get_absolute_url }}">{{ catalog.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'categories:find' %}">Поиск</a>
+{% endblock %}
+

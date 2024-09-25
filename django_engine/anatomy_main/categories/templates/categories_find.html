@@ -1,0 +1,21 @@
+
+{% extends 'categories_base.html' %}
+
+{% block title %}
+	Поиск по каталогам
+{% endblock %}
+
+{% block content %}
+	<form action="{% url 'categories:find' %}">
+        <label>
+            Label:
+            <input name="name" autocomplete="name" />
+        </label>
+    <button>Поиск</button>
+    </form>
+	{% for catalog in catalogs %}
+
+        {% include 'category_card.html' %}
+
+    {% endfor %}
+{% endblock %}

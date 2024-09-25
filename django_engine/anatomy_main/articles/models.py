@@ -1,7 +1,6 @@
 import uuid
 
 from django.db import models
-from django.db.models import Q
 from django.urls import reverse
 
 from users.models import ArticleUserRel

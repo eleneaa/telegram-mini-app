@@ -1,8 +1,9 @@
 from django.db.models import FileField, Q
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 
+from anatomy_main import utils
 from articles.models import Article
 from categories.models import Catalog
 from users.models import ArticleUserRel
@@ -37,17 +38,11 @@ def open_article(request: HttpRequest,
 
 @require_POST
 def toggle_favorite(request: HttpRequest,
-                    question_id: str):
-    user = request.user
-    article_user_rel, created = ArticleUserRel.objects.get_or_create(user=user,
-                                                                     article_id=question_id)
-    if created:
-        article_user_rel.is_favorite = True
-        article_user_rel.save()
-        return JsonResponse({"action": "added"})
-    else:
-        article_user_rel.delete()
-        return JsonResponse({"action": "removed"})
+                    article_id: str):
+    return utils.toggle_favorite(request,
+                                 article_id,
+                                 ArticleUserRel,
+                                 "article_id")
 
 
 def favorite_articles(request: HttpRequest):

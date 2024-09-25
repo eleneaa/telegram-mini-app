@@ -1,0 +1,64 @@
+{% extends 'categories_base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ catalog.name }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ catalog.name }}</h1>
+    <img width="100" height="100" src="{% static cat.image.url %}" alt="Фото категории">
+    <p>{{ catalog.description }}</p>
+    <div id="item-{{ catalog.id }}">
+        <button class="favorite-button" data-item-id="{{ catalog.id }}">
+            {% if is_favorite %}
+                Удалить из избранного
+            {% else %}
+                Добавить в избранное
+            {% endif %}
+        </button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% csrf_token %}
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.favorite-button').click(function () {
+                var button = $(this);
+                var categoryId = button.data('item-id');
+
+                $.ajax({
+                    url: '/categories/favorite/' + categoryId + '/',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    success: function (response) {
+                        if (response.action === 'added') {
+                            button.text('Удалить из избранного');
+                        } else {
+                            button.text('Добавить в избранное');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Ошибка:", error);
+                    }
+                });
+            });
+        });
+    </script>
+    <p>Статьи</p>
+    <ul>
+        {% for article in catalog.articles_ids %}
+            <li><a href="{{ article.get_absolute_url }}">{{ article.label }}</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Дочерние каталоги</h2>
+    {% for catalog in catalog.child.all %}
+
+        {% include 'category_card.html' %}
+
+    {% endfor %}
+{% endblock %}
