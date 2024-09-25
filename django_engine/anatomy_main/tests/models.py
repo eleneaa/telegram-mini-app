@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -82,6 +83,9 @@ class Test(models.Model):
             childs_array = [catalog for catalog in self.catalogs.all()]
             return childs_array
         return []
+
+    def get_absolute_url(self):
+        return reverse("tests:open_test", kwargs={"test_id": self.id})
 
     class Meta:
         verbose_name = 'Тест'

@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="row d-flex">
+        <div class="col-12" style='text-align: center'>
+            <h1>{{ test.label }}</h1>
+            {% include 'add_test_to_favorite.html' with is_favorite=is_favorite %}
+        </div>
+    </div>
+
+    <h3> Кол-во вопросов: {{ test.questions_ids|length }}</h3>
+    <a href="{% url 'tests:start_test' test_id=test.id %}"><button class="btn btn-success rounded-pill my-2 col-12 p-2">Начать прохождение</button></a>
+    <div class="row d-flex pt-2">
+        <div class="col-12">
+            {% include 'add_note_to_test.html' with note=note %}
+        </div>
+    </div>
+{#    <ul>Принадлежит каталогам:</ul>#}
+{#    {% for catalog in test.catalog_ids %}#}
+{#        <li>{{ catalog }}</li>#}
+{#    {% endfor %}#}
+{% endblock %}

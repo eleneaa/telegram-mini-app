@@ -1,21 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
     <section>
-    <main>
-        <div class="vh-100-m d-flex justify-content-center align-items-center">
-            <div class="container pt-3">
-                <div class="row d-flex justify-content-center">
-                    <div class="col-12">
-                        <div class="card card-bg">
-                            <div class="card-body p-4">
-                                {% include 'question_detail.html' %}
-{#                                {% include 'test_add_favorite.html' %}#}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-</section>
+        {% include 'question_detail.html' %}
+{#      {% include 'test_add_favorite.html' %}#}
+    </section>
 {% endblock %}

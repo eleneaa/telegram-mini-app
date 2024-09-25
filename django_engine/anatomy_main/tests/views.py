@@ -3,12 +3,19 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
 
 from .models import Test, Question, QuestionType
 
 from django.urls import reverse
 
 from users.models import QuestionUserRel, TestUserRel
+
+
+def start_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    first_question_id = test.questions_ids()[0].id
+    return redirect('tests:question_detail', test_id=test_id, question_id=first_question_id)
 
 
 def question_detail(request, test_id, question_id):
@@ -69,7 +76,6 @@ def test_results(request, test_id):
 
 @require_POST
 def toggle_favorite(request, question_id):
-    print(Question.objects.all())
     question = get_object_or_404(Question, id=question_id)
     favorite, created = QuestionUserRel.objects.get_or_create(user=request.user, question=question, is_favorite=True)
     if created:
@@ -81,3 +87,63 @@ def toggle_favorite(request, question_id):
         action = "removed"
 
     return JsonResponse({'action': action})
+
+
+@require_POST
+def toggle_favorite_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    favorite, created = TestUserRel.objects.get_or_create(user=request.user, test=test, is_favorite=True)
+    if created:
+        # Элемент был добавлен в избранное
+        action = "added"
+    else:
+        # Элемент был удален из избранного
+        favorite.delete()
+        action = "removed"
+
+    return JsonResponse({'action': action})
+
+
+@require_POST
+def toggle_save_note_test(request, test_id, note_text=''):
+    test = get_object_or_404(Test, id=test_id)
+    test_user_rel, created = TestUserRel.objects.get_or_create(user=request.user, test=test)
+    is_updated = False
+    if test_user_rel.note:
+        is_updated = True
+    test_user_rel.note = note_text
+    test_user_rel.save()
+    if is_updated:
+        # Элемент был добавлен в избранное
+        action = "updated"
+    else:
+        # Элемент был удален из избранного
+        action = "added"
+
+    return JsonResponse({'action': action})
+
+
+def open_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    try:
+        rel_field = TestUserRel.objects.get(test=test, user=request.user)
+    except TestUserRel.DoesNotExist:
+        is_favorite = False
+        note = ''
+    else:
+        is_favorite = rel_field.is_favorite
+        note = rel_field.note
+    return render(request, 'test_page.html', context={'test': test,
+                                                      'is_favorite': is_favorite,
+                                                      'note': note})
+
+
+class TestsView(ListView):
+    model = Test
+    paginate_by = 5
+    template_name = 'all_tests_page.html'
+
+    context_object_name = 'tests'
+
+    def get_queryset(self):
+        return Test.objects.all()

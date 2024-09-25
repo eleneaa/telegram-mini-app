@@ -1,0 +1,40 @@
+
+<div class="input-group">
+  {% if note %}
+  <span class="input-group-text">Изменить заметку</span>
+  {% else %}
+  <span class="input-group-text">Добавить заметку</span>
+  {% endif %}
+  <textarea class="form-control" aria-label="With textarea" id="textareaID">{{ note }}</textarea>
+  <button class="btn btn-dark rounded-pill my-2 col-12 p-2 save-button">Сохранить</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% csrf_token %}
+<script>
+    $(document).ready(function() {
+        $('.save-button ').click(function() {
+            var button = $(this);
+            console.log(button)
+            var note_text = document.getElementById('textareaID').value;
+            $.ajax({
+                url: '/tests/toggle_save_note_test/' + '{{ test.id }}' + "/" + note_text + (note_text ? '/' : ''),
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    if (response.action === 'added') {
+                        button.text('unfav');
+                    } else {
+                        button.text('fav');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Ошибка:", error);
+                }
+            });
+        });
+    });
+</script>
+
