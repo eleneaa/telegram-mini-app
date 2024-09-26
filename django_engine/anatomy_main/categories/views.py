@@ -33,7 +33,7 @@ def open_catalog(request: HttpRequest, catalog_id: str):
 def favorite_catalogs(request: HttpRequest):
     return render(request,
                   'category_favorite.html',
-                  {'catalogs': Catalog.get_favorite_catalogs(request.user)})
+                  {'catalogs': request.user.favorite_catalogs_ids()})
 
 
 @require_POST

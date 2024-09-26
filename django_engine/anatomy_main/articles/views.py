@@ -47,7 +47,7 @@ def toggle_favorite(request: HttpRequest,
 
 def favorite_articles(request: HttpRequest):
     return render(request, 'article_favorite.html', {
-        'favorite_articles': Article.get_favorite_articles(request.user)
+        'favorite_articles': request.user.favorite_articles_ids()
     })
 
 
