@@ -1,11 +1,8 @@
-<button class="btn btn-warning favorite-button w-100" data-item-id="{{ test.id }}">
-    {% if is_favorite %}
-    unfav
-    {% else %}
-    fav
-    {% endif %}
-</button>
-
+<label>
+    <button class="favorite-button btn btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none" data-item-id="{{ test.id }}">
+        {% if is_favorite %}❤{% else %}🤍{% endif %}
+    </button>
+</label>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% csrf_token %}
 <script>
@@ -16,7 +13,6 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $('.favorite-button ').click(function() {
             var button = $(this);
             var testId = button.data('item-id');
-
             $.ajax({
                 url: '/tests/toggle_favorite_test/' + testId + '/',
                 type: 'POST',
@@ -24,10 +20,10 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                     'X-CSRFToken': csrftoken
                 },
                 success: function(response) {
-                    if (response.action === 'updated') {
-                        button.text('Изменить');
+                    if (response.action === 'added') {
+                        button.text('❤')
                     } else {
-                        button.text('Добавить');
+                        button.text('🤍')
                     }
                 },
                 error: function(xhr, status, error) {

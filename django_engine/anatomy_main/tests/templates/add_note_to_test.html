@@ -24,11 +24,7 @@
                     'X-CSRFToken': csrftoken
                 },
                 success: function(response) {
-                    if (response.action === 'added') {
-                        button.text('unfav');
-                    } else {
-                        button.text('fav');
-                    }
+                    console.log(response)
                 },
                 error: function(xhr, status, error) {
                     console.error("Ошибка:", error);

@@ -91,10 +91,33 @@ def toggle_favorite(request: HttpRequest,
     user = request.user
     model_user_rel, created = rel_user_model_type.objects.get_or_create(user=user,
                                                                         **{rel_column_name: model_id})
-    if created:
-        model_user_rel.is_favorite = True
-        model_user_rel.save()
-        return JsonResponse({"action": "added"})
+    model_user_rel.is_favorite = not model_user_rel.is_favorite
+    if model_user_rel.is_favorite:
+        action = 'added'
     else:
-        model_user_rel.delete()
-        return JsonResponse({"action": "removed"})
+        action = 'removed'
+    model_user_rel.save()
+    return JsonResponse({"action": action})
+
+
+def toggle_save_note(request: HttpRequest,
+                     model_id: str,
+                     rel_user_model_type: type[models.Model],
+                     rel_column_name: str,
+                     note_text: str):
+    user = request.user
+    model_user_rel, created = rel_user_model_type.objects.get_or_create(user=user,
+                                                                        **{rel_column_name: model_id})
+    is_updated = False
+    if model_user_rel.note:
+        is_updated = True
+    model_user_rel.note = note_text
+    model_user_rel.save()
+    if is_updated:
+        # Заметка была обновлена
+        action = "updated"
+    else:
+        # Заметка была добавлена
+        action = "added"
+
+    return JsonResponse({'action': action})

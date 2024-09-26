@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
 from .models import Test, Question, QuestionType
-
+from anatomy_main import utils
 from django.urls import reverse
 
 from users.models import QuestionUserRel, TestUserRel
@@ -76,51 +76,23 @@ def test_results(request, test_id):
 
 @require_POST
 def toggle_favorite(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    favorite, created = QuestionUserRel.objects.get_or_create(user=request.user, question=question, is_favorite=True)
-    if created:
-        # Элемент был добавлен в избранное
-        action = "added"
-    else:
-        # Элемент был удален из избранного
-        favorite.delete()
-        action = "removed"
-
-    return JsonResponse({'action': action})
+    return utils.toggle_favorite(request,
+                                 question_id,
+                                 QuestionUserRel,
+                                 "question_id")
 
 
 @require_POST
 def toggle_favorite_test(request, test_id):
-    test = get_object_or_404(Test, id=test_id)
-    favorite, created = TestUserRel.objects.get_or_create(user=request.user, test=test, is_favorite=True)
-    if created:
-        # Элемент был добавлен в избранное
-        action = "added"
-    else:
-        # Элемент был удален из избранного
-        favorite.delete()
-        action = "removed"
-
-    return JsonResponse({'action': action})
+    return utils.toggle_favorite(request,
+                                 test_id,
+                                 TestUserRel,
+                                 "test_id")
 
 
 @require_POST
 def toggle_save_note_test(request, test_id, note_text=''):
-    test = get_object_or_404(Test, id=test_id)
-    test_user_rel, created = TestUserRel.objects.get_or_create(user=request.user, test=test)
-    is_updated = False
-    if test_user_rel.note:
-        is_updated = True
-    test_user_rel.note = note_text
-    test_user_rel.save()
-    if is_updated:
-        # Элемент был добавлен в избранное
-        action = "updated"
-    else:
-        # Элемент был удален из избранного
-        action = "added"
-
-    return JsonResponse({'action': action})
+    return utils.toggle_save_note(request, test_id, TestUserRel, 'test_id', note_text)
 
 
 def open_test(request, test_id):

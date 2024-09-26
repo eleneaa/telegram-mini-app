@@ -1,23 +1,20 @@
-
-    <button class="btn btn-warning favorite-button w-100" data-item-id="{{ question.id }}">
-        {% if is_favorite %}
-        unfav
-        {% else %}
-        fav
-        {% endif %}
+<label>
+    <button class="favorite-button btn btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none" data-item-id="{{ question.id }}">
+        {% if is_favorite %}❤{% else %}🤍{% endif %}
     </button>
+</label>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% csrf_token %}
 <script>
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 </script>
+
 <script>
     $(document).ready(function() {
         $('.favorite-button ').click(function() {
             var button = $(this);
             var questionId = button.data('item-id');
-
             $.ajax({
                 url: '/tests/favorite/' + questionId + '/',
                 type: 'POST',
@@ -26,9 +23,11 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 },
                 success: function(response) {
                     if (response.action === 'added') {
-                        button.text('unfav');
+                        console.log('add')
+                        button.text = '❤'
                     } else {
-                        button.text('fav');
+                        console.log('rm')
+                        button.text = '🤍'
                     }
                 },
                 error: function(xhr, status, error) {
@@ -38,4 +37,3 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         });
     });
 </script>
-

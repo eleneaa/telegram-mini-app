@@ -12,13 +12,12 @@
 <hr class="hr"/>
 <form method="post" class="form-ensurance-control">
     <div class="container-fluid p-0 pb-2">
-        <div class="row d-flex justify-content-between">
-            <div class="col-8">
-                <h2 class="w-100">{{ question.label }}</h2>
+        <div class="row row-cols-auto d-flex justify-content-center align-items-center">
+            <div class="p-0">
+                <span class="w-100 m-0">{{ question.label }}</span>
+                {% include 'add_question_favorite.html' %}
             </div>
-            <div class="col-4">
-                {% include 'test_add_favorite.html' %}
-            </div>
+
         </div>
     </div>
     {% csrf_token %}

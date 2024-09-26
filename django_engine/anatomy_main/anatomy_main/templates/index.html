@@ -22,20 +22,8 @@
     <body>
         {% include 'navbar.html' %}
         <main>
-        <div class="vh-100-m d-flex justify-content-center align-items-center">
-            <div class="container pt-3">
-                <div class="row d-flex justify-content-center">
-                    <div class="col-12">
-                        <div class="card card-bg">
-                            <div class="card-body p-4">
-                                {% block content %}
-                                {% endblock %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% block content %}
+        {% endblock %}
     </main>
 
     </body>
