@@ -5,6 +5,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <title>Vet Moment - Платформа для обучения ветеринаров</title>
         <link rel="stylesheet"
               href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -25,6 +26,21 @@
         {% block content %}
         {% endblock %}
     </main>
-
+        <h1>Telegram User Data</h1>
+    <pre id="user-data">Loading...</pre>
     </body>
+    <script>
+        // Инициализация WebApp API
+        const tg = window.Telegram.WebApp;
+
+        // Проверка готовности WebApp
+        tg.ready();
+
+        // Получаем все данные из initDataUnsafe
+        const initData = tg.initDataUnsafe;
+
+        // Отображаем полученные данные на странице
+        const userDataElement = document.getElementById('user-data');
+        userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
+    </script>
 </html>
