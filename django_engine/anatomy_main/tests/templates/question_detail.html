@@ -10,19 +10,21 @@
         </div>
 </div>
 <hr class="hr"/>
-<form method="post" class="form-ensurance-control">
-    <div class="container-fluid p-0 pb-2">
-        <div class="row row-cols-auto d-flex justify-content-center align-items-center">
-            <div class="p-0">
-                <span class="w-100 m-0">{{ question.label }}</span>
-                {% include 'add_question_favorite.html' %}
-            </div>
+<div class="card card-bg container-fluid p-0 mb-2">
+        <div class="card-body">
+            <div class="row row-cols-auto d-flex justify-content-start align-items-center">
+                <div class="p-0">
+                    <span class="w-100 m-1" style="margin-right: 0 !important;">{{ question.label }}</span>
+                    {% include 'add_question_favorite.html' %}
+                </div>
 
+            </div>
         </div>
-    </div>
+</div>
+<form method="post" class="form-ensurance-control">
     {% csrf_token %}
     {% if question.question_type == 'input' %}
-        <input type="text" name="answer[]" required class="input-group"/>
+        <input type="text" name="answer[]" class="input-group pt-2"/>
     {% else %}
         {% for variant in variants %}
             <input class="form-check-input" type="{{ question.question_type }}" name="answer[]" value="{{ variant.id }}">{{ variant }}<br/>

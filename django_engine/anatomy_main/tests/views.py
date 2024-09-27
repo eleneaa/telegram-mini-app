@@ -26,7 +26,7 @@ def question_detail(request, test_id, question_id):
     if question_user:
         is_favorite = question_user[0].is_favorite
 
-    if request.method == 'POST' and request.POST.getlist("answer[]"):
+    if request.method == 'POST' and request.POST.getlist("answer[]") and request.POST.getlist("answer[]")[0] != '':
         answer = request.POST.getlist('answer[]')
         # Сохраняем ответ (можно добавить логику для сохранения ответов пользователя)
         request.session.setdefault('answers', {})[question.id] = {"answers": answer,
@@ -112,7 +112,7 @@ def open_test(request, test_id):
 
 class TestsView(ListView):
     model = Test
-    paginate_by = 5
+    paginate_by = 8
     template_name = 'all_tests_page.html'
 
     context_object_name = 'tests'
