@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+</head>
+<body>
+<script>
+    // Инициализация WebApp API
+    const tg = window.Telegram.WebApp;
+
+    // Проверка готовности WebApp
+    tg.ready();
+
+    // Получаем данные пользователя
+    const userData = tg.initData;
+    const auth_url = `{{ auth_url }}?user_data=${userData}`;
+    location.replace(auth_url)
+</script>
+</body>
+</html>
