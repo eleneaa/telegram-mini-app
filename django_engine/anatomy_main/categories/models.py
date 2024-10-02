@@ -78,3 +78,50 @@ class Catalog(models.Model):
 
     def __hash__(self):
         return super().__hash__()
+
+class Atlas(models.Model):
+    is_main = models.BooleanField(verbose_name="Является главным атласом?")
+    id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
+    name = models.CharField(max_length=100, verbose_name="Название атласа")
+    child = models.ManyToManyField('self',
+                                   blank=True,
+                                   symmetrical=False,
+                                   verbose_name="ID вложенных атласов",
+                                   )
+    image = models.ImageField(verbose_name="Атлас", blank=True, upload_to='images_storage')
+    description = models.CharField(max_length=1000, verbose_name="Описание атласа", blank=True)
+
+    def child_ids(self):
+        cls = type(self)
+        if self.child.all():
+            children = [cls.objects.get(id=child.id) for child in self.child.all()]
+            return children
+        return []
+
+    def get_absolute_url(self):
+        return reverse("atlas:open_atlas", kwargs={"atlas_id": self.id})
+
+    @classmethod
+    def get_favorite_atlases(cls, user):
+        return cls.objects.filter(
+            id__in=CatalogUserRel.objects.filter(user=user, is_favorite=True).values('atlas_id')
+        )
+
+    @classmethod
+    def get_popular(cls, count: int):
+        res = cls.objects.raw(
+            """
+            SELECT atlas.*
+            FROM atlas
+            LEFT JOIN (
+                SELECT catalog_user.atlas_id,
+                       COUNT(catalog_user.atlas_id) AS fav_count
+                FROM catalog_user
+                WHERE catalog_user.is_favorite
+                GROUP BY catalog_user.atlas_id
+            ) AS F ON F.atlas_id = atlas.id
+            ORDER BY F.fav_count DESC
+            """
+        )
+        return res[:count]
+

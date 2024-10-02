@@ -33,6 +33,21 @@ class CatalogUserRel(models.Model):
         return f'{self.catalog}'
 
 
+class AtlasUserRel(models.Model):
+    atlas = models.ForeignKey('categories.Atlas', on_delete=models.CASCADE, related_name='atlas_user_id', verbose_name='Атлас')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_atlas_id')
+    is_favorite = models.BooleanField(default=False, verbose_name='Атлас в избранном?')
+    note = models.CharField(default='', blank=True, verbose_name='Заметка к атласу', max_length=150)
+
+    class Meta:
+        db_table = 'atlas_user'
+        verbose_name = 'Атлас'
+        verbose_name_plural = 'Атласы'
+
+    def __str__(self):
+        return f'{self.atlas}'
+
+
 class QuestionUserRel(models.Model):
     question = models.ForeignKey('tests.Question', on_delete=models.CASCADE, related_name="qu_user_id",
                                  verbose_name='Вопрос')
