@@ -82,6 +82,12 @@ class ArticleUserRel(models.Model):
 
 
 class User(AbstractUser):
+    # last_user_data = models.CharField(default='', blank=True, verbose_name='Последняя юзер дата', max_length=None)
+    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True)
+    first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
+    last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
+    telegram_username = models.CharField(default='', blank=True, verbose_name='Username пользователя', max_length=33)
+
     favorite_tests = models.ManyToManyField("tests.Test", verbose_name="Список избранных тестов", symmetrical=False,
                                             related_name='user_tests',
                                             through='TestUserRel')

@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <a href="{% url 'categories:main' %}">Каталоги</a>
     {% block content %}
 
     {% endblock %}
+    <h1>Telegram User Data</h1>
+    <pre id="user-data" style="color: red;">Loading...</pre>
 </body>
+<script>
+        // Инициализация WebApp API
+        const tg = window.Telegram.WebApp;
+
+        // Проверка готовности WebApp
+        tg.ready();
+
+        // Получаем все данные из initDataUnsafe
+        const initData = tg.initDataUnsafe;
+
+        // Отображаем полученные данные на странице
+        const userDataElement = document.getElementById('user-data');
+        userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
+    </script>
 </html>

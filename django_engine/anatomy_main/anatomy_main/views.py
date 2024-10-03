@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.conf import settings
 from django.http import JsonResponse
+from users.models import User
 # from django.contrib.auth import get_user_model
 
 # User = get_user_model()
@@ -26,28 +27,31 @@ def verify_telegram_signature(init_data, bot_token):
 
 
 # Функция для сохранения или обновления данных пользователя
-# def save_or_update_user(parsed_data):
-#     user_data = json.loads(parsed_data.get('user', '{}'))
-#     telegram_id = user_data.get('id')
-#     first_name = user_data.get('first_name', '')
-#     last_name = user_data.get('last_name', '')
-#     username = user_data.get('username', '')
-#
-#     if telegram_id:
-#         user, created = User.objects.get_or_create(username=username, defaults={
-#             'first_name': first_name,
-#             'last_name': last_name,
-#         })
-#
-#         if not created:
-#             # Обновляем данные пользователя, если они изменились
-#             if user.first_name != first_name or user.last_name != last_name:
-#                 user.first_name = first_name
-#                 user.last_name = last_name
-#                 user.save()
-#
-#         return user
-#     return None
+def save_or_update_user(parsed_data):
+    user_data = json.loads(parsed_data.get('user', '{}'))
+    telegram_id = user_data.get('id')
+    first_name = user_data.get('first_name', '')
+    last_name = user_data.get('last_name', '')
+    username = user_data.get('username', '')
+
+    if telegram_id:
+        user, created = User.objects.get_or_create(telegram_id=telegram_id, defaults={
+            'telegram_username': username,
+            'telegram_id': telegram_id,
+            'first_name': first_name,
+            'last_name': last_name,
+        })
+
+        if not created:
+            # Обновляем данные пользователя, если они изменились
+            if user.first_name != first_name or user.last_name != last_name or user.telegram_username != username:
+                user.first_name = first_name
+                user.last_name = last_name
+                user.telegram_username = username
+                user.save()
+
+        return user
+    return None
 
 
 # Основная view для обработки данных
@@ -67,8 +71,8 @@ def main(request):
                 return JsonResponse({'status': 'error', 'message': 'Data is outdated'}, status=403)
 
             # Сохраняем или обновляем пользователя
-            # user = save_or_update_user(parsed_data)
-            user = True
+            user = save_or_update_user(parsed_data)
+            # user = True
             if user:
                 return render(request, 'index.html', context={'user': user})
 
