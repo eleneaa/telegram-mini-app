@@ -100,6 +100,11 @@ class User(AbstractUser):
                                                 verbose_name="Список избранных тем",
                                                 through='CatalogUserRel')
 
+    favorites_atlases = models.ManyToManyField("atlases.Atlas", blank=True, symmetrical=False,
+                                                related_name='atlases',
+                                                verbose_name="Список избранных атласов",
+                                                through='AtlasUserRel')
+
     def favorite_tests_ids(self):
         if self.favorite_tests.all():
             childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user_id=self.id)]
@@ -127,6 +132,12 @@ class User(AbstractUser):
     def favorite_catalogs_ids(self):
         if self.favorites_catalogs.all():
             childs_array = [article for article in CatalogUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            return childs_array
+        return []
+
+    def favorite_atlases_ids(self):
+        if self.favorites_atlases.all():
+            childs_array = [atlas for atlas in AtlasUserRel.objects.filter(is_favorite=True, user_id=self.id)]
             return childs_array
         return []
 
