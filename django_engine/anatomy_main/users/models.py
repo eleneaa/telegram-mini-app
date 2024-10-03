@@ -34,7 +34,8 @@ class CatalogUserRel(models.Model):
 
 
 class AtlasUserRel(models.Model):
-    atlas = models.ForeignKey('categories.Atlas', on_delete=models.CASCADE, related_name='atlas_user_id', verbose_name='Атлас')
+    atlas = models.ForeignKey('atlases.Atlas', on_delete=models.CASCADE, related_name='atlas_user_id',
+                              verbose_name='Атлас')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_atlas_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Атлас в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к атласу', max_length=150)
@@ -101,9 +102,9 @@ class User(AbstractUser):
                                                 through='CatalogUserRel')
 
     favorites_atlases = models.ManyToManyField("atlases.Atlas", blank=True, symmetrical=False,
-                                                related_name='atlases',
-                                                verbose_name="Список избранных атласов",
-                                                through='AtlasUserRel')
+                                               related_name='atlases',
+                                               verbose_name="Список избранных атласов",
+                                               through='AtlasUserRel')
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():

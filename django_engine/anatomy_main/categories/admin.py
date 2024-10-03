@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Catalog
-from anatomy_main.utils import links_to_catalogs, links_to_tests, links_to_articles
+from anatomy_main.utils import links_to_catalogs, links_to_tests, links_to_articles, links_to_atlases
 
 
 class TestInline(admin.TabularInline):
@@ -20,7 +20,7 @@ class ArticleInline(admin.TabularInline):
 
 @admin.register(Catalog)
 class CatalogAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_main', 'child_ids', 'tests_ids', 'articles_ids']
+    list_display = ['name', 'is_main', 'child_ids', 'tests_ids', 'articles_ids', 'atlases_ids']
     inlines = [TestInline, ArticleInline]
     search_fields = ('name',)
     exclude = ['id']
@@ -38,6 +38,10 @@ class CatalogAdmin(admin.ModelAdmin):
     def articles_ids(self, obj):
         return links_to_articles(obj.articles_ids())
     articles_ids.short_description = 'Список статей'
+
+    def atlases_ids(self, obj):
+        return links_to_atlases(obj.atlases_ids())
+    atlases_ids.short_description = 'Список атласов'
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'child':

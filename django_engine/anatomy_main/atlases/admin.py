@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Atlas
 
-# Register your models here.
+
+@admin.register(Atlas)
+class UserAdmin(admin.ModelAdmin):
+    exclude = ['id']

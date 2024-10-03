@@ -64,6 +64,26 @@ def links_to_articles_rel(objects):
         return format_html(rel_list)
 
 
+def links_to_atlases_rel(objects):
+    if objects:
+        rel_list = "<ol style=padding-left:'0'>"
+        for obj in objects:
+            link = reverse("admin:atlases_atlas_change", args=[obj.atlas.id])
+            rel_list += "<li><a href='%s'>%s</a></li>" % (link, obj.atlas.label)
+        rel_list += "</ol>"
+        return format_html(rel_list)
+
+
+def links_to_atlases(objects):
+    if objects:
+        rel_list = "<ol style=padding-left:'0'>"
+        for obj in objects:
+            link = reverse("admin:atlases_atlas_change", args=[obj.id])
+            rel_list += "<li><a href='%s'>%s</a></li>" % (link, obj.label)
+        rel_list += "</ol>"
+        return format_html(rel_list)
+
+
 def links_to_questions(objects):
     if objects:
         rel_list = "<ol style=padding-left:'0'>"
