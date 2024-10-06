@@ -3,6 +3,8 @@ import hmac
 import urllib.parse
 import json
 import time
+
+from django.contrib.auth import login
 from django.shortcuts import render
 from django.urls import reverse
 from django.conf import settings
@@ -32,11 +34,13 @@ def save_or_update_user(parsed_data):
     telegram_id = user_data.get('id')
     first_name = user_data.get('first_name', '')
     last_name = user_data.get('last_name', '')
-    username = user_data.get('username', '')
+    telegram_username = user_data.get('username', '')
+    username = f"tg_{telegram_id}"
 
     if telegram_id:
         user, created = User.objects.get_or_create(telegram_id=telegram_id, defaults={
-            'telegram_username': username,
+            'username': username,
+            'telegram_username': telegram_username,
             'telegram_id': telegram_id,
             'first_name': first_name,
             'last_name': last_name,
@@ -44,18 +48,21 @@ def save_or_update_user(parsed_data):
 
         if not created:
             # Обновляем данные пользователя, если они изменились
-            if user.first_name != first_name or user.last_name != last_name or user.telegram_username != username:
+            if user.first_name != first_name or user.last_name != last_name or user.telegram_username != telegram_username or user.username != username:
+                user.username = username
                 user.first_name = first_name
                 user.last_name = last_name
-                user.telegram_username = username
+                user.telegram_username = telegram_username
                 user.save()
-
         return user
     return None
 
 
 # Основная view для обработки данных
 def main(request):
+    if request.user.is_authenticated:
+        return render(request, 'index.html', context={'user': request.user})
+    #TODO вытаскивать токен из env
     bot_token = "7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU"  # Замените на ваш реальный токен
 
     # Получаем данные пользователя из GET-запроса
@@ -74,6 +81,7 @@ def main(request):
             user = save_or_update_user(parsed_data)
             # user = True
             if user:
+                login(user=user, request=request)
                 return render(request, 'index.html', context={'user': user})
 
         return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=403)
@@ -84,3 +92,6 @@ def main(request):
 # Вспомогательная view для редиректа на main
 def init_page(request):
     return render(request, 'index_auth_redirect.html', context={'auth_url': reverse('main')})
+
+def test(request):
+    return render(request, 'test.html', context={'user': request.user})

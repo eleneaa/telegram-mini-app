@@ -83,10 +83,28 @@ class ArticleUserRel(models.Model):
 
 class User(AbstractUser):
     # last_user_data = models.CharField(default='', blank=True, verbose_name='Последняя юзер дата', max_length=None)
-    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True)
-    first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
-    last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
-    telegram_username = models.CharField(default='', blank=True, verbose_name='Username пользователя', max_length=33)
+    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True, primary_key=True)
+    # first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
+    # last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
+    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя', max_length=33)
+
+    # # Theme settings for Telegram Mini App (default to light theme)
+    # background_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона',
+    #                                     max_length=7)  # Белый фон
+    # text_color = models.CharField(default='#000000', blank=True, verbose_name='Цвет текста',
+    #                               max_length=7)  # Черный текст
+    # button_color = models.CharField(default='#0088cc', blank=True, verbose_name='Цвет кнопки',
+    #                                 max_length=7)  # Синий (как в Telegram)
+    # button_text_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет текста на кнопке',
+    #                                      max_length=7)  # Белый текст на кнопке
+    # navbar_background = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона навбара',
+    #                                      max_length=7)  # Белый навбар
+    # navbar_text = models.CharField(default='#000000', blank=True, verbose_name='Цвет текста навбара',
+    #                                max_length=7)  # Черный текст в навбаре
+    # navbar_link = models.CharField(default='#0088cc', blank=True, verbose_name='Цвет ссылки навбара',
+    #                                max_length=7)  # Ссылки того же цвета, что и кнопки
+    # navbar_link_hover = models.CharField(default='#005f8c', blank=True, verbose_name='Цвет ссылки при наведении',
+    #                                      max_length=7)  # Более темный синий при наведении
 
     favorite_tests = models.ManyToManyField("tests.Test", verbose_name="Список избранных тестов", symmetrical=False,
                                             related_name='user_tests',

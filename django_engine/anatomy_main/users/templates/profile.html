@@ -22,27 +22,47 @@
     </head>
     <body>
         {% include 'navbar.html' %}
-        <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-        <p class="text-center">здесь пока ничего нет</p>
-<!--        <h1>Telegram User Data</h1>-->
-<!--    <pre id="user-data">Loading...</pre>-->
-<!--    <img id="user-photo" alt="User Photo" style="display: none; width: 150px; height: 150px;">-->
+        <div class="container mt-5">
+        <h1 class="text-center">Профиль пользователя</h1>
+
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
+                <p class="card-text">@{{ user.telegram_username }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Основная информация</h5>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Telegram ID:</strong> {{ user.telegram_id }}</li>
+                    <li class="list-group-item"><strong>Имя:</strong> {{ user.first_name }}</li>
+                    <li class="list-group-item"><strong>Фамилия:</strong> {{ user.last_name }}</li>
+                    <li class="list-group-item"><strong>Username:</strong> @{{ user.telegram_username }}</li>
+                </ul>
+            </div>
+<!--            <div class="col-md-6">-->
+<!--                <h5>Дополнительная информация</h5>-->
+<!--                <ul class="list-group">-->
+<!--                    <li class="list-group-item"><strong>Последняя активность:</strong> {{ user.last_active|date:"d M Y H:i" }}</li>-->
+<!--                    <li class="list-group-item"><strong>Язык:</strong> {{ user.language_code }}</li>-->
+<!--                    <li class="list-group-item"><strong>Настройки уведомлений:</strong> {{ user.notifications_enabled|yesno:"Включено,Выключено" }}</li>-->
+<!--                </ul>-->
+<!--            </div>-->
+        </div>
+    </div>
+
+    <img id="user-photo" alt="User Photo" style="display: none; width: 150px; height: 150px;">
     </body>
     <script>
         // Инициализация WebApp API
         const tg = window.Telegram.WebApp;
 
-        // Устанавливаем цвет шапки приложения в самом телеграмме
-        tg.setHeaderColor('#ffffff');
-
-        // Открывает приложение на всю ширину на телефоне
-        tg.expand();
-
         // Проверка готовности WebApp
         tg.ready();
+
+        tg.setHeaderColor('#ffffff');
 
         // Получаем все данные из initDataUnsafe
         const initData = tg.initDataUnsafe;
