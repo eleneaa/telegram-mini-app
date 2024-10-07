@@ -5,7 +5,7 @@ from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMar
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 
 BOT_TOKEN = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
-WEBAPP_URL = os.getenv("WEBAPP_URL")  # Ссылка на ваше мини-приложение
+WEBAPP_URL = os.getenv("WEBAPP_URL", "https://eoemdm0yeejm02q.m.pipedream.net")  # Ссылка на ваше мини-приложение
 
 
 async def start(update: Update, context: CallbackContext):
