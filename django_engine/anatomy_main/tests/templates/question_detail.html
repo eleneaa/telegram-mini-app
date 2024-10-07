@@ -23,11 +23,12 @@
 </div>
 <form method="post" class="form-ensurance-control">
     {% csrf_token %}
+    <input type="hidden" name="question_index" value="{{ question_index }}">
     {% if question.question_type == 'input' %}
         <input type="text" name="answer[]" class="input-group pt-2"/>
     {% else %}
         {% for variant in variants %}
-            <input class="form-check-input" type="{{ question.question_type }}" name="answer[]" value="{{ variant.id }}">{{ variant }}<br/>
+            <input class="form-check-input" type="{{ question.question_type }}" name="answer[]" value="{{ variant.id }}">{{ variant.name }}<br/>
         {% endfor %}
     {% endif %}
     <button type="submit" class='btn btn-success rounded-pill my-2 col-12 p-2'>Ответить</button>
