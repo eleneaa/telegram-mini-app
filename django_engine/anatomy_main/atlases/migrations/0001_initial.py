@@ -14,16 +14,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Article',
+            name='Atlas',
             fields=[
                 ('id', models.CharField(default=uuid.uuid4, max_length=100, primary_key=True, serialize=False)),
                 ('label', models.CharField(max_length=50, verbose_name='Название файла')),
-                ('article_file', models.FileField(upload_to='articles_storage', verbose_name='Файл статьи')),
-                ('catalogs', models.ManyToManyField(blank=True, related_name='articles', to='categories.catalog', verbose_name='Принадлежит каталогам')),
+                ('atlas_file', models.ImageField(upload_to='atlases_storage', verbose_name='Файл атласа')),
+                ('catalogs', models.ManyToManyField(blank=True, related_name='atlases', to='categories.catalog', verbose_name='Принадлежит каталогам')),
             ],
             options={
-                'verbose_name': 'Статья',
-                'verbose_name_plural': 'Статьи',
+                'verbose_name': 'Атлас',
+                'verbose_name_plural': 'Атласы',
             },
         ),
     ]

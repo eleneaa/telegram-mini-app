@@ -36,15 +36,15 @@ class Atlas(models.Model):
     def get_popular(cls, count: int):
         res = cls.objects.raw(
             """
-            SELECT atlas.*
-            FROM atlas
+            SELECT atlases_atlas.*
+            FROM atlases_atlas
             LEFT JOIN (
-                SELECT catalog_user.atlas_id,
-                       COUNT(catalog_user.atlas_id) AS fav_count
-                FROM catalog_user
-                WHERE catalog_user.is_favorite
-                GROUP BY catalog_user.atlas_id
-            ) AS F ON F.atlas_id = atlas.id
+                SELECT atlas_user.atlas_id,
+                       COUNT(atlas_user.atlas_id) AS fav_count
+                FROM atlas_user
+                WHERE atlas_user.is_favorite
+                GROUP BY atlas_user.atlas_id
+            ) AS F ON F.atlas_id = atlases_atlas.id
             ORDER BY F.fav_count DESC
             """
         )

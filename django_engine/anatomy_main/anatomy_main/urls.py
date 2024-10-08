@@ -26,5 +26,6 @@ urlpatterns = [
     path("tests/", include('tests.urls')),
     path("categories/", include('categories.urls')),
     path("articles/", include('articles.urls')),
+    path('atlases/', include('atlases.urls')),
     path("user/", include('users.urls'))
 ]

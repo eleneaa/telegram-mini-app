@@ -1,0 +1,86 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .app-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #e9ecef;
+            padding: 10px 15px;
+        }
+        .menu-icon, .personal-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #adb5bd;
+        }
+        .image-placeholder {
+            height: 200px;
+            background-color: #dee2e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #6c757d;
+        }
+        .card {
+            border: none;
+            background-color: #e9ecef;
+            height: 100%;
+        }
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #adb5bd;
+            margin-bottom: 10px;
+        }
+        .search-input {
+            border-radius: 20px;
+        }
+    </style>
+    <div class="app-container">
+        <div class="p-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control search-input" placeholder="Найти атлас">
+                <button class="btn btn-outline-secondary" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-3">
+                <h2 class="h6 mb-2">Популярные атласы</h2>
+                <div class="row g-2">
+                    {% for atlas in popular_atlases %}
+                        <div class="col-4">
+                            <div class="card p-2">
+                                <div class="card-icon mx-auto"></div>
+                                <div class="text-center small">{{ atlas }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary btn-sm mt-2">Посмотреть все</button>
+            </div>
+            <hr class="hr">
+            <div>
+                <h1 class="h6 mb-2">Избранные атласы</h1>
+                <div class="row g-2">
+                    {% for atlas in favorite_atlases %}
+                        <div class="col-4">
+                            <div class="card p-2">
+                                <div class="card-icon mx-auto"></div>
+                                <div class="text-center small">{{ atlas }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm mt-2">Посмотреть все</button>
+        </div>
+    </div>
+{% endblock %}
