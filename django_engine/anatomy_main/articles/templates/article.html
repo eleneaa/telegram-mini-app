@@ -1,0 +1,54 @@
+{% extends "article_base.html" %}
+{% block title %}
+	{{ article.label }}
+{% endblock %}
+{% block content %}
+    <h1>{{ article.label }}</h1>
+    <p>My first paragraph.</p>
+    <div id="item-{{ article.id }}">
+        <button class="favorite-button" data-item-id="{{ article.id }}">
+            {% if is_favorite %}
+                Удалить из избранного
+            {% else %}
+                Добавить в избранное
+            {% endif %}
+        </button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% csrf_token %}
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.favorite-button').click(function () {
+                var button = $(this);
+                var articleId = button.data('item-id');
+
+                $.ajax({
+                    url: '/articles/favorite/' + articleId + '/',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    success: function (response) {
+                        if (response.action === 'added') {
+                            button.text('Удалить из избранного');
+                        } else {
+                            button.text('Добавить в избранное');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Ошибка:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% block article_content %}
+    {% endblock %}
+
+{% endblock %}
+
+

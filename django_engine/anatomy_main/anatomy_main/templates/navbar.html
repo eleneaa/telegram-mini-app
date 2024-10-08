@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid d-flex align-items-center flex-nowrap">
+    <a class="navbar-brand h1" href="{% url 'main' %}" onclick="hapticFeedback()">
+      <img src="{% static 'icons/logo.png' %}" alt="Logo" width="35" height="30" class="d-inline-block align-text-center">
+      Vet Moment
+    </a>
+    <a href="{% url 'users:profile' %}" class="btn btn-outline-primary ms-auto" role="button" onclick="hapticFeedback()">Личный кабинет</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'tests:main' %}">Тесты</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'categories:main' %}">Атласы</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Статьи</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+    // // Инициализация WebApp API
+    // const tg = window.Telegram.WebApp;
+    //
+    // // Проверка готовности WebApp
+    // tg.ready();
+
+    // Функция для легкой вибрации
+    function hapticFeedback() {
+        tg.HapticFeedback.impactOccurred('medium');;  // Включение вибрации
+    }
+</script>

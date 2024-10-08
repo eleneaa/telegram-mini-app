@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ожидание перенаправления</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative; /* Для позиционирования котика */
+            overflow: hidden; /* Скрыть переполнение */
+        }
+
+        .loading-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress {
+            height: 20px;
+            background-color: #007bff;
+            width: 0;
+            border-radius: 25px;
+            animation: loading 3s linear infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0;
+            }
+            50% {
+                width: 80%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Стиль для котика */
+        .cat {
+            position: absolute;
+            width: 100px; /* Ширина котика */
+            padding-top: 10px;
+            animation: moveCat 3s linear infinite; /* Анимация движения */
+        }
+
+        /* Ключевые кадры для анимации котика */
+        @keyframes moveCat {
+            0% {
+                left: -100px; /* Начальная позиция (за пределами слева) */
+            }
+            50% {
+                left: calc(100vw - 100px); /* Конечная позиция (за пределами справа) */
+            }
+            100% {
+                left: -100px; /* Возврат на начальную позицию */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Секундочку...</h1>
+    <div class="loading-bar">
+        <div class="progress"></div>
+    </div>
+
+    <!-- Изображение котика -->
+    <img src="{% static 'icons/cat.png' %}" alt="Котик" class="cat">
+
+    <script>
+        // Инициализация WebApp API
+        const tg = window.Telegram.WebApp;
+
+        // Проверка готовности WebApp
+        tg.ready();
+
+        // Открывает приложение на всю ширину на телефоне
+        tg.expand();
+
+        // Получаем данные пользователя
+        const userData = tg.initData;
+
+        // Перенаправляем пользователя на страницу авторизации
+        const auth_url = `{{ auth_url }}?user_data=${encodeURIComponent(userData)}`;
+        async function triggerHapticFeedback() {
+            for (let i = 0; i < 5; i++) {
+                tg.HapticFeedback.impactOccurred('light');
+                await new Promise(resolve => setTimeout(resolve, 100)); // Ждем 100 мс между вибрациями
+            }
+            for (let i = 0; i < 5; i++) {
+                tg.HapticFeedback.impactOccurred('rigid');
+                await new Promise(resolve => setTimeout(resolve, 100)); // Ждем 100 мс между вибрациями
+            }
+            for (let i = 0; i < 5; i++) {
+                tg.HapticFeedback.impactOccurred('heavy');
+                await new Promise(resolve => setTimeout(resolve, 100)); // Ждем 100 мс между вибрациями
+            }
+        }
+
+        // Запускаем вибрацию и затем перенаправляем
+        triggerHapticFeedback().then(() => {
+            setTimeout(() => {
+                location.replace(auth_url); // Перенаправляем с передачей userData после вибрации
+            }, 200); // Ждем 500 мс перед перенаправлением
+        });
+    </script>
+</body>
+</html>

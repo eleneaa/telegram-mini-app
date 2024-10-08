@@ -1,0 +1,43 @@
+<label>
+    <button class="favorite-button btn-link p-0 m-0 w-100"
+            style="border: 0;
+            text-decoration: none;
+            background: none"
+            data-item-id="{{ question.id }}">
+        {% if is_favorite %}❤{% else %}🤍{% endif %}
+    </button>
+</label>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% csrf_token %}
+<script>
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.favorite-button ').click(function() {
+            var button = $(this);
+            var questionId = button.data('item-id');
+            $.ajax({
+                url: '/tests/favorite/' + questionId + '/',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    if (response.action === 'added') {
+                        console.log('add')
+                        button.text('❤')
+                    } else {
+                        console.log('rm')
+                        button.text('🤍')
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Ошибка:", error);
+                }
+            });
+        });
+    });
+</script>

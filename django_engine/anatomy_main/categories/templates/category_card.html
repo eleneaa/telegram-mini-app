@@ -1,0 +1,14 @@
+{% load static %}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ catalog.name }}</h5>
+        <p class="card-text">
+            {% if catalog.image %}
+                <img height="100" width="100" src="{% static catalog.image.url %}" alt="фото категории">
+            {% endif %}
+            {{ catalog.description }}
+        </p>
+        <a href="{{ catalog.get_absolute_url }}" class="btn btn-primary">Открыть</a>
+    </div>
+</div>

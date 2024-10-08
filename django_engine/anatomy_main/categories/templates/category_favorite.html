@@ -1,0 +1,15 @@
+{% extends 'categories_base.html' %}
+{% load static %}
+
+{% block title %}
+	Любимые категории
+{% endblock %}
+
+{% block content %}
+	{% for catalog in catalogs %}
+        <p><a href="{{ catalog.get_absolute_url }}">{{ catalog.name }}</a></p>
+	{% empty %}
+		<p>Пока нет любимых категорий :( <a href="{% url 'categories:main' %}">Добавить?</a></p>
+	{% endfor %}
+
+{% endblock %}
