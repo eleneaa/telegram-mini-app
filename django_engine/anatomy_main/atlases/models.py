@@ -5,13 +5,16 @@ from django.urls import reverse
 from users.models import AtlasUserRel
 
 
-
 class Atlas(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     label = models.CharField(max_length=50, verbose_name='Название файла')
     atlas_file = models.ImageField(verbose_name='Файл атласа', upload_to='atlases_storage')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
-                                      related_name='articles', blank=True)
+                                      related_name='atlases', blank=True)
+
+    class Meta:
+        verbose_name = 'Атлас'
+        verbose_name_plural = 'Атласы'
 
     def child_ids(self):
         cls = type(self)
@@ -46,3 +49,6 @@ class Atlas(models.Model):
             """
         )
         return res[:count]
+
+    def __str__(self):
+        return self.label

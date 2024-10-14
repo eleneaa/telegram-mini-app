@@ -34,5 +34,20 @@
 
         {% endfor %}
     {% endif %}
+    <h1>Welcome to Telegram Mini App!</h1>
+        <p id="user-data"></p>
+        <button id="send-data">Send Data to Bot</button>
+    <script>
+            const tg = window.Telegram.WebApp;
+
+            // Получаем данные о пользователе
+            let userData = tg.initDataUnsafe;
+            document.getElementById('user-data').innerHTML = "Hello, " + userData.user.first_name;
+
+            document.getElementById('send-data').addEventListener('click', function() {
+                tg.sendData(JSON.stringify(userData));  // Отправляем данные в бота
+                window.location.href = 'https://google.com';  // Перенаправляем пользователя на Google
+            });
+        </script>
 
 {% endblock %}

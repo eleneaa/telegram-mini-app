@@ -34,7 +34,8 @@ class CatalogUserRel(models.Model):
 
 
 class AtlasUserRel(models.Model):
-    atlas = models.ForeignKey('categories.Atlas', on_delete=models.CASCADE, related_name='atlas_user_id', verbose_name='Атлас')
+    atlas = models.ForeignKey('atlases.Atlas', on_delete=models.CASCADE, related_name='atlas_user_id',
+                              verbose_name='Атлас')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_atlas_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Атлас в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к атласу', max_length=150)
@@ -81,6 +82,30 @@ class ArticleUserRel(models.Model):
 
 
 class User(AbstractUser):
+    # last_user_data = models.CharField(default='', blank=True, verbose_name='Последняя юзер дата', max_length=None)
+    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True, primary_key=True)
+    # first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
+    # last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
+    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя', max_length=33)
+
+    # # Theme settings for Telegram Mini App (default to light theme)
+    # background_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона',
+    #                                     max_length=7)  # Белый фон
+    # text_color = models.CharField(default='#000000', blank=True, verbose_name='Цвет текста',
+    #                               max_length=7)  # Черный текст
+    # button_color = models.CharField(default='#0088cc', blank=True, verbose_name='Цвет кнопки',
+    #                                 max_length=7)  # Синий (как в Telegram)
+    # button_text_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет текста на кнопке',
+    #                                      max_length=7)  # Белый текст на кнопке
+    # navbar_background = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона навбара',
+    #                                      max_length=7)  # Белый навбар
+    # navbar_text = models.CharField(default='#000000', blank=True, verbose_name='Цвет текста навбара',
+    #                                max_length=7)  # Черный текст в навбаре
+    # navbar_link = models.CharField(default='#0088cc', blank=True, verbose_name='Цвет ссылки навбара',
+    #                                max_length=7)  # Ссылки того же цвета, что и кнопки
+    # navbar_link_hover = models.CharField(default='#005f8c', blank=True, verbose_name='Цвет ссылки при наведении',
+    #                                      max_length=7)  # Более темный синий при наведении
+
     favorite_tests = models.ManyToManyField("tests.Test", verbose_name="Список избранных тестов", symmetrical=False,
                                             related_name='user_tests',
                                             through='TestUserRel')
@@ -101,9 +126,9 @@ class User(AbstractUser):
                                                 through='CatalogUserRel')
 
     favorites_atlases = models.ManyToManyField("atlases.Atlas", blank=True, symmetrical=False,
-                                                related_name='atlases',
-                                                verbose_name="Список избранных атласов",
-                                                through='AtlasUserRel')
+                                               related_name='atlases',
+                                               verbose_name="Список избранных атласов",
+                                               through='AtlasUserRel')
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():

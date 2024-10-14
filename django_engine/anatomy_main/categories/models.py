@@ -37,6 +37,12 @@ class Catalog(models.Model):
             return articles_array
         return []
 
+    def atlases_ids(self):
+        if self.atlases.all():
+            articles_array = [article for article in self.atlases.all()]
+            return articles_array
+        return []
+
     def get_absolute_url(self):
         return reverse("categories:open_catalog", kwargs={"catalog_id": self.id})
 

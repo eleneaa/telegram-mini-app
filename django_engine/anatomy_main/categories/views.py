@@ -8,7 +8,6 @@ from categories.models import Catalog
 from users.models import CatalogUserRel
 
 
-from .models import Atlas
 from users.models import AtlasUserRel
 
 
