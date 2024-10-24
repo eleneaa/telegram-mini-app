@@ -1,8 +1,8 @@
 # Create your views here.
 # views.py
-from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
@@ -12,77 +12,57 @@ from .models import Test, Question, QuestionType
 
 
 def start_test(request, test_id):
-    test = get_object_or_404(Test, id=test_id)
-    # questions = test.questions_ids()
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT "tests_question"."id",
-       "tests_question"."label",
-       "tests_question"."question_type",
-       ARRAY_AGG("P0"."variant_name_and_id") AS "variants_list"
-        FROM "tests_question"
-                 INNER JOIN "tests_test_questions_list" ON ("tests_question"."id" = "tests_test_questions_list"."question_id")
-                 LEFT OUTER JOIN "question_variants" ON ("tests_question"."id" = "question_variants"."question_id")
-                 LEFT OUTER JOIN (SELECT "tests_variant"."id"                                  as id,
-                                         "tests_variant"."name" || ' ' || "tests_variant"."id" as "variant_name_and_id"
-                                  FROM "tests_variant") AS "P0"
-                                 ON ("question_variants"."variant_id" = "P0"."id")
-        WHERE "tests_test_questions_list"."test_id" = %s
-        GROUP BY "tests_question".id
-        """, [test_id]
-        )
-        questions = [
-            dict(zip([col[0] for col in cursor.description], row))
-            for row in cursor.fetchall()
-        ]
+    try:
+        test = Test.objects.prefetch_related('questions_list').get(id=test_id)
+    except ObjectDoesNotExist:
+        raise Http404
+    test.questions_list.prefetch_related('variants')
+    request.session['test'] = {
+        'id': test.id,
+        'label': test.label,
+        'question_count': len(test.questions_list.all())
+    }
 
-    for question in questions:
-        variants_list = []
-        for i in question['variants_list']:
-            name, _id = i.split(' ')
-            variants_list.append({"name": name, "id": _id})
-        question['variants_list'] = variants_list
+    questions = list(test.questions_list.all())
+    request.session['questions'] = [
+        {
+            'id': q.id,
+            'question_type': q.question_type,
+            'label': q.label,
+            'variants': [
+                {
+                    'id': v.id,
+                    'name': v.name
+                } for v in q.variants.all()
+            ]
+        }
+        for q in questions]
 
-    request.session["questions"] = list(questions)
-    request.session['current_question'] = 0
+    question_user_rels = QuestionUserRel.objects.filter(user_id=request.user.pk,
+                                                        question__in=questions).all()
 
-    request.session['test'] = {'label': test.label, 'id': test.id}
+    request.session['question_user_rels'] = dict(map(lambda q: (q.question_id, {
+        'id': q.id,
+        'is_favorite': q.is_favorite,
+        'note': q.note
+    }), question_user_rels))
 
-    request.session['question_user_rels'] = list(QuestionUserRel
-                                                 .objects
-                                                 .filter(question_id__in=[question['id'] for question in questions],
-                                                         user_id=request.user.telegram_id)
-                                                 .all()
-                                                 .values())
-
-    first_question_id = questions[0]['id']
-    return redirect('tests:question_detail', test_id=test_id, question_id=first_question_id)
+    return redirect('tests:question_detail', test_id=test_id, question_id=0, permanent=False)
 
 
-def question_detail(request, test_id, question_index):
-    test = get_object_or_404(Test, id=test_id)
+def question_detail(request, test_id, question_id):
+    if (any(key not in request.session for key in ['test', 'questions', 'question_user_rels']) or
+            question_id >= len(request.session["questions"]) or
+            question_id < 0 or
+            request.session['test']['id'] != test_id):
+        return redirect('tests:start_test', test_id=test_id)
 
-    # определяем к какому вопросу относится запрос
-    if request.method == "POST":
-        current_question_index = int(request.POST.get('question_index'))
-        request.session["current_question"] = current_question_index
-    else:
-        current_question_index = request.session["current_question"]
+    test = request.session['test']
 
     try:
-        question = request.session["questions"][current_question_index]
+        question = request.session["questions"][question_id]
     except IndexError:
-        print(f'Вопросы закончились Сессия: {request.session}')
         return redirect('tests:test_results', test_id=test_id)
-    question_user_rels: list[dict] = request.session['question_user_rels']
-    try:
-        question_user = next(filter(lambda x: x['question_id'] == question_id, question_user_rels))
-    except StopIteration:
-        question_user = None
-    is_favorite = False
-    if question_user:
-        is_favorite = question_user['is_favorite']
 
     if request.method == 'POST' and request.POST.getlist("answer[]") and request.POST.getlist("answer[]")[0] != '':
         answer = request.POST.getlist('answer[]')
@@ -91,32 +71,39 @@ def question_detail(request, test_id, question_index):
                                                                      'question_type': question['question_type']}
         request.session.modified = True
 
-        # Переходим к следующему вопросу или к результатам
+        its_last_question = question_id + 1 >= len(request.session["questions"])
 
-        request.session['current_question'] += 1
-
-        current_question = request.session['current_question']
-        its_not_last_question = len(request.session["questions"]) > current_question
-
-        if its_not_last_question:
-            next_question = request.session["questions"][request.session['current_question']]
-            return redirect(reverse('tests:question_detail', kwargs={"test_id": test.id,
-                                                                     "question_id": next_question['id']}))
+        if its_last_question:
+            return redirect('tests:test_results', test_id=test_id)
         else:
-            return redirect(reverse('tests:test_results', kwargs={'test_id': test.id}))
+            return redirect('tests:question_detail', test_id=test_id, question_id=question_id + 1)
 
-    return render(request, 'question.html', {'test': test, 'question': question,
-                                             'variants': question['variants_list'],
-                                             "is_favorite": is_favorite,
-                                             "question_type": question['question_type'],
-                                             'question_index': current_question_index})
+    question_user_rels: dict[str, dict] = request.session['question_user_rels']
+    question_user = question_user_rels.get(str(question_id), None)
+
+    is_favorite = False
+    if question_user:
+        is_favorite = question_user['is_favorite']
+
+    return render(request, 'question.html',
+                  {
+                      'test': test,
+                      'question': question,
+                      'variants': question['variants'],
+                      "is_favorite": is_favorite,
+                      "question_type": question['question_type'],
+                      'question_index': question_id
+                  })
 
 
 def test_results(request, test_id):
+    if any(key not in request.session for key in ['test', 'questions', 'question_user_rels', 'answers']):
+        return redirect('tests:start_test', test_id=test_id)
+
     test = get_object_or_404(Test, id=test_id)
     # Сохраняем запись, что тест завершен
     if test.id not in request.user.completed_tests_ids():
-        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user_id=request.user.telegram_id)
+        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
         entity.is_completed = True
         entity.save()
     answers = request.session.get('answers', {})
@@ -135,7 +122,10 @@ def test_results(request, test_id):
             correct_ids = list(map(lambda x: x.variant_id, question_obj.correct_answers()))
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
                 score += 1
-
+    del request.session['questions']
+    del request.session['answers']
+    del request.session['question_user_rels']
+    del request.session['test']
     return render(request, 'test_results.html', {'test': test, 'score': score, 'total_questions': total_questions})
 
 

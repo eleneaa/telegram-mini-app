@@ -1,62 +1,47 @@
 <!DOCTYPE html>
 {% load static %}
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <title>Vet Moment - Платформа для обучения ветеринаров</title>
-        <link rel="stylesheet"
-              href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-        <meta name="theme-color" content="#ffffff">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&amp;display=swap"
-              rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <link
-  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.min.css"
-  rel="stylesheet"
-/>
-    </head>
-    <body>
-        {% include 'navbar.html' %}
-        <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-        <p class="text-center">здесь пока ничего нет</p>
-<!--        <h1>Telegram User Data</h1>-->
-<!--    <pre id="user-data">Loading...</pre>-->
-<!--    <img id="user-photo" alt="User Photo" style="display: none; width: 150px; height: 150px;">-->
-    </body>
-    <script>
-        // Инициализация WebApp API
-        const tg = window.Telegram.WebApp;
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Vet Moment - Платформа для обучения ветеринаров</title>
+    <link rel="stylesheet"
+          href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&amp;display=swap"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.min.css"
+            rel="stylesheet"
+    />
+</head>
+<body>
+{% include 'navbar.html' %}
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+</body>
+<script>
+    // Инициализация WebApp API
+    const tg = window.Telegram.WebApp;
 
-        // Устанавливаем цвет шапки приложения в самом телеграмме
-        tg.setHeaderColor('#ffffff');
+    // Проверка готовности WebApp
+    tg.ready();
 
-        // Открывает приложение на всю ширину на телефоне
-        tg.expand();
+    // Получаем все данные из initDataUnsafe
+    const initData = tg.initDataUnsafe;
 
-        // Проверка готовности WebApp
-        tg.ready();
-
-        // Получаем все данные из initDataUnsafe
-        const initData = tg.initDataUnsafe;
-
-        let userData = tg.initDataUnsafe.user;
-
-        // Отображаем полученные данные на странице
-        const userDataElement = document.getElementById('user-data');
-        userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
-
-        if (userData.photo_url) {
-            const userPhoto = document.getElementById('user-photo');
-            userPhoto.src = userData.photo_url;
-            userPhoto.style.display = 'block';  // Показываем фотографию
-        }
-    </script>
+    // Отображаем полученные данные на странице
+    const userDataElement = document.getElementById('user-data');
+    userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
+</script>
 </html>

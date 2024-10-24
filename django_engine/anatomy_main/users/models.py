@@ -132,13 +132,13 @@ class User(AbstractUser):
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user__telegram_id=self.pk)]
             return childs_array
         return []
 
     def completed_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_completed=True, user_id=self.telegram_id)]
+            childs_array = [test for test in TestUserRel.objects.filter(is_completed=True, user_id=self.pk)]
             return childs_array
         return []
 
