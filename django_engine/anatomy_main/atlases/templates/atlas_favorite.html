@@ -1,0 +1,15 @@
+{% extends "atlas_base.html" %}
+
+{% block content %}
+	{% if favorite_atlases|length != 0 %}
+        <h2>Избранные атласы</h2>
+
+        {% for atlas in favorite_atlases %}
+
+            {% include 'atlases_card.html' %}
+
+        {% endfor %}
+        {% else %}
+            <p>Вы ещё не добавили атласы в избранное! <a href="{% url 'atlases:main' %}">Вернуться на главную</a></p>
+    {% endif %}
+{% endblock %}

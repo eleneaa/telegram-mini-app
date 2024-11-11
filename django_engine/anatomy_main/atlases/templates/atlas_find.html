@@ -1,0 +1,16 @@
+{% extends "atlas_base.html" %}
+
+{% block content %}
+    <form action="{% url 'atlases:find' %}">
+        <label>
+            Label:
+            <input name="label" autocomplete="name" />
+        </label>
+    <button>Save</button>
+    </form>
+	{% for atlas in atlases %}
+
+        {% include 'atlases_card.html' %}
+
+    {% endfor %}
+{% endblock %}
