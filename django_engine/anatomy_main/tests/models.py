@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+from users.models import TestUserRel
 
 # Create your models here.
 class QuestionType(models.TextChoices):
@@ -86,6 +86,32 @@ class Test(models.Model):
 
     def get_absolute_url(self):
         return reverse("tests:open_test", kwargs={"test_id": self.id})
+
+    @classmethod
+    def get_favorite_tests(cls, user):
+        return cls.objects.filter(
+            id__in=TestUserRel.objects.filter(user=user, is_favorite=True).values('test_id')
+        )
+
+    @classmethod
+    def get_popular(cls,
+                    count: int = None):
+        res = cls.objects.raw(
+            """
+            select tests_test.*
+            from tests_test
+            left join (select tests_user.test_id,
+                         count(tests_user.test_id) as fav_count
+                  from tests_user
+                  where tests_user.is_favorite
+                  group by tests_user.test_id) as F on F.test_id = tests_test.id
+            order by F.fav_count DESC 
+            """
+        )
+        if count:
+            return res[:count]
+        else:
+            return res
 
     class Meta:
         verbose_name = 'Тест'

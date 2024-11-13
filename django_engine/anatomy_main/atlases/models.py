@@ -24,7 +24,7 @@ class Atlas(models.Model):
         return []
 
     def get_absolute_url(self):
-        return reverse("atlas:open_atlas", kwargs={"atlas_id": self.id})
+        return reverse("atlases:open_atlas", kwargs={"atlas_id": self.id})
 
     @classmethod
     def get_favorite_atlases(cls, user):

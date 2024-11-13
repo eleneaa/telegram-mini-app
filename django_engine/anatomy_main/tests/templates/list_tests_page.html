@@ -3,14 +3,19 @@
 {% block content %}
     <div class="container pt-2">
         <div class="row p-2">
-        <h1>СПИСОК ТЕСТОВ</h1>
+        <h1 class="p-1">СПИСОК ТЕСТОВ</h1>
         {% for test in tests %}
             <div class="col-6 p-1">
-                <div class="card">
+                <div class="card" style="max-height: 200px">
                     <div class="card-body">
                         <div class="row d-flex justify-content-between">
-                            <div class="col-9">
+                            <div class="col-12 text-center pb-2">
                                 <b><span class="card-title">{{ test }}</span></b>
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-9">
+                                <span class="card-subtitle mb-2 text-muted">Вопросов: <b>{{ test.questions_ids|length }}</b></span>
                             </div>
                             <div class="col-3 d-flex justify-content-end" style="align-items: end !important">
                                 <a href="{{ test.get_absolute_url }}" style="text-decoration: none">
@@ -20,7 +25,6 @@
                                 </a>
                             </div>
                         </div>
-                        <span class="card-subtitle mb-2 text-muted">Вопросов: <b>{{ test.questions_ids|length }}</b></span>
                         <hr class="hr"/>
                         <div class="container p-0 m-0" style="min-height: 100px">
                             {% for catalog in test.catalog_ids %}

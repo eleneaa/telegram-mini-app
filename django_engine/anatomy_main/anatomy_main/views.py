@@ -10,6 +10,11 @@ from django.urls import reverse
 from django.conf import settings
 from django.http import JsonResponse
 from users.models import User
+from tests.models import Test
+from atlases.models import Atlas
+from articles.models import Article
+
+
 # from django.contrib.auth import get_user_model
 
 # User = get_user_model()
@@ -61,8 +66,15 @@ def save_or_update_user(parsed_data):
 # Основная view для обработки данных
 def main(request):
     if request.user.is_authenticated:
-        return render(request, 'index.html', context={'user': request.user})
-    #TODO вытаскивать токен из env
+        popular_tests = Test.get_popular(count=6)
+        popular_atlases = Atlas.get_popular(count=6)
+        popular_articles = Article.get_popular(count=6)
+        return render(request, 'main.html', context={'user': request.user,
+                                                     'popular_tests': popular_tests,
+                                                     'popular_atlases': popular_atlases,
+                                                     'popular_articles': popular_articles})
+    # TODO вытаскивать токен из env
+    # Азиз легенда
     bot_token = "7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU"  # Замените на ваш реальный токен
 
     # Получаем данные пользователя из GET-запроса
@@ -92,6 +104,7 @@ def main(request):
 # Вспомогательная view для редиректа на main
 def init_page(request):
     return render(request, 'index_auth_redirect.html', context={'auth_url': reverse('main')})
+
 
 def test(request):
     return render(request, 'test.html', context={'user': request.user})

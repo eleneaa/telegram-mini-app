@@ -1,0 +1,17 @@
+{% load static %}
+{% block user_content %}
+    <div class="row justify-content-center" style="max-height: 190px; display: flex">
+        <div class='col-4 align-self-center'>
+            <img src="{% static 'icons/photo_2024-06-21_21-51-45.jpg' %}" style="height: auto;
+            max-width: 100%; max-height: 190px" class="rounded-4 shadow">
+        </div>
+        <div class="col-8 align-self-center" style="max-height: 190px">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Пройдено тестов: <b>1</b></li>
+                <li class="list-group-item">Прочитано статей: <b>2</b></li>
+                <li class="list-group-item">Просмотрено атласов: <b>3</b></li>
+                <li class="list-group-item">Дней на платформе: <b>4</b></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

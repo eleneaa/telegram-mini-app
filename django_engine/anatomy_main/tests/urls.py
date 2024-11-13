@@ -4,13 +4,16 @@ from . import views
 app_name = 'tests'
 
 urlpatterns = [
-    path('', views.TestsView.as_view(), name='main'),
+    path('', views.main_page, name='main'),
+    # path('', views.TestsView.as_view(), name='main'),
     # path('find/', views.find, name='find'),
     # path('find/<str:catalog_id>/', views.find_catalog_tests, name='find_catalog_tests'),
     # path('favorite_tests/', views.favorite_tests, name='favorite_tests'),
     # path('favorite_questions/', views.favorite_tests, name='favorite_questions'),
     # path('finished_tests/', views.finished_tests, name='finished_tests'),
     path('open/<str:test_id>/', views.open_test, name='open_test'),
+    path('list_favorite_tests/', views.list_favorite_tests, name='list_favorite_tests'),
+    path('list_popular_tests/', views.list_popular_tests, name='list_popular_tests'),
     path('toggle_favorite_test/<str:test_id>/', views.toggle_favorite_test, name='add_test_to_favorite'),
     path('run/<str:test_id>/', views.start_test, name='start_test'),
     path('run/<str:test_id>/questions/<str:question_id>/', views.question_detail, name='question_detail'),

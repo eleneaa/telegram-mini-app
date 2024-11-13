@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div class="pb-3 pt-3">
+            {% include  "popular_tests_component.html" with popular_tests=popular_tests %}
+        </div>
+        <div class="pb-3">
+            {% include  "favorite_tests_component.html" with popular_tests=popular_tests %}
+        </div>
+    </div>
+{% endblock %}

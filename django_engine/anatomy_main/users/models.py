@@ -132,37 +132,43 @@ class User(AbstractUser):
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [test for test in
+                            TestUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def completed_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_completed=True, user_id=self.id)]
+            childs_array = [test for test in
+                            TestUserRel.objects.filter(is_completed=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_questions_ids(self):
         if self.favorite_questions.all():
-            childs_array = [question for question in QuestionUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [question for question in
+                            QuestionUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_articles_ids(self):
         if self.favorites_articles.all():
-            childs_array = [article for article in ArticleUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [article for article in
+                            ArticleUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_catalogs_ids(self):
         if self.favorites_catalogs.all():
-            childs_array = [article for article in CatalogUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [article for article in
+                            CatalogUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_atlases_ids(self):
         if self.favorites_atlases.all():
-            childs_array = [atlas for atlas in AtlasUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [atlas for atlas in
+                            AtlasUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 

@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
+from django.apps import apps
 
 from .models import Test, Question, QuestionType
 from anatomy_main import utils
@@ -21,7 +22,7 @@ def start_test(request, test_id):
 def question_detail(request, test_id, question_id):
     test = get_object_or_404(Test, id=test_id)
     question = get_object_or_404(Question, id=question_id, test=test)
-    question_user = QuestionUserRel.objects.filter(question_id=question_id, user_id=request.user.id)
+    question_user = QuestionUserRel.objects.filter(question_id=question_id, user_id=request.user.telegram_id)
     is_favorite = False
     if question_user:
         is_favorite = question_user[0].is_favorite
@@ -51,7 +52,7 @@ def test_results(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     # Сохраняем запись, что тест завершен
     if test.id not in request.user.completed_tests_ids():
-        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user_id=request.user.id)
+        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user_id=request.user.telegram_id)
         entity.is_completed = True
         entity.save()
     answers = request.session.get('answers', {})
@@ -108,6 +109,23 @@ def open_test(request, test_id):
     return render(request, 'test_page.html', context={'test': test,
                                                       'is_favorite': is_favorite,
                                                       'note': note})
+
+
+def main_page(request):
+    popular_tests = Test.get_popular(10)
+    favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
+    favorite_tests = Test.objects.filter(id__in=favorite_tests)
+    print(favorite_tests)
+    return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
+                                                           "favorite_tests": favorite_tests})
+
+
+def list_favorite_tests(request):
+    return render(request, 'list_tests_page.html', context={"tests": Test.get_favorite_tests(request.user)})
+
+
+def list_popular_tests(request):
+    return render(request, 'list_tests_page.html', context={"tests": Test.get_popular()})
 
 
 class TestsView(ListView):

@@ -8,6 +8,7 @@ from .models import Atlas
 from users.models import AtlasUserRel
 from categories.models import Catalog
 
+
 def main(request: HttpRequest):
     popular_atlases = Atlas.get_popular(10)
     favorite_atlases = Atlas.get_favorite_atlases(request.user)
@@ -20,11 +21,11 @@ def main(request: HttpRequest):
 
 
 def open_atlas(request: HttpRequest,
-                 atlas_id: str):
+               atlas_id: str):
     atlas = get_object_or_404(Atlas, id=atlas_id)
     file: ImageField = atlas.atlas_file
     atlas_user_rel: AtlasUserRel = AtlasUserRel.objects.get_or_create(user=request.user,
-                                                                            atlas_id=atlas_id)[0]
+                                                                      atlas_id=atlas_id)[0]
     return render(request,
                   file.name.split('/')[-1],
                   {
