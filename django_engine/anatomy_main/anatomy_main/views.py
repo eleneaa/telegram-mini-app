@@ -3,6 +3,8 @@ import hmac
 import urllib.parse
 import json
 import time
+import os
+import requests
 
 from django.contrib.auth import login
 from django.shortcuts import render
@@ -15,9 +17,47 @@ from atlases.models import Atlas
 from articles.models import Article
 
 
-# from django.contrib.auth import get_user_model
+# Дада снова токен в коде
+bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
 
-# User = get_user_model()
+
+# Функция для получения фотографии профиля пользователя
+def get_user_profile_picture(user_id):
+    try:
+        # Получаем фотографии профиля пользователя через API Telegram
+        url = f'https://api.telegram.org/bot{bot_token}/getUserProfilePhotos?user_id={user_id}'
+        response = requests.get(url)
+
+        # Проверяем, что запрос прошел успешно
+        if response.status_code == 200:
+            data = response.json()
+
+            # Проверяем, есть ли фотографии
+            if data['result']['total_count'] > 0:
+                # Получаем ID первого фото
+                file_id = data['result']['photos'][0][0]['file_id']
+
+                # Получаем информацию о файле
+                file_url = f'https://api.telegram.org/bot{bot_token}/getFile?file_id={file_id}'
+                file_response = requests.get(file_url)
+
+                if file_response.status_code == 200:
+                    file_data = file_response.json()
+                    # Возвращаем URL файла
+                    file_path = file_data['result']['file_path']
+                    return f'https://api.telegram.org/file/bot{bot_token}/{file_path}'
+                else:
+                    print("Ошибка при получении файла.")
+                    return None
+            else:
+                print("У пользователя нет фотографий.")
+                return None
+        else:
+            print(f"Ошибка при запросе данных: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        return None
 
 
 # Функция для проверки подписи Telegram
@@ -58,24 +98,24 @@ def save_or_update_user(parsed_data):
                 user.first_name = first_name
                 user.last_name = last_name
                 user.telegram_username = telegram_username
-                user.save()
+        telegram_photo_url = get_user_profile_picture(telegram_id)
+        if telegram_photo_url:
+            user.telegram_photo_url = telegram_photo_url
+        user.save()
         return user
     return None
 
 
 # Основная view для обработки данных
 def main(request):
+    popular_tests = Test.get_popular(count=6)
+    popular_atlases = Atlas.get_popular(count=6)
+    popular_articles = Article.get_popular(count=6)
     if request.user.is_authenticated:
-        popular_tests = Test.get_popular(count=6)
-        popular_atlases = Atlas.get_popular(count=6)
-        popular_articles = Article.get_popular(count=6)
         return render(request, 'main.html', context={'user': request.user,
                                                      'popular_tests': popular_tests,
                                                      'popular_atlases': popular_atlases,
                                                      'popular_articles': popular_articles})
-    # TODO вытаскивать токен из env
-    # Азиз легенда
-    bot_token = "7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU"  # Замените на ваш реальный токен
 
     # Получаем данные пользователя из GET-запроса
     init_data = request.GET.get('user_data')
@@ -91,11 +131,13 @@ def main(request):
 
             # Сохраняем или обновляем пользователя
             user = save_or_update_user(parsed_data)
-            # user = True
+
             if user:
                 login(user=user, request=request)
-                return render(request, 'index.html', context={'user': user})
-
+                return render(request, 'main.html', context={'user': request.user,
+                                                             'popular_tests': popular_tests,
+                                                             'popular_atlases': popular_atlases,
+                                                             'popular_articles': popular_articles})
         return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=403)
 
     return JsonResponse({'status': 'error', 'message': 'No user data provided'}, status=400)

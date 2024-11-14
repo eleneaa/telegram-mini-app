@@ -94,6 +94,17 @@ class Test(models.Model):
         )
 
     @classmethod
+    def get_completed_tests(cls, user,
+                            count: int = None):
+        res = cls.objects.filter(
+            id__in=TestUserRel.objects.filter(user=user, is_completed=True).values('test_id')
+        )
+        if count:
+            return res[:count]
+        else:
+            return res
+
+    @classmethod
     def get_popular(cls,
                     count: int = None):
         res = cls.objects.raw(

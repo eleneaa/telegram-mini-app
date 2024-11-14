@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-v+f7u3auumsuu!5m=me**g-s5n4l*l36&5nnc0rv337u)4&0f7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['7887-109-120-133-103.ngrok-free.app',
+ALLOWED_HOSTS = ['salmon-ultimate-piglet.ngrok-free.app',
                  'localhost',
                  '127.0.0.1']
 
@@ -86,10 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tg_bd',
-        'HOST': '192.168.10.65',
+        'HOST': '109.120.133.103',
         'PORT': 5432,
-        'USER': 'postgres',
-        "PASSWORD": 'changeme'
+        'USER': 'tg_vet_app',
+        "PASSWORD": 'v*3kdPdsa)LLsdsd'
     }
 }
 
@@ -145,5 +145,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://7887-109-120-133-103.ngrok-free.app',  # Добавьте сюда ваш URL ngrok
+    'https://salmon-ultimate-piglet.ngrok-free.app',  # Добавьте сюда ваш URL ngrok
 ]

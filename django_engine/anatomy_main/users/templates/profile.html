@@ -1,3 +1,99 @@
+{% extends 'index.html' %}
+{% block content %}
+    <div class="container p-4 pt-3">
+        <div class="pb-3">
+            {% include 'user_info.html' with user=user %}
+        </div>
+        <div class="card">
+        <div class="card-body text-center">
+            <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+            <p class="card-text">@{{ user.telegram_username }}</p>
+        </div>
+    </div>
+
+    <div class="container p-4 pt-3">
+            <!-- Notes Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
+                Просмотреть заметки
+            </button>
+            <div class="collapse col-12 mb-3" id="notes">
+                <div class="card card-body">
+                    <p>Заметки пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Completed Tests Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#completed-tests" aria-expanded="false" aria-controls="completed-tests">
+                Посмотреть пройденные тесты
+            </button>
+            <div class="collapse col-12 mb-3" id="completed-tests">
+{#                <div class="card card-body">#}
+{#                    <p>Пройденные тесты пользователя отображаются здесь.</p>#}
+{#                </div>#}
+                {% include 'user_completed_tests_component.html' with completed_tests=completed_tests %}
+            </div>
+
+            <!-- Last Test Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#last-test" aria-expanded="false" aria-controls="last-test">
+                Перепройти последний тест
+            </button>
+            <div class="collapse col-12 mb-3" id="last-test">
+                <div class="card card-body">
+                    <p>Последний пройденный тест отображается здесь.</p>
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#settings" aria-expanded="false" aria-controls="settings">
+                Настройки
+            </button>
+            <div class="collapse col-12 mb-3" id="settings">
+                <div class="card card-body">
+                    <p>Настройки пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Favorite Atlases Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-atlases" aria-expanded="false" aria-controls="favorite-atlases">
+                Избранные атласы
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-atlases">
+                <div class="card card-body">
+                    <p>Избранные атласы пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Favorite Articles Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-articles" aria-expanded="false" aria-controls="favorite-articles">
+                Избранные статьи
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-articles">
+                <div class="card card-body">
+                    <p>Избранные статьи пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Favorite Tests Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-tests" aria-expanded="false" aria-controls="favorite-tests">
+                Избранные тесты
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-tests">
+                <div class="card card-body">
+                    <p>Избранные тесты пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Favorite Questions Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-questions" aria-expanded="false" aria-controls="favorite-questions">
+                Избранные вопросы
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-questions">
+                <div class="card card-body">
+                    <p>Избранные вопросы пользователя отображаются здесь.</p>
+                </div>
+            </div>
+        </div>
+{% endblock %}
 <!DOCTYPE html>
 {% load static %}
 
@@ -32,29 +128,3 @@
 <!--            </div>-->
     </div>
 </div>
-
-<img id="user-photo" alt="User Photo" style="display: none; width: 150px; height: 150px;">
-<script>
-    // Инициализация WebApp API
-    const tg = window.Telegram.WebApp;
-
-    // Проверка готовности WebApp
-    tg.ready();
-
-    tg.setHeaderColor('#ffffff');
-
-    // Получаем все данные из initDataUnsafe
-    const initData = tg.initDataUnsafe;
-
-    let userData = tg.initDataUnsafe.user;
-
-    // Отображаем полученные данные на странице
-    const userDataElement = document.getElementById('user-data');
-    userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
-
-    if (userData.photo_url) {
-        const userPhoto = document.getElementById('user-photo');
-        userPhoto.src = userData.photo_url;
-        userPhoto.style.display = 'block';  // Показываем фотографию
-    }
-</script>

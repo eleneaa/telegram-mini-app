@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class TestUserRel(models.Model):
@@ -87,6 +88,7 @@ class User(AbstractUser):
     # first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
     # last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
     telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя', max_length=33)
+    telegram_photo_url = models.URLField(null=True, blank=True, verbose_name='Ссылка на аватар пользователя')
 
     # # Theme settings for Telegram Mini App (default to light theme)
     # background_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона',
@@ -171,6 +173,10 @@ class User(AbstractUser):
                             AtlasUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
+
+    def get_count_days_on_platform(self):
+        return (timezone.now() - self.date_joined).days
+
 
     class Meta:
         verbose_name = 'Пользователь'
