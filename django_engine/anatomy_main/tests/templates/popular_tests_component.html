@@ -1,15 +1,15 @@
 {% load static %}
 {% block popular_test %}
     <div class="mb-3">
-        <h2 class="h3 mb-2">Популярные тесты</h2>
+        <h1 class="mb-2">Популярные тесты</h1>
         <div class="p-0 pb-1 scrollable-container" id="container">
             {% for test in popular_tests %}
                 <div class="p-0 draggable">
                     <div class="card little-card">
-                        <div class="card-body">
+                        <div class="card-body p-1">
                             <div class="row d-flex justify-content-between">
                                 <div class="col-12 text-center">
-                                    <b><span class="card-title">{{ test }}</span></b>
+                                    <b><span class="card-title">{{ test|truncatechars:20 }}</span></b>
                                 </div>
                             </div>
                             <div class="row d-flex justify-content-between">

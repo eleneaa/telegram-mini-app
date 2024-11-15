@@ -10,7 +10,7 @@
                     <div class="card-body">
                         <div class="row d-flex justify-content-between">
                             <div class="col-12 text-center pb-2">
-                                <b><span class="card-title">{{ test }}</span></b>
+                                <b><span class="card-title">{{ test|truncatechars:25 }}</span></b>
                             </div>
                         </div>
                         <div class="row d-flex justify-content-between">
@@ -30,7 +30,7 @@
                             {% for catalog in test.catalog_ids %}
                                 {% if forloop.counter <= 4 %}
                                     <span class="badge rounded-pill bg-dark" style="min-width: 10vw; margin-right: 1px">
-                                        <a href="{{ catalog.get_absolute_url }}" style="text-decoration: none; color: white">{{ catalog }}</a>
+                                        <a href="{{ catalog.get_absolute_url }}" style="text-decoration: none; color: white">{{ catalog|truncatechars:15 }}</a>
                                     </span>
                                 {% endif %}
                             {% endfor %}

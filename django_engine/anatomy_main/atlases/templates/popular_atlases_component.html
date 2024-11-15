@@ -1,18 +1,20 @@
 {% load static %}
 {% block popular_atlas %}
     <div class="mb-3">
-        <h2 class="h3 mb-2">Популярные атласы</h2>
+        <h1 class="mb-2">Популярные атласы</h1>
         <div class="p-0 pb-1 scrollable-container" id="container">
             {% for atlas in popular_atlases %}
                 <div class="p-0 draggable">
                     <div class="card little-card">
                         <img src="{% static atlas.atlas_file %}" class="card-img-top" alt="..." style="min-height: 75px; max-height: 75px">
-                        <div class="card-body">
+                        <div class="card-body p-1">
                             <div class="row d-flex justify-content-between">
-                                <div class="col-9">
-                                    <b><span class="card-title">{{ atlas }}</span></b>
+                                <div class="col-12 text-center">
+                                    <b><span class="card-title">{{ atlas|truncatechars:20 }}</span></b>
                                 </div>
-                                <div class="col-3 d-flex justify-content-end" style="align-items: end !important">
+                            </div>
+                            <div class="row d-flex justify-content-between">
+                                <div class="col-12 d-flex justify-content-end" style="align-items: end !important">
                                     <a href="{{ atlas.get_absolute_url }}" style="text-decoration: none">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-arrow-right" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
@@ -21,7 +23,7 @@
                                 </div>
                             </div>
                             <hr class="hr"/>
-                            <div class="container p-0 m-0" style="max-height: 70px">
+                            <div class="container p-0 m-0" style="max-height: 50px">
                             </div>
                         </div>
                     </div>

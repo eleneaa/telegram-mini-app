@@ -1,12 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<nav class="navbar navbar-expand-lg bg-light">
+<nav class="navbar navbar-expand-lg bg-light sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand p-0" href="{% url 'main' %}" onclick="hapticFeedback()">
       <img src="{% static 'icons/logo.png' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-center">
-        Vet Moment
+        <span>Vet Moment</span>
     </a>
-    <a href="{% url 'users:profile' %}" class="btn btn-outline-primary ms-auto btn-sm m-2" role="button" onclick="hapticFeedback()">Личный кабинет</a>
+    <a href="{% url 'users:profile' %}" class="btn btn-outline-primary ms-auto btn-sm m-2" role="button" onclick="hapticFeedback()"><span>Личный кабинет</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
