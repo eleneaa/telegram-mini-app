@@ -29,7 +29,7 @@ def open_article(request: HttpRequest,
     article_user_rel: ArticleUserRel = ArticleUserRel.objects.get_or_create(user=request.user,
                                                                             article_id=article_id)[0]
     return render(request,
-                  file.name.split('/')[-1],
+                  [file.name.split('/')[-1], 'article_not_found.html'],
                   {
                       "article": article,
                       "is_favorite": article_user_rel.is_favorite
