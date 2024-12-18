@@ -8,9 +8,10 @@
         </label>
     <button>Save</button>
     </form>
-	{% for article in articles %}
+	{% for article in objects %}
 
         {% include 'articles_card.html' %}
-
+    {% empty %}
+        <p>По вашему запросу ничего не нашлось</p>
     {% endfor %}
 {% endblock %}

@@ -8,9 +8,10 @@
         </label>
     <button>Save</button>
     </form>
-	{% for atlas in atlases %}
+	{% for atlas in objects %}
 
         {% include 'atlases_card.html' %}
-
+    {% empty %}
+        <p>По вашему запросу ничего не нашлось</p>
     {% endfor %}
 {% endblock %}

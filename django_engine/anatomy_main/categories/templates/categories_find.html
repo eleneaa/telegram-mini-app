@@ -13,9 +13,10 @@
         </label>
     <button>Поиск</button>
     </form>
-	{% for catalog in catalogs %}
+	{% for catalog in objects %}
 
         {% include 'category_card.html' %}
-
+    {% empty %}
+        <p>По вашему запросу ничего не нашлось</p>
     {% endfor %}
 {% endblock %}
