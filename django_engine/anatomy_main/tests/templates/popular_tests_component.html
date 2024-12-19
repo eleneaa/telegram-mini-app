@@ -2,29 +2,17 @@
 {% block popular_test %}
     <div class="mb-3">
         <h1 class="mb-2">Популярные тесты</h1>
-        <div class="p-0 pb-1 scrollable-container" id="container">
+        <div class="scrollable-container" id="container">
             {% for test in popular_tests %}
-                <div class="p-0 draggable">
-                    <div class="card little-card">
+                <div class="p-0">
+                    <div class="card little-card draggable border-0">
+                        <img src="{% static test.test_file %}" class="card-img-top" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
                         <div class="card-body p-1">
-                            <div class="row d-flex justify-content-between">
-                                <div class="col-12 text-center">
-                                    <b><span class="card-title">{{ test|truncatechars:20 }}</span></b>
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-12 text-center p-2">
+                                    <span class="card-title">{{ test|truncatechars:20 }}</span>
                                 </div>
                             </div>
-                            <div class="row d-flex justify-content-between">
-                                <div class="col-9">
-                                    <span class="card-subtitle mb-2 text-muted">Вопросов: <b>{{ test.questions_ids|length }}</b></span>
-                                </div>
-                                <div class="col-3 d-flex justify-content-end" style="align-items: end !important">
-                                    <a href="{{ test.get_absolute_url }}" style="text-decoration: none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                            <hr class="hr"/>
                             <div class="container p-0 m-0" style="max-height: 70px">
                             </div>
                         </div>
@@ -32,6 +20,6 @@
                 </div>
             {% endfor %}
         </div>
-        <a href="{% url 'tests:list_popular_tests' %}"><button class="btn btn-outline-dark btn-sm mt-2">Посмотреть все</button></a>
+        <a href="{% url 'tests:list_popular_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow">Посмотреть все</button></a>
     </div>
 {% endblock %}

@@ -20,28 +20,94 @@
             crossorigin="anonymous"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --primary-color: #123030; /* Ваш новый цвет */
+        }
+
+        .btn-primary {
+            --bs-btn-active-bg: #335B5A;
+            --bs-btn-active-border-color: #335B5A;
+            --bs-btn-hover-border-color: #335B5A;
+            --bs-btn-hover-bg: #335B5A;
+            background-color: var(--primary-color); !important;
+            border-color: var(--primary-color); !important;
+        }
+
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active, {
+            background-color: #335B5A; /* Цвет при наведении */ !important;
+            border-color: #335B5A; !important;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", serif;
+            font-optical-sizing: auto;
+            font-weight: normal;
+            font-style: normal;
+            {#font-size: 20px;#}
+            line-height: 16px;
+        }
+    </style>
+    <style>
         /* Стили для реализации контейнера, с возможностью перетаскивания объектов внутри контейнера */
         .scrollable-container {
+            background-color: transparent;
             display: flex; /* Используем flexbox для горизонтального расположения */
             overflow-x: auto; /* Включаем горизонтальную прокрутку */
-            padding: 10px; /* Отступы внутри контейнера */
             box-sizing: border-box; /* Учитываем отступы в ширине и высоте */
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
+            padding: 10px 10px 12px 24px;
+            margin-left: -24px;
+            margin-right: -24px;
         }
+
         .scrollable-container::-webkit-scrollbar {
             display: none;
         }
         .draggable {
-            min-width: 30vw; /* Минимальная ширина элемента */
-            max-width: 30vw; /* Минимальная ширина элемента */
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+            min-width: 25vw; /* Минимальная ширина элемента */
+            max-width: 25vw; /* Минимальная ширина элемента */
             margin-right: 10px; /* Отступы между элементами */
-            padding: 20px; /* Отступы внутри элемента */
             cursor: grab; /* Курсор при наведении на элемент */
         }
 
+        .draggable img {
+            min-height: 15vw;
+            max-height: 15vw;
+        }
+
+        .draggable-lg {
+            min-width: 30vw;
+            max-width: 30vw;
+            min-height: 30vw;
+            max-height: 30vw;
+            margin-bottom: 6px;
+        }
+        .draggable-lg img {
+            min-height: 23vw;
+            max-height: 23vw;
+        }
+
         span {
-            font-size: 18px;
+                font-size: 20px; /* Размер для планшетов */
+            }
+
+        @media screen and (max-width: 1024px) {
+            .draggable-lg {
+                min-width: 40vw;
+                max-width: 40vw;
+                min-height: 40vw;
+                max-height: 40vw;
+                margin-bottom: 6px;
+            }
+            span {
+                font-size: 24px; /* Размер для планшетов */
+            }
         }
 
         @media screen and (max-width: 768px) {
@@ -53,6 +119,18 @@
                 min-width: 30vw; /* Минимальная ширина элемента */
                 max-width: 30vw; /* Минимальная ширина элемента */
             }
+
+            .draggable-lg {
+                min-width: 40vw;
+                max-width: 40vw;
+                min-height: 40vw;
+                max-height: 40vw;
+                margin-bottom: 6px;
+            }
+
+            h1 {
+                font-size: 24px; /* Размер для планшетов */
+            }
         }
 
         @media screen and (max-width: 480px) {
@@ -61,8 +139,22 @@
             }
 
             .draggable {
-                min-width: 50vw; /* Минимальная ширина элемента */
-                max-width: 50vw; /* Минимальная ширина элемента */
+                min-width: 30vw; /* Минимальная ширина элемента */
+                max-width: 30vw; /* Минимальная ширина элемента */
+                min-height: 30vw; /* Минимальная ширина элемента */
+                max-height: 30vw; /* Минимальная ширина элемента */
+            }
+
+            .draggable-lg {
+                min-width: 40vw;
+                max-width: 40vw;
+                min-height: 40vw;
+                max-height: 40vw;
+                margin-bottom: 6px;
+            }
+
+            h1 {
+                font-size: 22px; /* Размер для мобильных устройств */
             }
         }
 
@@ -72,32 +164,23 @@
             }
 
             .draggable {
-                min-width: 50vw; /* Минимальная ширина элемента */
-                max-width: 50vw; /* Минимальная ширина элемента */
+                min-width: 30vw; /* Минимальная ширина элемента */
+                max-width: 30vw; /* Минимальная ширина элемента */
+                min-height: 30vw; /* Минимальная ширина элемента */
+                max-height: 30vw; /* Минимальная ширина элемента */
             }
 
+            .draggable-lg {
+                min-width: 45vw;
+                max-width: 45vw;
+                min-height: 45vw;
+                max-height: 45vw;
+                margin-bottom: 6px;
+            }
 
             h1 {
-                font-size: 32px; /* Базовый размер для больших экранов */
-            }
-
-            @media (max-width: 768px) {
-                h1 {
-                    font-size: 24px; /* Размер для планшетов */
-                }
-            }
-
-            @media (max-width: 480px) {
-                h1 {
-                    font-size: 18px; /* Размер для мобильных устройств */
-                }
-            }
-
-            @media (max-width: 320px) {
-                h1 {
                     font-size: 16px; /* Размер для мобильных устройств */
                 }
-            }
         }
 
 

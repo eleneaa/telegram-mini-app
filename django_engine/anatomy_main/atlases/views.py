@@ -43,11 +43,12 @@ def toggle_favorite(request: HttpRequest,
                                  "atlas_id")
 
 
-def favorite_atlases(request: HttpRequest):
-    return render(request, 'atlases_favorite.html', {
-        'favorite_atlases': request.user.favorite_atlases_ids()
-    })
+def list_favorite_atlases(request):
+    return render(request, 'list_atlases_page.html', context={"atlases": Atlas.get_favorite_atlases(request.user)})
 
+
+def list_popular_atlases(request):
+    return render(request, 'list_atlases_page.html', context={"atlases": Atlas.get_popular(count=10)})
 
 def find(request: HttpRequest):
     queries = request.GET

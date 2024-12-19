@@ -4,8 +4,8 @@
     <h2 class="h3 mb-2">Заметки</h2>
     <div class="p-0 pb-1 scrollable-container" id="container">
         {% for note in notes %}
-            <div class="p-0 draggable">
-                <div class="card little-card">
+            <div class="p-0">
+                <div class="card little-card draggable">
                     <div class="card-body">
                         <p class="card-text">{{ note.content }}</p>
                     </div>

@@ -4,8 +4,8 @@
         <h2 class="h3 mb-2">Избранные атласы</h2>
         <div class="p-0 scrollable-container" id="container">
             {% for atlas in favorite_atlases %}
-                <div class="p-0 draggable">
-                    <div class="card little-card">
+                <div class="p-0">
+                    <div class="card little-card draggable border-0 shadow">
                         <img src="{% static atlas.atlas_file %}" class="card-img-top" alt="..." style="min-height: 75px; max-height: 75px">
                         <div class="card-body">
                             <div class="row d-flex justify-content-between">
@@ -20,14 +20,11 @@
                                     </a>
                                 </div>
                             </div>
-                            <hr class="hr"/>
-                            <div class="container p-0 m-0" style="max-height: 70px">
-                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <button class="btn btn-primary btn-sm mt-2">Посмотреть все</button>
+        <a href="{% url "atlases:favorite_atlases" %}"><button class="btn btn-primary btn-sm mt-2 ">Посмотреть все</button></a>
     </div>
 {% endblock %}
