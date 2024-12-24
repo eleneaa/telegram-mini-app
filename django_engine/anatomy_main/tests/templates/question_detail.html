@@ -14,8 +14,11 @@
         <div class="card-body">
             <div class="row row-cols-auto d-flex justify-content-start align-items-center">
                 <div class="p-0">
-                    <span class="w-100 m-1" style="margin-right: 0 !important;">{{ question.label }}</span>
-                    {% include 'add_question_favorite.html' %}
+                    <a class="icon-link" style="text-decoration: none; color: black">
+                        {% include 'add_question_favorite.html' %}
+                        {{ question.label }}
+
+                    </a>
                 </div>
 
             </div>

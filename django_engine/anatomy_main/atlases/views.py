@@ -27,9 +27,11 @@ def open_atlas(request: HttpRequest,
     atlas_user_rel: AtlasUserRel = AtlasUserRel.objects.get_or_create(user=request.user,
                                                                       atlas_id=atlas_id)[0]
     return render(request,
-                  file.name.split('/')[-1],
+                  'atlas.html',
                   {
-                      "article": atlas,
+                      "atlas": atlas,
+                      'tests': atlas.get_tests_by_categories(),
+                      'articles': atlas.get_articles_by_categories(),
                       "is_favorite": atlas_user_rel.is_favorite
                   })
 

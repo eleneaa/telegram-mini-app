@@ -86,10 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tg_bd',
-        'HOST': '109.120.133.103',
+        'HOST': '192.168.10.65',
         'PORT': 5432,
-        'USER': 'tg_vet_app',
-        "PASSWORD": 'v*3kdPdsa)LLsdsd'
+        'USER': 'postgres',
+        "PASSWORD": 'changeme'
     }
 }
 

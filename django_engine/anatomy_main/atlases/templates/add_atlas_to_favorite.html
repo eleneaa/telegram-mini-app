@@ -1,6 +1,6 @@
 {% load static %}
 <label>
-    <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ question.id }}">
+    <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ atlas.id }}">
         {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="20px" height="20px">{% endif %}
     </button>
 </label>
@@ -13,10 +13,10 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     $(document).ready(function() {
         $('.favorite-button ').click(function() {
             var button = $(this);
-            var questionId = button.data('item-id');
+            var atlasId = button.data('item-id');
             var oldIcon = document.getElementById('test')
             $.ajax({
-                url: '/tests/favorite/' + questionId + '/',
+                url: '/atlases/toggle_favorite_atlas/' + atlasId + '/',
                 type: 'POST',
                 headers: {
                     'X-CSRFToken': csrftoken

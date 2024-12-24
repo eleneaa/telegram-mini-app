@@ -15,6 +15,7 @@ class Article(models.Model):
     article_file = models.FileField(verbose_name='Файл статьи', upload_to='articles_storage')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='articles', blank=True)
+    article_photo = models.ImageField(verbose_name='Фотография статьи', upload_to='articles_storage')
 
     def catalog_ids(self):
         if self.catalogs.all():

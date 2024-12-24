@@ -2,29 +2,7 @@
 {% block favorite_atlas %}
     <div class="mb-3">
         <h2 class="h3 mb-2">Избранные атласы</h2>
-        <div class="p-0 scrollable-container" id="container">
-            {% for atlas in favorite_atlases %}
-                <div class="p-0">
-                    <div class="card little-card draggable border-0 shadow">
-                        <img src="{% static atlas.atlas_file %}" class="card-img-top" alt="..." style="min-height: 75px; max-height: 75px">
-                        <div class="card-body">
-                            <div class="row d-flex justify-content-between">
-                                <div class="col-9">
-                                    <b><span class="card-title">{{ atlas }}</span></b>
-                                </div>
-                                <div class="col-3 d-flex justify-content-end" style="align-items: end !important">
-                                    <a href="{{ atlas.get_absolute_url }}" style="text-decoration: none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <a href="{% url "atlases:favorite_atlases" %}"><button class="btn btn-primary btn-sm mt-2 ">Посмотреть все</button></a>
+        {% include "scrollable_atlases_cards.html" with atlases=favorite_atlases %}
+        <a href="{% url "atlases:favorite_atlases" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow">Посмотреть все</button></a>
     </div>
 {% endblock %}
