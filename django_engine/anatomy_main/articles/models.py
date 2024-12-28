@@ -53,6 +53,22 @@ class Article(models.Model):
             .values('article_id')
         )
 
+    def get_tests_by_categories(self):
+        tests = set()
+        for catalog in self.catalogs.all():
+            if catalog.tests_ids():
+                tests.update(catalog.tests_ids())
+
+        return tests
+
+    def get_articles_by_categories(self):
+        articles = set()
+        for catalog in self.catalogs.all():
+            if catalog.articles_ids():
+                articles.update(catalog.tests_ids())
+
+        return articles
+
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'

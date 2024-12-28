@@ -2,7 +2,7 @@
 {% block favorite_test %}
     <div class="mb-3">
         <h1 class="mb-2">Избранные тесты</h1>
-        {% include "scrollable_tests_cards.html" with tests=favorite_tests %}
-        <a href="{% url 'tests:list_favorite_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow">Посмотреть все</button></a>
+        {% include "scrollable_tests_cards_large.html" with tests=favorite_tests %}
+        <a href="{% url 'tests:list_favorite_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2'>Посмотреть все</span></button></a>
     </div>
 {% endblock %}

@@ -13,7 +13,7 @@ def main(request: HttpRequest):
     popular_atlases = Atlas.get_popular(10)
     favorite_atlases = Atlas.get_favorite_atlases(request.user)
     categories = Catalog.objects.all()
-    return render(request, 'all_atlases.html', {
+    return render(request, 'atlases_main_page.html', {
         'popular_atlases': popular_atlases,
         'favorite_atlases': favorite_atlases,
         'categories': categories
@@ -26,14 +26,31 @@ def open_atlas(request: HttpRequest,
     file: ImageField = atlas.atlas_file
     atlas_user_rel: AtlasUserRel = AtlasUserRel.objects.get_or_create(user=request.user,
                                                                       atlas_id=atlas_id)[0]
+
+    if request.method == "POST":
+        utils.toggle_save_note(request, atlas_id, AtlasUserRel, 'atlas_id', request.POST.get("note"))
+
+    try:
+        rel_field = AtlasUserRel.objects.get(atlas=atlas, user=request.user)
+    except AtlasUserRel.DoesNotExist:
+        note = ''
+    else:
+        note = rel_field.note
+
     return render(request,
                   'atlas.html',
                   {
                       "atlas": atlas,
                       'tests': atlas.get_tests_by_categories(),
                       'articles': atlas.get_articles_by_categories(),
-                      "is_favorite": atlas_user_rel.is_favorite
+                      "is_favorite": atlas_user_rel.is_favorite,
+                      'note': note
                   })
+
+
+@require_POST
+def toggle_save_note(request, atlas_id, note_text=''):
+    return utils.toggle_save_note(request, atlas_id, AtlasUserRel, 'atlas_id', note_text)
 
 
 @require_POST
@@ -51,6 +68,7 @@ def list_favorite_atlases(request):
 
 def list_popular_atlases(request):
     return render(request, 'list_atlases_page.html', context={"atlases": Atlas.get_popular(count=10)})
+
 
 def find(request: HttpRequest):
     queries = request.GET

@@ -1,7 +1,7 @@
 {% load static %}
 <label>
     <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ atlas.id }}">
-        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="20px" height="20px">{% endif %}
+        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="18px" height="18px">{% endif %}
     </button>
 </label>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -57,7 +57,6 @@ class Atlas(models.Model):
     def get_tests_by_categories(self):
         tests = set()
         for catalog in self.catalogs.all():
-            print(catalog.tests_ids())
             if catalog.tests_ids():
                 tests.update(catalog.tests_ids())
 
@@ -66,8 +65,7 @@ class Atlas(models.Model):
     def get_articles_by_categories(self):
         articles = set()
         for catalog in self.catalogs.all():
-            print(catalog.articles_ids())
             if catalog.articles_ids():
-                articles.add(*catalog.articles_ids())
+                articles.update(catalog.tests_ids())
 
         return articles

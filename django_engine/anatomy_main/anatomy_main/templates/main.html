@@ -9,13 +9,23 @@
             <button class="btn btn-primary col-12 shadow rounded-4">❤ Посмотреть избранное</button>
         </div>
         <div class="pb-3">
-            {% include 'popular_atlases_component.html' with popular_atlases=popular_atlases %}
+            <div class="mb-3">
+                <h1 class="mb-2">Популярные атласы</h1>
+                {% include "scrollable_atlases_cards.html" with atlases=popular_atlases %}
+                <a href="{% url "atlases:popular_atlases" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2'>Посмотреть все</span></button></a>
+            </div>
         </div>
         <div class="pb-3">
-            {% include 'popular_tests_component.html' with popular_tests=popular_tests %}
+            <div class="mb-3">
+                <h1 class="mb-2">Популярные тесты</h1>
+                {% include "scrollable_tests_cards.html" with tests=popular_tests %}
+                <a href="{% url 'tests:list_popular_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2'>Посмотреть все</span></button></a>
+            </div>
         </div>
-        <div class="pb-3">
-            {% include 'popular_articles_component.html' with popular_articles=popular_articles %}
+        <div class="mb-3">
+            <h1 class="mb-2">Популярные статьи</h1>
+            {% include "scrollable_articles_cards.html" with articles=popular_articles %}
+    {#        <a href="{% url "articles:popular_articles" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2'>Посмотреть все</span></button></a>#}
         </div>
     </div>
 {% endblock %}

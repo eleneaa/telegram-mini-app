@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% include 'index.html' with active='atlases' %}
 {% load static %}
 {% block content %}
     <div class="container p-0 m-0">
@@ -9,8 +9,8 @@
                 </a>
             </div>
         </div>
-        <div class="container-fluid p-0 m-0">
-            <img class='border-top border-dark border-bottom border-2 p-0 m-0 img-fluid' src="{% static atlas.atlas_file %}" style="width: 100%">
+        <div class="p-0 m-0" style="max-height: 40vh">
+            <img class='border-top border-dark border-bottom border-2 p-0 m-0' src="{% static atlas.atlas_file %}" style="width: 100%; height: 100%; max-height: 40vh; min-height: 40vh">
         </div>
         <div class="container p-4">
             <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
@@ -19,6 +19,9 @@
                 {% endif %}
             </div>
             <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
+            <div class="container justify-content-center text-center p-2">
+                {% include "add_note_to_atlas.html" with atlas=atlas %}
+            </div>
             <h5 class="mt-2 mb-2">Статьи и тесты по этой же теме</h5>
             <div class="mb-3">
                 {% include 'scrollable_tests_cards.html' with tests=tests %}

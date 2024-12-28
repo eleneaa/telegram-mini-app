@@ -2,7 +2,7 @@
 {% block content %}
     <div class="scrollable-container" id="container">
         {% for article in articles %}
-            <a href="{{ article.get_absolute_rul }}" style="text-decoration: none">
+            <a href="{{ article.get_absolute_url }}" style="text-decoration: none">
                 <div class="card little-card draggable border-0 rounded-4">
                     <img src="{% static article.article_photo %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
                     <div class="card-body p-1">

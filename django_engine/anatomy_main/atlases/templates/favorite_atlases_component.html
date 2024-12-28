@@ -2,7 +2,7 @@
 {% block favorite_atlas %}
     <div class="mb-3">
         <h2 class="h3 mb-2">Избранные атласы</h2>
-        {% include "scrollable_atlases_cards.html" with atlases=favorite_atlases %}
-        <a href="{% url "atlases:favorite_atlases" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow">Посмотреть все</button></a>
+        {% include "scrollable_atlases_cards_large.html" with atlases=favorite_atlases %}
+        <a href="{% url "atlases:favorite_atlases" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2'>Посмотреть все</span></button></a>
     </div>
 {% endblock %}
