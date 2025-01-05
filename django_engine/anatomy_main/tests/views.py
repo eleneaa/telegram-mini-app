@@ -32,7 +32,7 @@ def start_test(request, test_id):
             'variants': [
                 {
                     'id': v.id,
-                    'name': v.name
+                    'text': v.name
                 } for v in q.variants.all()
             ]
         }
@@ -90,9 +90,10 @@ def question_detail(request, test_id, question_id):
                       'test': test,
                       'question': question,
                       'variants': question['variants'],
-                      "is_favorite": is_favorite,
+                      'is_favorite': is_favorite,
                       "question_type": question['question_type'],
-                      'question_index': question_id
+                      'question_index': question_id + 1,
+                      'all_questions_count': len(request.session["questions"]),
                   })
 
 
