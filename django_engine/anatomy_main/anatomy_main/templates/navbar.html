@@ -1,39 +1,51 @@
 {% load static %}
 <!DOCTYPE html>
 <nav class="navbar navbar-expand-lg sticky-top" data-bs-theme="dark">
-  <div class="container-fluid">
-    <a class="navbar-brand p-0" href="{% url 'main' %}" onclick="hapticFeedback()">
-      <img src="{% static 'icons/logo.png' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-center">
-        <span>Vet Moment</span>
-    </a>
-    <a href="{% url 'users:profile' %}" class="ms-auto btn-sm m-2" role="button" onclick="hapticFeedback()" style="color: white; padding-right: 4px">
-        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"
-              viewBox="0 0 24 24"  fill="none"  stroke="currentColor"
-              stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"
-              class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" />
-            <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
-            <path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05" />
-        </svg>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link {% if active == 'tests' %} active {% endif %}" href="{% url 'tests:main' %}">Тесты</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if active == 'atlases' %} active {% endif %}" href="{% url 'atlases:main' %}">Атласы</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if active == 'articles' %} active {% endif %}" href="{% url 'articles:main' %}">Статьи</a>
-        </li>
-      </ul>
+    <div class="container-fluid">
+        <a class="navbar-brand p-0" href="{% url 'main' %}" onclick="hapticFeedback()">
+            <img src="{% static 'icons/logo.png' %}" alt="Logo" width="40" height="40"
+                 class="d-inline-block align-text-center">
+            <span>Vet Moment</span>
+        </a>
+        <a href="{% url 'users:profile' %}" class="ms-auto btn-sm m-2" role="button" onclick="hapticFeedback()"
+           style="color: white; padding-right: 4px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="icon icon-tabler icons-tabler-outline icon-tabler-user-square-rounded">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z"/>
+                <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z"/>
+                <path d="M6 20.05v-.05a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v.05"/>
+            </svg>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if active == 'tests' %} active {% endif %}" href="{% url 'tests:main' %}">Тесты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active == 'atlases' %} active {% endif %}" href="{% url 'atlases:main' %}">Атласы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active == 'articles' %} active {% endif %}"
+                       href="{% url 'articles:main' %}">Статьи</a>
+                </li>
+                {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a href="/admin/" class="nav-link">
+                            Админка
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
 
 <script>
@@ -45,6 +57,7 @@
 
     // Функция для легкой вибрации
     function hapticFeedback() {
-        tg.HapticFeedback.impactOccurred('medium');;  // Включение вибрации
+        tg.HapticFeedback.impactOccurred('medium');
+        ;  // Включение вибрации
     }
 </script>
