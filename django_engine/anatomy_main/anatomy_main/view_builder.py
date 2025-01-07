@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 def find(model, template_name: str):
     def find_view(request):
-        queries = request.GET.get('label', '')
+        queries = request.GET.dict()
         if queries == '' or queries is None:
             objects = model.objects.all()
         else:

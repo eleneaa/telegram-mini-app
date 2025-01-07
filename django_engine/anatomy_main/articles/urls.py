@@ -8,7 +8,7 @@ app_name = 'articles'
 
 urlpatterns = [
     path('', views.main, name='main'),
-    path('find/', view_builder.find(Article, "article_find.html"), name='find'),
+    path('find/', view_builder.find(Article, "articles_main_page.html"), name='find'),
     path('open/<str:article_id>/', views.open_article, name='open_article'),
     path('popular_articles/', views.list_popular_articles, name='popular_articles'),
     path('favorite_articles/', views.list_favorite_articles, name='favorite_articles'),
