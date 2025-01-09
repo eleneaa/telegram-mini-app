@@ -3,19 +3,8 @@
 {% block content %}
     <div class="container p-4 pt-3">
         <div class="row text-center justify-content-between">
-        <h1 class="p-1">СПИСОК АТЛАСОВ</h1>
-        {% for atlas in atlases %}
-            <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
-                <a href="{{ atlas.get_absolute_url }}" style="text-decoration: none;">
-                    <div class="card draggable-lg border-0 shadow rounded-4">
-                        <img src="{% static atlas.atlas_file %}" class="card-img-top rounded-top-4" alt="...">
-                        <div class="card-body">
-                            <span>{{ atlas }}</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        {% endfor %}
+        <h1 class="p-1">Список атласов</h1>
+        {% include 'grid_atlases_cards.html' with atlases=atlases %}
         </div>
     </div>
 {% endblock %}

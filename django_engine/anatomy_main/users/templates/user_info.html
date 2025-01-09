@@ -2,7 +2,7 @@
 {% block user_content %}
     <div class="row justify-content-center" style="max-height: 190px; display: flex">
         <div class='col-4 align-self-center'>
-            <img src="{% static 'icons/photo_2024-06-21_21-51-45.jpg' %}" style="height: auto;
+            <img src="{{ user.telegram_photo_url }}" style="height: auto;
             max-width: 100%; max-height: 190px" class="rounded-4 shadow">
         </div>
         <div class="col-8 align-self-center" style="max-height: 190px">

@@ -17,28 +17,13 @@
             </div>
         </form>
         {% if objects  is not None %}
-
-            <div class="container p-4 pt-3">
-                <div class="row text-center justify-content-between">
-                    {% if objects|length > 0 %}
-                        <h1 class="p-1">Найденные тесты</h1>
-                        {% for test in objects %}
-                            <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
-                                <a href="{{ test.get_absolute_url }}" style="text-decoration: none;">
-                                    <div class="card draggable-lg border-0 shadow rounded-4">
-                                        <img src="{% static test.test_photo %}" class="card-img-top rounded-top-4"
-                                             alt="...">
-                                        <div class="card-body">
-                                            <span>{{ test }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <h1 class="p-1">Ничего не найдено</h1>
-                    {% endif %}
-                </div>
+            <div class="row text-center justify-content-between">
+                {% if objects|length > 0 %}
+                    <h1 class="p-1">Найденные тесты</h1>
+                    {% include 'grid_tests_cards.html' with tests=objects %}
+                {% else %}
+                    <h1 class="p-1">Ничего не найдено</h1>
+                {% endif %}
             </div>
         {% else %}
 

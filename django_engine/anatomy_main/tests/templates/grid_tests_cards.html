@@ -1,0 +1,16 @@
+{% load static %}
+{% block content %}
+    {% for test in tests %}
+        <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
+            <a href="{{ test.get_absolute_url }}" style="text-decoration: none;">
+                <div class="card draggable-lg border-0 shadow rounded-4">
+                    <img src="{% static test.test_file %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
+                    <div class="card-body text-truncate">
+                        <span>{{ test }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+    {% endfor %}
+{% endblock %}

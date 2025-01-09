@@ -2,7 +2,7 @@
 {% block popular_article %}
     <div class="mb-3">
         <h1 class="mb-2">Популярные статьи</h1>
-        {% include "scrollable_articles_cards.html" with articles=popular_articles %}
+        {% include "scrollable_articles_cards_large.html" with articles=popular_articles %}
         <a href="{% url "articles:popular_articles" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2'>Посмотреть все</span></button></a>
     </div>
 {% endblock %}

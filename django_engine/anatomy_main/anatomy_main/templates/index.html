@@ -30,11 +30,27 @@
             --bs-btn-hover-border-color: #335B5A;
             --bs-btn-hover-bg: #335B5A;
             background-color: var(--primary-color); !important;
+            background: linear-gradient(to bottom, #123030, #335B5A) !important;
             border-color: var(--primary-color); !important;
         }
 
         .navbar {
-            background-color: var(--primary-color); !important;
+            background: linear-gradient(to bottom, #123030, #335B5A) !important;
+        }
+
+        .offcanvas-body {
+            background: linear-gradient(to bottom, #123030, #215959)
+        }
+
+        .offcanvas-header {
+            background: linear-gradient(to bottom, #123030, #215959);
+            align-items: normal;
+            display: inline;
+        }
+
+        .nav-item {
+            padding: 6px;
+            font-size: 16px;
         }
 
         .hr-vet {
@@ -47,8 +63,8 @@
             width: 50%;
             margin: auto
         }
-        .btn-primary:hover, .btn-primary:focus, .btn-primary:active, {
-            background-color: #335B5A; /* Цвет при наведении */ !important;
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background: linear-gradient(to bottom, #123030, #335B5A) !important;
             border-color: #335B5A; !important;
         }
     </style>
@@ -123,7 +139,7 @@
                 margin-bottom: 6px;
             }
             span {
-                font-size: 24px; /* Размер для планшетов */
+                font-size: 18px; /* Размер для планшетов */
             }
         }
 
@@ -204,7 +220,7 @@
     </style>
 </head>
 <body>
-{% include 'navbar.html' %}
+{% include 'navbar.html' with user=user %}
 <main>
     {% block content %}
     {% endblock %}
