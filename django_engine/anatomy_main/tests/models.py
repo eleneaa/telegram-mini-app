@@ -71,7 +71,7 @@ class Test(models.Model):
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='tests', blank=True)
-    test_photo = models.ImageField(verbose_name='Фотография теста', upload_to='tests_storage')
+    test_photo = models.ImageField(verbose_name='Фотография теста', upload_to='tests_storage', blank=True)
     def questions_ids(self):
         if self.questions_list.all():
             childs_array = [questions for questions in self.questions_list.all()]

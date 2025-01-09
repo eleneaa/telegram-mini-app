@@ -20,7 +20,7 @@ from articles.models import Article
 # Дада снова токен в коде
 bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
 
-
+# TODO: Фотографии удаляются через некоторое время, нужно при каждом входе обновлять ссылку
 # Функция для получения фотографии профиля пользователя
 def get_user_profile_picture(user_id):
     try:

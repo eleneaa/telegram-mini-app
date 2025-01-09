@@ -15,6 +15,7 @@ urlpatterns = [
     # path('favorite_questions/', views.favorite_tests, name='favorite_questions'),
     # path('finished_tests/', views.finished_tests, name='finished_tests'),
     path('find/', view_builder.find(Test, "test_main_page.html"), name='find'),
+    path('find_preview/', view_builder.find(Test, "find_preview_tests_component.html", 5), name='find_preview'),
     path('open/<str:test_id>/', views.open_test, name='open_test'),
     path('list_favorite_tests/', views.list_favorite_tests, name='list_favorite_tests'),
     path('list_popular_tests/', views.list_popular_tests, name='list_popular_tests'),

@@ -1,0 +1,6 @@
+{% load static %}
+{% block favorite_test %}
+    <div class="mb-3">
+        {% include "scrollable_tests_cards.html" with tests=objects %}
+    </div>
+{% endblock %}
