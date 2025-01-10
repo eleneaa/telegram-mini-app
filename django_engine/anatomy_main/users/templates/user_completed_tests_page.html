@@ -1,0 +1,10 @@
+{% include 'index.html' with active='tests' %}
+{% load static %}
+{% block content %}
+    <div class="container p-4 pt-3">
+        <div class="row text-center justify-content-between">
+        <h1 class="p-1">Список пройденных тестов</h1>
+        {% include 'grid_tests_cards.html' with tests=tests %}
+        </div>
+    </div>
+{% endblock %}

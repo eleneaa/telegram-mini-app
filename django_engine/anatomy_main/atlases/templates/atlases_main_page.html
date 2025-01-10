@@ -17,6 +17,15 @@
                 </button>
             </div>
         </form>
+
+        <div class="spinner-border text-primary me-5 d-none pt-2"
+                     id="loading-spinner" role="status" style="width: 1.5rem; height: 1.5rem;">
+                    <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <!-- Превью результатов поиска -->
+        <div id="search-results" class="pt-2"></div>
+
         {% if objects  is not None %}
 
                 <div class="row text-center justify-content-between">
@@ -37,4 +46,61 @@
         {% endif %}
 
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.querySelector(".search-input");
+            const resultsContainer = document.querySelector("#search-results");
+            const loadingSpinner = document.querySelector("#loading-spinner");
+
+            // Функция дебаунсинга
+            function debounce(func, delay) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            // Основная логика поиска
+            function performSearch() {
+                const query = searchInput.value.trim();
+
+                // Очистка результатов при пустом запросе
+                if (!query) {
+                    resultsContainer.innerHTML = "";
+                    loadingSpinner.classList.add("d-none");
+                    return;
+                }
+
+                // Показать индикатор загрузки
+                loadingSpinner.classList.remove("d-none");
+
+                // Отправить запрос
+                fetch(`find_preview/?label__icontains=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.text(); // Получаем HTML как текст
+                })
+                .then(html => {
+                    loadingSpinner.classList.add("d-none");
+                    resultsContainer.innerHTML = html; // Вставляем готовую разметку
+                })
+                .catch(() => {
+                    loadingSpinner.classList.add("d-none");
+                    resultsContainer.innerHTML = `
+                        <div class="text-center text-danger">
+                            <p>Произошла ошибка. Попробуйте снова.</p>
+                        </div>`;
+                });
+            }
+
+            // Обёртка performSearch с дебаунсингом
+            const debouncedSearch = debounce(performSearch, 500);
+
+            // Обработчик события ввода
+            searchInput.addEventListener("input", debouncedSearch);
+        });
+    </script>
 {% endblock %}

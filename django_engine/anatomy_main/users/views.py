@@ -33,6 +33,11 @@ def profile(request):
     return render(request, 'profile.html', context=context)
 
 
+def list_user_completed_tests(request):
+    user = request.user
+    return render(request, 'user_completed_tests_page.html', context={"tests": Test.get_completed_tests(user)})
+
+
 # def signin(request):
 #     # Проверка, что пользователь зашел в акк
 #     if request.user.is_authenticated:

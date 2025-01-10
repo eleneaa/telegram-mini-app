@@ -1,8 +1,8 @@
 {% load static %}
-{% block find_preview_test %}
+{% block find_preview_atlas %}
     <div class="mb-3 text-center">
         {% if objects|length > 0 %}
-            {% include "grid_tests_cards.html" with tests=objects %}
+            {% include "grid_atlases_cards.html" with atlases=objects %}
         {% else %}
             <p>Ничего не найдено</p>
         {% endif %}
