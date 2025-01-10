@@ -10,6 +10,8 @@ class TestUserRel(models.Model):
     is_favorite = models.BooleanField(default=False, verbose_name='Тест в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к тесту', max_length=150)
 
+    last_try = models.DateTimeField(auto_now_add=True, verbose_name='Дата последней попытки')
+
     def get_absolute_url(self):
         return self.test.get_absolute_url()
 

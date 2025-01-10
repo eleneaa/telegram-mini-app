@@ -1,8 +1,9 @@
 # Create your views here.
 # views.py
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
@@ -103,10 +104,10 @@ def test_results(request, test_id):
 
     test = get_object_or_404(Test, id=test_id)
     # Сохраняем запись, что тест завершен
-    if test.id not in request.user.completed_tests_ids():
-        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
-        entity.is_completed = True
-        entity.save()
+    entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
+    entity.is_completed = True
+    entity.last_try = timezone.now()
+    entity.save()
     answers = request.session.get('answers', {})
     total_questions = len(answers)
     score = 0
@@ -192,3 +193,13 @@ class TestsView(ListView):
 
     def get_queryset(self):
         return Test.objects.all()
+
+
+def retry_last_test(request: HttpRequest):
+    user_tests = TestUserRel.objects.filter(user=request.user)
+
+    if len(user_tests) == 0:
+        return redirect("tests:main")
+
+    last_test = user_tests.latest('last_try')
+    return redirect("tests:open_test", test_id=last_test.test_id)

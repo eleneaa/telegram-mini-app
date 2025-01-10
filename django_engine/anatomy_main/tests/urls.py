@@ -20,5 +20,6 @@ urlpatterns = [
     path('favorite/<str:question_id>/', views.toggle_favorite, name='add_to_favorite'),
     path("toggle_save_note_test/<str:test_id>/<str:note_text>/", views.toggle_save_note_test,
          name='toggle_save_note_test'),
-    path("toggle_save_note_test/<str:test_id>/", views.toggle_save_note_test, name='toggle_save_note_test')
+    path("toggle_save_note_test/<str:test_id>/", views.toggle_save_note_test, name='toggle_save_note_test'),
+    path("retry_last_test/", views.retry_last_test, name='retry_last_test'),
 ]
