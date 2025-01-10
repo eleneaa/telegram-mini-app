@@ -10,6 +10,9 @@ class TestUserRel(models.Model):
     is_favorite = models.BooleanField(default=False, verbose_name='Тест в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к тесту', max_length=150)
 
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
+
     class Meta:
         db_table = 'tests_user'
         verbose_name = 'Тест'
@@ -24,6 +27,9 @@ class CatalogUserRel(models.Model):
                                 related_name='cat_user_id', verbose_name='Каталог')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_cat_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Каталог в избранном?')
+
+    def get_absolute_url(self):
+        return self.catalog.get_absolute_url()
 
     class Meta:
         db_table = 'catalog_user'
@@ -40,6 +46,9 @@ class AtlasUserRel(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_atlas_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Атлас в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к атласу', max_length=150)
+
+    def get_absolute_url(self):
+        return self.atlas.get_absolute_url()
 
     class Meta:
         db_table = 'atlas_user'
@@ -73,6 +82,9 @@ class ArticleUserRel(models.Model):
     is_favorite = models.BooleanField(default=False, verbose_name='Статья в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к статье', max_length=150)
 
+    def get_absolute_url(self):
+        return self.article.get_absolute_url()
+
     class Meta:
         db_table = 'articles_user'
         verbose_name = 'Статья'
@@ -84,10 +96,12 @@ class ArticleUserRel(models.Model):
 
 class User(AbstractUser):
     # last_user_data = models.CharField(default='', blank=True, verbose_name='Последняя юзер дата', max_length=None)
-    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True, primary_key=True)
+    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True,
+                                         primary_key=True)
     # first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
     # last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
-    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя', max_length=33)
+    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя',
+                                         max_length=33)
     telegram_photo_url = models.URLField(null=True, blank=True, verbose_name='Ссылка на аватар пользователя')
 
     # # Theme settings for Telegram Mini App (default to light theme)
@@ -177,6 +191,17 @@ class User(AbstractUser):
     def get_count_days_on_platform(self):
         return (timezone.now() - self.date_joined).days
 
+    def get_notes(self):
+        notes = dict()
+
+        notes['tests'] = [test for test in TestUserRel.objects.filter(user_id=self.telegram_id) if test.note]
+        notes['questions'] = [question for question in QuestionUserRel.objects.filter(user_id=self.telegram_id) if
+                              question.note]
+        notes['atlases'] = [atlas for atlas in AtlasUserRel.objects.filter(user_id=self.telegram_id) if atlas.note]
+        notes['articles'] = [article for article in ArticleUserRel.objects.filter(user_id=self.telegram_id) if
+                             article.note]
+
+        return notes
 
     class Meta:
         verbose_name = 'Пользователь'

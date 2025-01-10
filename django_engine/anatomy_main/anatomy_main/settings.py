@@ -15,6 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -27,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['salmon-ultimate-piglet.ngrok-free.app',
                  'localhost',
                  '127.0.0.1']
+
 
 # Application definition
 
@@ -76,6 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'anatomy_main.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -83,12 +86,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tg_bd',
-        'HOST': '109.120.133.103',
+        'HOST': '192.168.10.65',
         'PORT': 5432,
-        'USER': 'tg_vet_app',
-        "PASSWORD": 'v*3kdPdsa)LLsdsd'
+        'USER': 'postgres',
+        "PASSWORD": 'changeme'
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -123,6 +127,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
@@ -137,6 +142,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://salmon-ultimate-piglet.ngrok-free.app',  # Добавьте сюда ваш URL ngrok

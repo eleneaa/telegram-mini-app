@@ -1,0 +1,89 @@
+{% include 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="container p-4 pt-3">
+        <h1 class="p-2" style="padding-bottom: 0 !important;"><b>Все заметки</b></h1>
+        <hr class="hr" style="margin-right: 8px; margin-left: 8px"/>
+        {% if tests %}<h2 class="p-2">Тесты</h2>{% endif %}
+        <div class="row">
+        {% for test in tests %}
+            <div class="col-12 pb-3">
+                <div class="card rounded-4 shadow border-0">
+                  <div class="card-body">
+                      <div class="row justify-content-between">
+                          <div class="col-8 text-start">
+                            <div class="card-title"><b>{{ test.note }}</b></div>
+                          </div>
+                          <div class="col-4 text-end">
+                              <a href="delete_note/{{ test.test_id }}"><svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="none"  stroke="#335B5A"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.708 3.721a3.982 3.982 0 0 1 2.292 -.721h4a4 4 0 0 1 4 4v7m0 4v3l-6 -4l-6 4v-14c0 -.308 .035 -.609 .1 -.897" /><path d="M3 3l18 18" /></svg></a>
+                          </div>
+                      </div>
+                      <div class="row justify-content-between">
+                          <div class="col-6 d-flex align-items-center">
+                              <div class="card-subtitle mt-2 text-body-secondary">{{ test }}</div>
+                          </div>
+                          <div class="col-6 text-end">
+                              <div class="mt-2"><a href="{{ test.get_absolute_url }}"><button type="button" class="btn btn-primary rounded-4 p-1"><span style="font-size: 14px" class="m-1">Перейти</span><svg  xmlns="http://www.w3.org/2000/svg"  width="16"  height="16"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-down-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66l-.117 .007a1 1 0 0 0 -.883 .993v3.585l-4.293 -4.292l-.094 -.083a1 1 0 0 0 -1.32 1.497l4.292 4.293h-3.585l-.117 .007a1 1 0 0 0 .117 1.993l6.034 .001a.998 .998 0 0 0 .186 -.025l.053 -.014l.066 -.02l.13 -.059l.093 -.055a.98 .98 0 0 0 .438 -.828v-6l-.007 -.117a1 1 0 0 0 -.993 -.883z" /></svg></button></a></div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        {% if atlases %}<h2 class="p-2">Атласы</h2>{% endif %}
+        <div class="row">
+            {% for atlas in atlases %}
+                <div class="col-12 pb-3">
+                    <div class="card rounded-4 shadow border-0">
+                      <div class="card-body">
+                          <div class="row justify-content-between">
+                              <div class="col-8 text-start">
+                                <div class="card-title"><b>{{ atlas.note }}</b></div>
+                              </div>
+                              <div class="col-4 text-end">
+                                  <a href="delete_note/{{ atlas.atlas_id }}"><svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="none"  stroke="#335B5A"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.708 3.721a3.982 3.982 0 0 1 2.292 -.721h4a4 4 0 0 1 4 4v7m0 4v3l-6 -4l-6 4v-14c0 -.308 .035 -.609 .1 -.897" /><path d="M3 3l18 18" /></svg></a>
+                              </div>
+                          </div>
+                          <div class="row justify-content-between">
+                              <div class="col-6 d-flex align-items-center">
+                                  <div class="card-subtitle mt-2 text-body-secondary">{{ atlas }}</div>
+                              </div>
+                              <div class="col-6 text-end">
+                                <div class="mt-2"><a href="{{ atlas.get_absolute_url }}"><button type="button" class="btn btn-primary rounded-4 p-1"><span style="font-size: 14px" class="m-1">Перейти</span><svg  xmlns="http://www.w3.org/2000/svg"  width="16"  height="16"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-down-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66l-.117 .007a1 1 0 0 0 -.883 .993v3.585l-4.293 -4.292l-.094 -.083a1 1 0 0 0 -1.32 1.497l4.292 4.293h-3.585l-.117 .007a1 1 0 0 0 .117 1.993l6.034 .001a.998 .998 0 0 0 .186 -.025l.053 -.014l.066 -.02l.13 -.059l.093 -.055a.98 .98 0 0 0 .438 -.828v-6l-.007 -.117a1 1 0 0 0 -.993 -.883z" /></svg></button></a></div>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if articles %}<h2 class="p-2">Статьи</h2>{% endif %}
+        <div class="row">
+            {% for article in articles %}
+                <div class="col-12 pb-3">
+                    <div class="card rounded-4 shadow border-0">
+                      <div class="card-body">
+                          <div class="row justify-content-between">
+                              <div class="col-8 text-start">
+                                <div class="card-title"><b>{{ article.note }}</b></div>
+                              </div>
+                              <div class="col-4 text-end">
+                                  <a href="delete_note/{{ article.article_id }}"><svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="none"  stroke="#335B5A"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.708 3.721a3.982 3.982 0 0 1 2.292 -.721h4a4 4 0 0 1 4 4v7m0 4v3l-6 -4l-6 4v-14c0 -.308 .035 -.609 .1 -.897" /><path d="M3 3l18 18" /></svg></a>
+                              </div>
+                          </div>
+                          <div class="row justify-content-between">
+                              <div class="col-6 d-flex align-items-center">
+                                  <div class="card-subtitle mt-2 text-body-secondary">{{ article }}</div>
+                              </div>
+                              <div class="col-6 text-end">
+                                  <div class="mt-2"><a href="{{ article.get_absolute_url }}"><button type="button" class="btn btn-primary rounded-4 p-1"><span style="font-size: 14px" class="m-1">Перейти</span><svg  xmlns="http://www.w3.org/2000/svg"  width="16"  height="16"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-down-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66l-.117 .007a1 1 0 0 0 -.883 .993v3.585l-4.293 -4.292l-.094 -.083a1 1 0 0 0 -1.32 1.497l4.292 4.293h-3.585l-.117 .007a1 1 0 0 0 .117 1.993l6.034 .001a.998 .998 0 0 0 .186 -.025l.053 -.014l.066 -.02l.13 -.059l.093 -.055a.98 .98 0 0 0 .438 -.828v-6l-.007 -.117a1 1 0 0 0 -.993 -.883z" /></svg></button></a></div>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

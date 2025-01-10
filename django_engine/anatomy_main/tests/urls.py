@@ -8,12 +8,6 @@ app_name = 'tests'
 
 urlpatterns = [
     path('', views.main_page, name='main'),
-    # path('', views.TestsView.as_view(), name='main'),
-    # path('find/', views.find, name='find'),
-    # path('find/<str:catalog_id>/', views.find_catalog_tests, name='find_catalog_tests'),
-    # path('favorite_tests/', views.favorite_tests, name='favorite_tests'),
-    # path('favorite_questions/', views.favorite_tests, name='favorite_questions'),
-    # path('finished_tests/', views.finished_tests, name='finished_tests'),
     path('find/', view_builder.find(Test, "test_main_page.html"), name='find'),
     path('find_preview/', view_builder.find(Test, "find_preview_tests_component.html", 5), name='find_preview'),
     path('open/<str:test_id>/', views.open_test, name='open_test'),

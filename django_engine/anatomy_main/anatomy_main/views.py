@@ -7,7 +7,7 @@ import os
 import requests
 
 from django.contrib.auth import login
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.conf import settings
 from django.http import JsonResponse
@@ -15,10 +15,11 @@ from users.models import User
 from tests.models import Test
 from atlases.models import Atlas
 from articles.models import Article
-
+from users.models import *
 
 # Дада снова токен в коде
 bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
+
 
 # TODO: Фотографии удаляются через некоторое время, нужно при каждом входе обновлять ссылку
 # Функция для получения фотографии профиля пользователя
@@ -150,3 +151,32 @@ def init_page(request):
 
 def test(request):
     return render(request, 'test.html', context={'user': request.user})
+
+
+def notes(request):
+    return render(request, 'notes.html', context=request.user.get_notes())
+
+
+def delete_note(request, object_id):
+    object_ = None
+    if TestUserRel.objects.filter(test_id=object_id).exists():
+        print('test')
+        object_ = TestUserRel.objects.get(test_id=object_id)
+    elif AtlasUserRel.objects.filter(atlas_id=object_id).exists():
+        print('atlas')
+        object_ = AtlasUserRel.objects.get(atlas_id=object_id)
+    elif ArticleUserRel.objects.filter(article_id=object_id).exists():
+        print('article')
+        object_ = ArticleUserRel.objects.get(article_id=object_id)
+    print(object_)
+    if object_:
+        object_.note = ""
+        object_.save()
+
+    return redirect("notes")
+
+
+def favorites(request):
+    return render(request, 'favorites.html', context={"tests": Test.get_favorite_tests(request.user),
+                                                      'atlases': Atlas.get_favorite_atlases(request.user),
+                                                      'articles': Article.get_favorite_articles(request.user)})

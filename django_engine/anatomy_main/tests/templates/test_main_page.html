@@ -12,7 +12,7 @@
                         style="border-left: none; border-color: rgb(0,0,0)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-search"
                          viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1z"/>
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                     </svg>
                 </button>
             </div>
@@ -27,27 +27,13 @@
         <div id="search-results" class="pt-2"></div>
 
         {% if objects is not None %}
-            <div class="container p-4 pt-3">
-                <div class="row text-center justify-content-between">
-                    {% if objects|length > 0 %}
-                        <h1 class="p-1">Найденные тесты</h1>
-                        {% for test in objects %}
-                            <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
-                                <a href="{{ test.get_absolute_url }}" style="text-decoration: none;">
-                                    <div class="card draggable-lg border-0 shadow rounded-4">
-                                        <img src="{% static test.test_photo %}" class="card-img-top rounded-top-4"
-                                             alt="...">
-                                        <div class="card-body">
-                                            <span>{{ test }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <h1 class="p-1">Ничего не найдено</h1>
-                    {% endif %}
-                </div>
+            <div class="row text-center justify-content-between">
+                {% if objects|length > 0 %}
+                    <h1 class="p-1">Найденные тесты</h1>
+                    {% include 'grid_tests_cards.html' with tests=objects %}
+                {% else %}
+                    <h1 class="p-1">Ничего не найдено</h1>
+                {% endif %}
             </div>
         {% else %}
             <div class="pb-3 pt-3">
