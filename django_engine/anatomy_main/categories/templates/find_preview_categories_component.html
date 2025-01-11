@@ -1,0 +1,22 @@
+{% load static %}
+{% block find_preview_category %}
+    <div class="row row-cols-1 row-cols-md-3 g-4 p-4 pt-3">
+        {% if objects|length > 0 %}
+        {% for catalog in objects %}
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ catalog.name }}</h5>
+                    <p class="card-text text-muted">
+                        {{ catalog.description|truncatechars:100 }}
+                    </p>
+                    <a href="{{ catalog.get_absolute_url }}" class="btn btn-primary">Открыть</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+            <h1 class="text-center">Ничего не найдено</h1>
+        {% endif %}
+    </div>
+{% endblock %}

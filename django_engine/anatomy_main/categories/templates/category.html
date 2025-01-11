@@ -1,16 +1,29 @@
-{% extends 'categories_base.html' %}
+{% include 'index.html' with active='tests' %}
 {% load static %}
 
-{% block title %}
-    {{ catalog.name }}
-{% endblock %}
-
 {% block content %}
-    <h1>{{ catalog.name }}</h1>
-    <img width="100" height="100" src="{% static cat.image.url %}" alt="Фото категории">
-    <p>{{ catalog.description }}</p>
-    <div id="item-{{ catalog.id }}">
-        <button class="favorite-button" data-item-id="{{ catalog.id }}">
+    <div class="container py-4">
+    <!-- Название категории -->
+    <h1 class="text-center mb-4">{{ catalog.name }}</h1>
+
+    <!-- Изображение категории -->
+    <div class="text-center mb-4">
+        {% if catalog.image %}
+        <img src="{{ catalog.image.url }}" alt="Фото категории" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+        {% else %}
+        <img src="{% static 'images/default_category.jpg' %}" alt="Фото категории" class="img-fluid rounded shadow-sm" style="max-height: 300px;">
+        {% endif %}
+    </div>
+
+    <!-- Описание категории -->
+    <div class="text-center mb-4">
+        <p class="text-muted">{{ catalog.description }}</p>
+    </div>
+
+    <!-- Кнопка избранного -->
+    <div class="text-center">
+        <button id="favorite-button" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                data-item-id="{{ catalog.id }}">
             {% if is_favorite %}
                 Удалить из избранного
             {% else %}
@@ -18,47 +31,81 @@
             {% endif %}
         </button>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% csrf_token %}
-    <script>
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    </script>
-    <script>
-        $(document).ready(function () {
-            $('.favorite-button').click(function () {
-                var button = $(this);
-                var categoryId = button.data('item-id');
+</div>
 
-                $.ajax({
-                    url: '/categories/favorite/' + categoryId + '/',
-                    type: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    },
-                    success: function (response) {
-                        if (response.action === 'added') {
-                            button.text('Удалить из избранного');
-                        } else {
-                            button.text('Добавить в избранное');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Ошибка:", error);
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- CSRF-токен -->
+{% csrf_token %}
+<script>
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    $(document).ready(function () {
+        $('#favorite-button').click(function () {
+            var button = $(this);
+            var categoryId = button.data('item-id');
+
+            $.ajax({
+                url: `/categories/favorite/${categoryId}/`,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function (response) {
+                    if (response.action === 'added') {
+                        button.removeClass('btn-outline-danger').addClass('btn-danger').text('Удалить из избранного');
+                    } else if (response.action === 'removed') {
+                        button.removeClass('btn-danger').addClass('btn-outline-danger').text('Добавить в избранное');
                     }
-                });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Ошибка:", error);
+                }
             });
         });
-    </script>
-    <p>Статьи</p>
-    <ul>
-        {% for article in catalog.articles_ids %}
-            <li><a href="{{ article.get_absolute_url }}">{{ article.label }}</a></li>
-        {% endfor %}
-    </ul>
-    <h2>Дочерние каталоги</h2>
-    {% for catalog in catalog.child.all %}
+    });
+</script>
 
-        {% include 'category_card.html' %}
+    <div class="container p-4 pt-3">
+        <div class="row text-center justify-content-between">
+        <h1 class="p-1">Список тестов категории</h1>
+        {% include 'grid_tests_cards.html' with tests=catalog.tests_ids %}
+        </div>
+    </div>
 
-    {% endfor %}
+    <div class="container p-4 pt-3">
+        <div class="row text-center justify-content-between">
+        <h1 class="p-1">Список cтатей категории</h1>
+        {% include 'grid_articles_cards.html' with articles=catalog.articles_ids %}
+        </div>
+    </div>
+
+    <div class="container p-4 pt-3">
+        <div class="row text-center justify-content-between">
+        <h1 class="p-1">Список атласов категории</h1>
+        {% include 'grid_atlases_cards.html' with atlases=catalog.atlases_ids %}
+        </div>
+    </div>
+
+    {% if objects|length > 0 %}
+        <h2 class="text-center">Дочерние каталоги</h2>
+        <!-- Сетка для категорий -->
+        <div class="row row-cols-1 row-cols-md-3 g-4 p-4 pt-3">
+            {% for catalog in catalog.child.all %}
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <!-- Иконка или изображение категории -->
+                    <div class="card-body">
+                        <h5 class="card-title">{{ catalog.name }}</h5>
+                        <p class="card-text text-muted">
+                            {{ catalog.description|truncatechars:100 }}
+                        </p>
+                        <a href="{{ catalog.get_absolute_url }}" class="btn btn-primary">Открыть</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

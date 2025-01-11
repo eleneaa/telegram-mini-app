@@ -2,7 +2,7 @@
 {% block find_preview_test %}
     <div class="mb-3 text-center">
         {% if objects|length > 0 %}
-            {% include "grid_tests_cards.html" with tests=objects %}
+            {% include "scrollable_tests_cards.html" with tests=objects %}
         {% else %}
             <p>Ничего не найдено</p>
         {% endif %}

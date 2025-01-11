@@ -6,7 +6,7 @@
 {#            {% include 'user_info.html' with user=user %}#}
 {#        </div>#}
         <div class="text-center pb-3">
-            <button class="btn btn-primary col-12 shadow rounded-4">❤ Посмотреть избранное</button>
+            <a href="{% url 'favorites' %}"><button class="btn btn-primary col-12 shadow rounded-4">❤ Посмотреть избранное</button></a>
         </div>
         <div class="pb-3">
             <div class="mb-3">

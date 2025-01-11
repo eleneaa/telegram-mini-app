@@ -2,7 +2,7 @@
 {% block find_preview_atlas %}
     <div class="mb-3 text-center">
         {% if objects|length > 0 %}
-            {% include "grid_atlases_cards.html" with atlases=objects %}
+            {% include "scrollable_atlases_cards.html" with atlases=objects %}
         {% else %}
             <p>Ничего не найдено</p>
         {% endif %}
