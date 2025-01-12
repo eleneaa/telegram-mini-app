@@ -7,7 +7,7 @@ from users.models import AtlasUserRel
 
 class Atlas(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Название файла')
+    label = models.CharField(max_length=200, verbose_name='Название файла')
     atlas_file = models.ImageField(verbose_name='Файл атласа', upload_to='atlases_storage')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='atlases', blank=True)

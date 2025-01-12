@@ -28,7 +28,7 @@ class QuestionVariantRel(models.Model):
 
 class Variant(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
 
     class Meta:
         verbose_name = 'Вариант ответа'
@@ -40,12 +40,12 @@ class Variant(models.Model):
 
 class Question(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Описание вопроса')
+    label = models.CharField(max_length=200, verbose_name='Описание вопроса')
     variants = models.ManyToManyField("Variant", verbose_name="Список правильных ответов", symmetrical=False,
                                       related_name='correct_variants',
                                       through='QuestionVariantRel')
     question_type = models.CharField(choices=QuestionType.choices, verbose_name="Тип вопроса",
-                                     default=QuestionType.multipy_choice, max_length=50)
+                                     default=QuestionType.multipy_choice, max_length=200)
 
     def answers_ids(self):
         if self.variants.all():
@@ -67,7 +67,7 @@ class Question(models.Model):
 
 class Test(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Название теста')
+    label = models.CharField(max_length=200, verbose_name='Название теста')
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='tests', blank=True)

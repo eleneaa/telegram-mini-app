@@ -13,14 +13,16 @@
 
     <div class="container p-4 pt-3">
             <!-- Notes Button -->
-            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
-                Просмотреть заметки
-            </button>
-            <div class="collapse col-12 mb-3" id="notes">
-                <div class="card card-body">
-                    <p>Заметки пользователя отображаются здесь.</p>
-                </div>
-            </div>
+            <a href="{% url "notes" %}">
+                <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
+                    Просмотреть заметки
+                </button>
+            </a>
+{#            <div class="collapse col-12 mb-3" id="notes">#}
+{#                <div class="card card-body">#}
+{#                    <p>Заметки пользователя отображаются здесь.</p>#}
+{#                </div>#}
+{#            </div>#}
 
             <!-- Completed Tests Button -->
             <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#completed-tests" aria-expanded="false" aria-controls="completed-tests">
@@ -30,20 +32,21 @@
 {#                <div class="card card-body">#}
 {#                    <p>Пройденные тесты пользователя отображаются здесь.</p>#}
 {#                </div>#}
-                {% include 'grid_tests_cards.html' with tests=completed_tests %}
+                {% include 'scrollable_tests_cards.html' with tests=completed_tests %}
                 <a href="{% url 'users:list_user_completed_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
-            </div>
             </div>
 
             <!-- Last Test Button -->
-            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#last-test" aria-expanded="false" aria-controls="last-test">
-                Перепройти последний тест
-            </button>
-            <div class="collapse col-12 mb-3" id="last-test">
-                <div class="card card-body">
-                    <p>Последний пройденный тест отображается здесь.</p>
-                </div>
-            </div>
+            <a href="{% url 'tests:retry_last_test' %}">
+                <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#last-test" aria-expanded="false" aria-controls="last-test">
+                    Перепройти последний тест
+                </button>
+            </a>
+{#            <div class="collapse col-12 mb-3" id="last-test">#}
+{#                <div class="card card-body">#}
+{#                    <p>Последний пройденный тест отображается здесь.</p>#}
+{#                </div>#}
+{#            </div>#}
 
             <!-- Settings Button -->
             <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#settings" aria-expanded="false" aria-controls="settings">
@@ -61,7 +64,7 @@
             </button>
             <div class="collapse col-12 mb-3" id="favorite-atlases">
                 <div class="card card-body">
-                    <p>Избранные атласы пользователя отображаются здесь.</p>
+                    {% include 'scrollable_atlases_cards.html' with atlases=favorite_atlases %}
                 </div>
             </div>
 
@@ -71,7 +74,7 @@
             </button>
             <div class="collapse col-12 mb-3" id="favorite-articles">
                 <div class="card card-body">
-                    <p>Избранные статьи пользователя отображаются здесь.</p>
+                    {% include 'scrollable_articles_cards.html' with articles=favorite_articles %}
                 </div>
             </div>
 
@@ -81,7 +84,7 @@
             </button>
             <div class="collapse col-12 mb-3" id="favorite-tests">
                 <div class="card card-body">
-                    <p>Избранные тесты пользователя отображаются здесь.</p>
+                    {% include 'scrollable_tests_cards.html' with tests=favorite_tests %}
                 </div>
             </div>
 

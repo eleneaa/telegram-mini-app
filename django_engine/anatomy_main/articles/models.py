@@ -11,7 +11,7 @@ from users.models import ArticleUserRel
 
 class Article(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Название файла')
+    label = models.CharField(max_length=200, verbose_name='Название файла')
     article_file = models.FileField(verbose_name='Файл статьи', upload_to='articles_storage')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='articles', blank=True)

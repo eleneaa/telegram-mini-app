@@ -4,7 +4,7 @@
         {% for test in tests %}
             <a href="{{ test.get_absolute_url }}" style="text-decoration: none">
                 <div class="card little-card draggable border-0 rounded-4">
-                    <img src="{% static test.test_file %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
+                    <img src="{% static test.test_photo %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
                     <div class="card-body p-1">
                         <div class="row d-flex justify-content-center">
                             <div class="col-12 text-center p-2">
