@@ -244,6 +244,25 @@
     // Отключаем вертикальную прокрутку
     tg.disableVerticalSwipes();
 
+    // Обработчик нажатия кнопки "Назад"
+    tg.BackButton.onClick(() => {
+        if (window.location.pathname === '/home/') {
+            window.location.reload();
+        } else {
+            console.log("Back button clicked!");
+            history.back(); // Переход на предыдущую страницу
+        }
+    });
+
+    // Проверяем наличие предыдущей страницы в истории
+    if (window.history.length > 1 && window.location.pathname !== '/home/') {
+        // Показываем кнопку "Назад" только если в истории есть предыдущая страница
+        tg.BackButton.show();
+    } else {
+        // Скрываем кнопку "Назад" если предыдущей страницы нет
+        tg.BackButton.hide();
+    }
+
     // Открывает приложение на всю ширину на телефоне
     tg.expand();
 
