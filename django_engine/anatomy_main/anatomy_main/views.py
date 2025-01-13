@@ -16,14 +16,16 @@ from tests.models import Test
 from atlases.models import Atlas
 from articles.models import Article
 from users.models import *
+import uuid
 
 # Дада снова токен в коде
 bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
+imgur_client_id = os.getenv('IMGUR_CLIENT_ID', '3dd1847a2c4f6e0')
 
 
-# TODO: Фотографии удаляются через некоторое время, нужно при каждом входе обновлять ссылку
 # Функция для получения фотографии профиля пользователя
-def get_user_profile_picture(user_id):
+def get_user_profile_picture(user):
+    user_id = user.telegram_id
     try:
         # Получаем фотографии профиля пользователя через API Telegram
         url = f'https://api.telegram.org/bot{bot_token}/getUserProfilePhotos?user_id={user_id}'
@@ -37,6 +39,8 @@ def get_user_profile_picture(user_id):
             if data['result']['total_count'] > 0:
                 # Получаем ID первого фото
                 file_id = data['result']['photos'][0][0]['file_id']
+                if user.last_telegram_photo_file_id == file_id:
+                    return None
 
                 # Получаем информацию о файле
                 file_url = f'https://api.telegram.org/bot{bot_token}/getFile?file_id={file_id}'
@@ -44,9 +48,26 @@ def get_user_profile_picture(user_id):
 
                 if file_response.status_code == 200:
                     file_data = file_response.json()
-                    # Возвращаем URL файла
                     file_path = file_data['result']['file_path']
-                    return f'https://api.telegram.org/file/bot{bot_token}/{file_path}'
+                    file_download_url = f'https://api.telegram.org/file/bot{bot_token}/{file_path}'
+
+                    # Загружаем файл с Telegram
+                    file_content = requests.get(file_download_url).content
+
+                    # Отправляем файл на Imgur
+                    headers = {'Authorization': f'Client-ID {imgur_client_id}'}
+                    imgur_response = requests.post(
+                        url='https://api.imgur.com/3/upload',
+                        headers=headers,
+                        files={'image': file_content}
+                    )
+
+                    if imgur_response.status_code == 200:
+                        imgur_data = imgur_response.json()
+                        return {'link': imgur_data['data']['link'], 'file_id': file_id}
+                    else:
+                        print("Ошибка при загрузке на Imgur:", imgur_response.json())
+                        return None
                 else:
                     print("Ошибка при получении файла.")
                     return None
@@ -99,9 +120,10 @@ def save_or_update_user(parsed_data):
                 user.first_name = first_name
                 user.last_name = last_name
                 user.telegram_username = telegram_username
-        telegram_photo_url = get_user_profile_picture(telegram_id)
-        if telegram_photo_url:
-            user.telegram_photo_url = telegram_photo_url
+        telegram_photo_data = get_user_profile_picture(user)
+        if telegram_photo_data:
+            user.telegram_photo_url = telegram_photo_data['link']
+            user.last_telegram_photo_file_id = telegram_photo_data['file_id']
         user.save()
         return user
     return None
@@ -109,17 +131,17 @@ def save_or_update_user(parsed_data):
 
 # Основная view для обработки данных
 def main(request):
+    # Получаем данные пользователя из GET-запроса
+    init_data = request.GET.get('user_data')
+
     popular_tests = Test.get_popular(count=6)
     popular_atlases = Atlas.get_popular(count=6)
     popular_articles = Article.get_popular(count=6)
-    if request.user.is_authenticated:
+    if not init_data and request.user.is_authenticated:
         return render(request, 'main.html', context={'user': request.user,
                                                      'popular_tests': popular_tests,
                                                      'popular_atlases': popular_atlases,
                                                      'popular_articles': popular_articles})
-
-    # Получаем данные пользователя из GET-запроса
-    init_data = request.GET.get('user_data')
 
     if init_data:
         # Проверяем подпись Telegram

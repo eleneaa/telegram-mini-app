@@ -105,6 +105,7 @@ class User(AbstractUser):
     telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя',
                                          max_length=33)
     telegram_photo_url = models.URLField(null=True, blank=True, verbose_name='Ссылка на аватар пользователя')
+    last_telegram_photo_file_id = models.CharField(default='', blank=True, verbose_name='Последний файл ID аватара пользователя', max_length=100)
 
     # # Theme settings for Telegram Mini App (default to light theme)
     # background_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона',
