@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-v+f7u3auumsuu!5m=me**g-s5n4l*l36&5nnc0rv337u)4&0f7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['salmon-ultimate-piglet.ngrok-free.app',
+                 'localhost',
+                 '127.0.0.1']
 
 
 # Application definition
@@ -91,7 +93,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -143,5 +144,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://7887-109-120-133-103.ngrok-free.app',  # Добавьте сюда ваш URL ngrok
+    'https://salmon-ultimate-piglet.ngrok-free.app',  # Добавьте сюда ваш URL ngrok
 ]

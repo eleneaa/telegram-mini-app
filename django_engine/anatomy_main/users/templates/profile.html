@@ -1,47 +1,128 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <title>Vet Moment - Платформа для обучения ветеринаров</title>
-        <link rel="stylesheet"
-              href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-        <meta name="theme-color" content="#ffffff">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&amp;display=swap"
-              rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <link
-  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.min.css"
-  rel="stylesheet"
-/>
-    </head>
-    <body>
-        {% include 'navbar.html' %}
-        <div class="container mt-5">
-        <h1 class="text-center">Профиль пользователя</h1>
+{% extends 'index.html' %}
+{% block content %}
+    <div class="container p-4 pt-3">
+        <div class="pb-3">
+            {% include 'user_info.html' with user=user %}
+        </div>
+        <div class="card">
+        <div class="card-body text-center">
+            <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+            <p class="card-text">@{{ user.telegram_username }}</p>
+        </div>
+    </div>
 
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <h5 class="card-title mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
-                <p class="card-text">@{{ user.telegram_username }}</p>
+    <div class="container p-4 pt-3">
+            <!-- Notes Button -->
+            <a href="{% url "notes" %}">
+                <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
+                    Просмотреть заметки
+                </button>
+            </a>
+{#            <div class="collapse col-12 mb-3" id="notes">#}
+{#                <div class="card card-body">#}
+{#                    <p>Заметки пользователя отображаются здесь.</p>#}
+{#                </div>#}
+{#            </div>#}
+
+            <!-- Completed Tests Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#completed-tests" aria-expanded="false" aria-controls="completed-tests">
+                Посмотреть пройденные тесты
+            </button>
+            <div class="collapse col-12 mb-3" id="completed-tests">
+{#                <div class="card card-body">#}
+{#                    <p>Пройденные тесты пользователя отображаются здесь.</p>#}
+{#                </div>#}
+                {% include 'scrollable_tests_cards.html' with tests=completed_tests %}
+                <a href="{% url 'users:list_user_completed_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
+            </div>
+
+            <!-- Last Test Button -->
+            <a href="{% url 'tests:retry_last_test' %}">
+                <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#last-test" aria-expanded="false" aria-controls="last-test">
+                    Перепройти последний тест
+                </button>
+            </a>
+{#            <div class="collapse col-12 mb-3" id="last-test">#}
+{#                <div class="card card-body">#}
+{#                    <p>Последний пройденный тест отображается здесь.</p>#}
+{#                </div>#}
+{#            </div>#}
+
+            <!-- Settings Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#settings" aria-expanded="false" aria-controls="settings">
+                Настройки
+            </button>
+            <div class="collapse col-12 mb-3" id="settings">
+                <div class="card card-body">
+                    <p>Настройки пользователя отображаются здесь.</p>
+                </div>
+            </div>
+
+            <!-- Favorite Atlases Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-atlases" aria-expanded="false" aria-controls="favorite-atlases">
+                Избранные атласы
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-atlases">
+                <div class="card card-body">
+                    {% include 'scrollable_atlases_cards.html' with atlases=favorite_atlases %}
+                </div>
+            </div>
+
+            <!-- Favorite Articles Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-articles" aria-expanded="false" aria-controls="favorite-articles">
+                Избранные статьи
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-articles">
+                <div class="card card-body">
+                    {% include 'scrollable_articles_cards.html' with articles=favorite_articles %}
+                </div>
+            </div>
+
+            <!-- Favorite Tests Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-tests" aria-expanded="false" aria-controls="favorite-tests">
+                Избранные тесты
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-tests">
+                <div class="card card-body">
+                    {% include 'scrollable_tests_cards.html' with tests=favorite_tests %}
+                </div>
+            </div>
+
+            <!-- Favorite Questions Button -->
+            <button class="btn btn-outline-dark col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#favorite-questions" aria-expanded="false" aria-controls="favorite-questions">
+                Избранные вопросы
+            </button>
+            <div class="collapse col-12 mb-3" id="favorite-questions">
+                <div class="card card-body">
+                    <p>Избранные вопросы пользователя отображаются здесь.</p>
+                </div>
             </div>
         </div>
+{% endblock %}
+<!DOCTYPE html>
+{% load static %}
 
-        <div class="row">
-            <div class="col-md-6">
-                <h5>Основная информация</h5>
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>Telegram ID:</strong> {{ user.telegram_id }}</li>
-                    <li class="list-group-item"><strong>Имя:</strong> {{ user.first_name }}</li>
-                    <li class="list-group-item"><strong>Фамилия:</strong> {{ user.last_name }}</li>
-                    <li class="list-group-item"><strong>Username:</strong> @{{ user.telegram_username }}</li>
-                </ul>
-            </div>
+{% include 'index.html' %}
+<div class="container mt-5">
+    <h1 class="text-center">Профиль пользователя</h1>
+
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h5 class="card-title mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
+            <p class="card-text">@{{ user.telegram_username }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Основная информация</h5>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Telegram ID:</strong> {{ user.telegram_id }}</li>
+                <li class="list-group-item"><strong>Имя:</strong> {{ user.first_name }}</li>
+                <li class="list-group-item"><strong>Фамилия:</strong> {{ user.last_name }}</li>
+                <li class="list-group-item"><strong>Username:</strong> @{{ user.telegram_username }}</li>
+            </ul>
+        </div>
 <!--            <div class="col-md-6">-->
 <!--                <h5>Дополнительная информация</h5>-->
 <!--                <ul class="list-group">-->
@@ -50,33 +131,5 @@
 <!--                    <li class="list-group-item"><strong>Настройки уведомлений:</strong> {{ user.notifications_enabled|yesno:"Включено,Выключено" }}</li>-->
 <!--                </ul>-->
 <!--            </div>-->
-        </div>
     </div>
-
-    <img id="user-photo" alt="User Photo" style="display: none; width: 150px; height: 150px;">
-    </body>
-    <script>
-        // Инициализация WebApp API
-        const tg = window.Telegram.WebApp;
-
-        // Проверка готовности WebApp
-        tg.ready();
-
-        tg.setHeaderColor('#ffffff');
-
-        // Получаем все данные из initDataUnsafe
-        const initData = tg.initDataUnsafe;
-
-        let userData = tg.initDataUnsafe.user;
-
-        // Отображаем полученные данные на странице
-        const userDataElement = document.getElementById('user-data');
-        userDataElement.textContent = JSON.stringify(initData, null, 2); // Преобразуем объект в JSON-формат с отступами
-
-        if (userData.photo_url) {
-            const userPhoto = document.getElementById('user-photo');
-            userPhoto.src = userData.photo_url;
-            userPhoto.style.display = 'block';  // Показываем фотографию
-        }
-    </script>
-</html>
+</div>

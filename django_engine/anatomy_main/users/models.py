@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class TestUserRel(models.Model):
@@ -8,6 +9,11 @@ class TestUserRel(models.Model):
     is_completed = models.BooleanField(default=False, verbose_name='Тест пройден?')
     is_favorite = models.BooleanField(default=False, verbose_name='Тест в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к тесту', max_length=150)
+
+    last_try = models.DateTimeField(auto_now_add=True, verbose_name='Дата последней попытки')
+
+    def get_absolute_url(self):
+        return self.test.get_absolute_url()
 
     class Meta:
         db_table = 'tests_user'
@@ -24,6 +30,9 @@ class CatalogUserRel(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_cat_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Каталог в избранном?')
 
+    def get_absolute_url(self):
+        return self.catalog.get_absolute_url()
+
     class Meta:
         db_table = 'catalog_user'
         verbose_name = 'Каталог'
@@ -39,6 +48,9 @@ class AtlasUserRel(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='user_atlas_id')
     is_favorite = models.BooleanField(default=False, verbose_name='Атлас в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к атласу', max_length=150)
+
+    def get_absolute_url(self):
+        return self.atlas.get_absolute_url()
 
     class Meta:
         db_table = 'atlas_user'
@@ -72,6 +84,9 @@ class ArticleUserRel(models.Model):
     is_favorite = models.BooleanField(default=False, verbose_name='Статья в избранном?')
     note = models.CharField(default='', blank=True, verbose_name='Заметка к статье', max_length=150)
 
+    def get_absolute_url(self):
+        return self.article.get_absolute_url()
+
     class Meta:
         db_table = 'articles_user'
         verbose_name = 'Статья'
@@ -83,10 +98,14 @@ class ArticleUserRel(models.Model):
 
 class User(AbstractUser):
     # last_user_data = models.CharField(default='', blank=True, verbose_name='Последняя юзер дата', max_length=None)
-    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True, primary_key=True)
+    telegram_id = models.BigIntegerField(default=0, blank=False, verbose_name='Telegram ID', unique=True,
+                                         primary_key=True)
     # first_name = models.CharField(default='', blank=True, verbose_name='Имя пользователя', max_length=65)
     # last_name = models.CharField(default='', blank=True, verbose_name='Фамилия пользователя', max_length=65)
-    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя', max_length=33)
+    telegram_username = models.CharField(default='', blank=True, null=True, verbose_name='Username пользователя',
+                                         max_length=33)
+    telegram_photo_url = models.URLField(null=True, blank=True, verbose_name='Ссылка на аватар пользователя')
+    last_telegram_photo_file_id = models.CharField(default='', blank=True, verbose_name='Последний файл ID аватара пользователя', max_length=100)
 
     # # Theme settings for Telegram Mini App (default to light theme)
     # background_color = models.CharField(default='#ffffff', blank=True, verbose_name='Цвет фона',
@@ -132,39 +151,60 @@ class User(AbstractUser):
 
     def favorite_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_favorite=True, user__telegram_id=self.pk)]
+            childs_array = [test for test in
+                            TestUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def completed_tests_ids(self):
         if self.favorite_tests.all():
-            childs_array = [test for test in TestUserRel.objects.filter(is_completed=True, user_id=self.pk)]
+            childs_array = [test for test in
+                            TestUserRel.objects.filter(is_completed=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_questions_ids(self):
         if self.favorite_questions.all():
-            childs_array = [question for question in QuestionUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [question for question in
+                            QuestionUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_articles_ids(self):
         if self.favorites_articles.all():
-            childs_array = [article for article in ArticleUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [article for article in
+                            ArticleUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_catalogs_ids(self):
         if self.favorites_catalogs.all():
-            childs_array = [article for article in CatalogUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [article for article in
+                            CatalogUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
 
     def favorite_atlases_ids(self):
         if self.favorites_atlases.all():
-            childs_array = [atlas for atlas in AtlasUserRel.objects.filter(is_favorite=True, user_id=self.id)]
+            childs_array = [atlas for atlas in
+                            AtlasUserRel.objects.filter(is_favorite=True, user_id=self.telegram_id)]
             return childs_array
         return []
+
+    def get_count_days_on_platform(self):
+        return (timezone.now() - self.date_joined).days
+
+    def get_notes(self):
+        notes = dict()
+
+        notes['tests'] = [test for test in TestUserRel.objects.filter(user_id=self.telegram_id) if test.note]
+        notes['questions'] = [question for question in QuestionUserRel.objects.filter(user_id=self.telegram_id) if
+                              question.note]
+        notes['atlases'] = [atlas for atlas in AtlasUserRel.objects.filter(user_id=self.telegram_id) if atlas.note]
+        notes['articles'] = [article for article in ArticleUserRel.objects.filter(user_id=self.telegram_id) if
+                             article.note]
+
+        return notes
 
     class Meta:
         verbose_name = 'Пользователь'

@@ -1,0 +1,18 @@
+{% load static %}
+{% block view_notes %}
+<div class="mb-3">
+    <h2 class="h3 mb-2">Заметки</h2>
+    <div class="p-0 pb-1 scrollable-container" id="container">
+        {% for note in notes %}
+            <div class="p-0">
+                <div class="card little-card draggable">
+                    <div class="card-body">
+                        <p class="card-text">{{ note.content }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <button class="btn btn-dark btn-sm mt-2">Посмотреть все</button>
+</div>
+{% endblock %}

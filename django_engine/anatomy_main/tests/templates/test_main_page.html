@@ -1,0 +1,105 @@
+{% include 'index.html' with active='tests' %}
+{% load static %}
+{% block content %}
+    <div class="container p-4 pt-3">
+        <form action="{% url 'tests:find' %}">
+            <div class="input-group mb-3 mt-3" style="border-radius: 20px; position: relative;">
+                <input name="label__icontains" type="text"
+                       class="form-control search-input rounded-start-pill"
+                       placeholder="Найти тест"
+                       style="border-right: none; border-color: rgb(0,0,0)">
+                <button class="btn btn-outline-secondary rounded-end-circle"
+                        style="border-left: none; border-color: rgb(0,0,0)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-search"
+                         viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div class="spinner-border text-primary me-5 d-none pt-2"
+                     id="loading-spinner" role="status" style="width: 1.5rem; height: 1.5rem;">
+                    <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <!-- Превью результатов поиска -->
+        <div id="search-results" class="pt-2"></div>
+
+        {% if objects is not None %}
+            <div class="row text-center justify-content-between">
+                {% if objects|length > 0 %}
+                    <h1 class="p-1">Найденные тесты</h1>
+                    {% include 'grid_tests_cards.html' with tests=objects %}
+                {% else %}
+                    <h1 class="p-1">Ничего не найдено</h1>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="pb-3 pt-3">
+                {% include  "popular_tests_component.html" with popular_tests=popular_tests %}
+            </div>
+            <div class="pb-3">
+                {% include  "favorite_tests_component.html" with popular_tests=popular_tests %}
+            </div>
+        {% endif %}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.querySelector(".search-input");
+            const resultsContainer = document.querySelector("#search-results");
+            const loadingSpinner = document.querySelector("#loading-spinner");
+
+            // Функция дебаунсинга
+            function debounce(func, delay) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            // Основная логика поиска
+            function performSearch() {
+                const query = searchInput.value.trim();
+
+                // Очистка результатов при пустом запросе
+                if (!query) {
+                    resultsContainer.innerHTML = "";
+                    loadingSpinner.classList.add("d-none");
+                    return;
+                }
+
+                // Показать индикатор загрузки
+                loadingSpinner.classList.remove("d-none");
+
+                // Отправить запрос
+                fetch(`find_preview/?label__icontains=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.text(); // Получаем HTML как текст
+                })
+                .then(html => {
+                    loadingSpinner.classList.add("d-none");
+                    resultsContainer.innerHTML = html; // Вставляем готовую разметку
+                })
+                .catch(() => {
+                    loadingSpinner.classList.add("d-none");
+                    resultsContainer.innerHTML = `
+                        <div class="text-center text-danger">
+                            <p>Произошла ошибка. Попробуйте снова.</p>
+                        </div>`;
+                });
+            }
+
+            // Обёртка performSearch с дебаунсингом
+            const debouncedSearch = debounce(performSearch, 500);
+
+            // Обработчик события ввода
+            searchInput.addEventListener("input", debouncedSearch);
+        });
+    </script>
+
+{% endblock %}

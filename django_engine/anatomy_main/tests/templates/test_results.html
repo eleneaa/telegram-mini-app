@@ -1,5 +1,4 @@
-<!-- test_results.html -->
-{% extends "index.html" %}
+{% include 'index.html' with active='tests' %}
 {% block content %}
     <h1>Результаты теста: {{ test.label }}</h1>
     <p>Вы ответили правильно на {{ score }} из {{ total_questions }} вопросов.</p>

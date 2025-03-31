@@ -7,10 +7,11 @@ from users.models import AtlasUserRel
 
 class Atlas(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Название файла')
+    label = models.CharField(max_length=200, verbose_name='Название файла')
     atlas_file = models.ImageField(verbose_name='Файл атласа', upload_to='atlases_storage')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='atlases', blank=True)
+    description = models.CharField(verbose_name="Текст атласа", max_length=1000, default='')
 
     class Meta:
         verbose_name = 'Атлас'
@@ -24,7 +25,7 @@ class Atlas(models.Model):
         return []
 
     def get_absolute_url(self):
-        return reverse("atlas:open_atlas", kwargs={"atlas_id": self.id})
+        return reverse("atlases:open_atlas", kwargs={"atlas_id": self.id})
 
     @classmethod
     def get_favorite_atlases(cls, user):
@@ -36,15 +37,15 @@ class Atlas(models.Model):
     def get_popular(cls, count: int):
         res = cls.objects.raw(
             """
-            SELECT atlas.*
-            FROM atlas
+            SELECT atlases_atlas.*
+            FROM atlases_atlas
             LEFT JOIN (
-                SELECT catalog_user.atlas_id,
-                       COUNT(catalog_user.atlas_id) AS fav_count
-                FROM catalog_user
-                WHERE catalog_user.is_favorite
-                GROUP BY catalog_user.atlas_id
-            ) AS F ON F.atlas_id = atlas.id
+                SELECT atlas_user.atlas_id,
+                       COUNT(atlas_user.atlas_id) AS fav_count
+                FROM atlas_user
+                WHERE atlas_user.is_favorite
+                GROUP BY atlas_user.atlas_id
+            ) AS F ON F.atlas_id = atlases_atlas.id
             ORDER BY F.fav_count DESC
             """
         )
@@ -52,3 +53,19 @@ class Atlas(models.Model):
 
     def __str__(self):
         return self.label
+
+    def get_tests_by_categories(self):
+        tests = set()
+        for catalog in self.catalogs.all():
+            if catalog.tests_ids():
+                tests.update(catalog.tests_ids())
+
+        return tests
+
+    def get_articles_by_categories(self):
+        articles = set()
+        for catalog in self.catalogs.all():
+            if catalog.articles_ids():
+                articles.update(catalog.tests_ids())
+
+        return articles

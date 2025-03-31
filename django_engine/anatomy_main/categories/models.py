@@ -9,7 +9,7 @@ from users.models import CatalogUserRel
 class Catalog(models.Model):
     is_main = models.BooleanField(verbose_name="Является главным каталогом?")
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    name = models.CharField(max_length=100, verbose_name="Название каталога")
+    name = models.CharField(max_length=200, verbose_name="Название каталога")
     child = models.ManyToManyField('self',
                                    blank=True,
                                    symmetrical=False,

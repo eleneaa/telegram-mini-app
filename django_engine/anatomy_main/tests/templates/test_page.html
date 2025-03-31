@@ -1,14 +1,18 @@
-{% extends 'index.html' %}
+{% include 'index.html' with active='tests' %}
 {% load static %}
 {% block content %}
-    <div class="container pt-3">
+    <div class="container p-4 pt-3">
         <div class="card card-bg">
             <div class="card-body p-4">
                 <div class="row d-flex">
                     <div class="col-12" style='text-align: center'>
                         <div class="row row-cols-auto d-flex justify-content-center align-items-center">
-                            <div class="col-auto p-0"><h1 class="w-100 p-0 m-0">{{ test.label }} {% include 'add_test_to_favorite.html' %}</h1></div>
-{#                            <div class="col p-0"><div class="container p-0 d-flex justify-content-start pt-auto">{% include 'add_test_to_favorite.html' with is_favorite=is_favorite %}</div></div>#}
+                            <div class="col-auto p-0">
+                                <a class="icon-link" style="text-decoration: none; color: black">
+                                    {% include 'add_test_to_favorite.html' %}
+                                    {{ test.label }}
+                                </a>
+                            </div>
                         </div>
                         <h4> Кол-во вопросов: {{ test.questions_ids|length }}</h4>
                         {% if test.catalog_ids %}
@@ -28,8 +32,4 @@
             </div>
         </div>
     </div>
-{#    <ul>Принадлежит каталогам:</ul>#}
-{#    {% for catalog in test.catalog_ids %}#}
-{#        <li>{{ catalog }}</li>#}
-{#    {% endfor %}#}
 {% endblock %}

@@ -1,0 +1,10 @@
+{% load static %}
+{% block find_preview_article %}
+    <div class="mb-3 text-center">
+        {% if objects|length > 0 %}
+            {% include "scrollable_articles_cards.html" with articles=objects %}
+        {% else %}
+            <p>Ничего не найдено</p>
+        {% endif %}
+    </div>
+{% endblock %}

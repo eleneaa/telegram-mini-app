@@ -1,8 +1,9 @@
 # Create your views here.
 # views.py
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
@@ -32,7 +33,7 @@ def start_test(request, test_id):
             'variants': [
                 {
                     'id': v.id,
-                    'name': v.name
+                    'text': v.name
                 } for v in q.variants.all()
             ]
         }
@@ -90,9 +91,10 @@ def question_detail(request, test_id, question_id):
                       'test': test,
                       'question': question,
                       'variants': question['variants'],
-                      "is_favorite": is_favorite,
+                      'is_favorite': is_favorite,
                       "question_type": question['question_type'],
-                      'question_index': question_id
+                      'question_index': question_id + 1,
+                      'all_questions_count': len(request.session["questions"]),
                   })
 
 
@@ -102,10 +104,10 @@ def test_results(request, test_id):
 
     test = get_object_or_404(Test, id=test_id)
     # Сохраняем запись, что тест завершен
-    if test.id not in request.user.completed_tests_ids():
-        entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
-        entity.is_completed = True
-        entity.save()
+    entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
+    entity.is_completed = True
+    entity.last_try = timezone.now()
+    entity.save()
     answers = request.session.get('answers', {})
     total_questions = len(answers)
     score = 0
@@ -165,6 +167,23 @@ def open_test(request, test_id):
                                                       'note': note})
 
 
+def main_page(request):
+    popular_tests = Test.get_popular(10)
+    favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
+    favorite_tests = Test.objects.filter(id__in=favorite_tests)
+    print(favorite_tests)
+    return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
+                                                           "favorite_tests": favorite_tests})
+
+
+def list_favorite_tests(request):
+    return render(request, 'list_tests_page.html', context={"tests": Test.get_favorite_tests(request.user)})
+
+
+def list_popular_tests(request):
+    return render(request, 'list_tests_page.html', context={"tests": Test.get_popular()})
+
+
 class TestsView(ListView):
     model = Test
     paginate_by = 8
@@ -174,3 +193,13 @@ class TestsView(ListView):
 
     def get_queryset(self):
         return Test.objects.all()
+
+
+def retry_last_test(request: HttpRequest):
+    user_tests = TestUserRel.objects.filter(user=request.user)
+
+    if len(user_tests) == 0:
+        return redirect("tests:main")
+
+    last_test = user_tests.latest('last_try')
+    return redirect("tests:open_test", test_id=last_test.test_id)

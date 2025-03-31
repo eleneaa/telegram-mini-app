@@ -1,0 +1,31 @@
+{% include 'index.html' with user=user %}
+{% load static %}
+{% block content %}
+    <div class="container p-4 pt-3">
+{#        <div class="pb-3">#}
+{#            {% include 'user_info.html' with user=user %}#}
+{#        </div>#}
+        <div class="text-center pb-3">
+            <a href="{% url 'favorites' %}"><button class="btn btn-primary col-12 shadow rounded-4">❤ Посмотреть избранное</button></a>
+        </div>
+        <div class="pb-3">
+            <div class="mb-3">
+                <h1 class="mb-2">Популярные атласы</h1>
+                {% include "scrollable_atlases_cards.html" with atlases=popular_atlases %}
+                <a href="{% url "atlases:popular_atlases" %}"><button class="btn btn-primary btn-sm mt-2 rounded-pill shadow"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
+            </div>
+        </div>
+        <div class="pb-3">
+            <div class="mb-3">
+                <h1 class="mb-2">Популярные тесты</h1>
+                {% include "scrollable_tests_cards.html" with tests=popular_tests %}
+                <a href="{% url 'tests:list_popular_tests' %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h1 class="mb-2">Популярные статьи</h1>
+            {% include "scrollable_articles_cards.html" with articles=popular_articles %}
+            <a href="{% url "articles:popular_articles" %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
+        </div>
+    </div>
+{% endblock %}

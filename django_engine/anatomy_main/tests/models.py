@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+from users.models import TestUserRel
 
 # Create your models here.
 class QuestionType(models.TextChoices):
@@ -28,7 +28,7 @@ class QuestionVariantRel(models.Model):
 
 class Variant(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
 
     class Meta:
         verbose_name = 'Вариант ответа'
@@ -40,12 +40,12 @@ class Variant(models.Model):
 
 class Question(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Описание вопроса')
+    label = models.CharField(max_length=200, verbose_name='Описание вопроса')
     variants = models.ManyToManyField("Variant", verbose_name="Список правильных ответов", symmetrical=False,
                                       related_name='correct_variants',
                                       through='QuestionVariantRel')
     question_type = models.CharField(choices=QuestionType.choices, verbose_name="Тип вопроса",
-                                     default=QuestionType.multipy_choice, max_length=50)
+                                     default=QuestionType.multipy_choice, max_length=200)
 
     def answers_ids(self):
         if self.variants.all():
@@ -67,11 +67,11 @@ class Question(models.Model):
 
 class Test(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=50, verbose_name='Название теста')
+    label = models.CharField(max_length=200, verbose_name='Название теста')
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='tests', blank=True)
-
+    test_photo = models.ImageField(verbose_name='Фотография теста', upload_to='tests_storage', blank=True)
     def questions_ids(self):
         if self.questions_list.all():
             childs_array = [questions for questions in self.questions_list.all()]
@@ -86,6 +86,43 @@ class Test(models.Model):
 
     def get_absolute_url(self):
         return reverse("tests:open_test", kwargs={"test_id": self.id})
+
+    @classmethod
+    def get_favorite_tests(cls, user):
+        return cls.objects.filter(
+            id__in=TestUserRel.objects.filter(user=user, is_favorite=True).values('test_id')
+        )
+
+    @classmethod
+    def get_completed_tests(cls, user,
+                            count: int = None):
+        res = cls.objects.filter(
+            id__in=TestUserRel.objects.filter(user=user, is_completed=True).values('test_id')
+        )
+        if count:
+            return res[:count]
+        else:
+            return res
+
+    @classmethod
+    def get_popular(cls,
+                    count: int = None):
+        res = cls.objects.raw(
+            """
+            select tests_test.*
+            from tests_test
+            left join (select tests_user.test_id,
+                         count(tests_user.test_id) as fav_count
+                  from tests_user
+                  where tests_user.is_favorite
+                  group by tests_user.test_id) as F on F.test_id = tests_test.id
+            order by F.fav_count DESC 
+            """
+        )
+        if count:
+            return res[:count]
+        else:
+            return res
 
     class Meta:
         verbose_name = 'Тест'
