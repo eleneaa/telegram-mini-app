@@ -1,0 +1,19 @@
+{% load static %}
+{% block content %}
+    <div class="scrollable-container" id="container">
+            {% for atlas in atlases %}
+                <a href="{{ atlas.get_absolute_url }}" style="text-decoration: none">
+                    <div class="card little-card draggable border-0 rounded-4">
+                        <img src="{% static atlas.atlas_file %}" class="card-img-top rounded-top-4" alt="...">
+                        <div class="card-body p-0">
+                            <div class="row d-flex justify-content-center text-center">
+                                <div class="col-12 p-3">
+                                    <span class="card-title">{{ atlas|truncatechars:20 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+    </div>
+{% endblock %}

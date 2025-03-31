@@ -16,16 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import main, init_page, test
+from .views import main, init_page, notes, delete_note, favorites
 
 urlpatterns = [
     path('', init_page),
-    # path('', include('users.urls')),
     path('home/', main, name='main'),
     path('admin/', admin.site.urls),
     path("tests/", include('tests.urls')),
     path("categories/", include('categories.urls')),
     path("articles/", include('articles.urls')),
     path('atlases/', include('atlases.urls')),
-    path("user/", include('users.urls'))
+    path("user/", include('users.urls')),
+    path("notes/", notes, name='notes'),
+    path('notes/delete_note/<str:object_id>', delete_note, name="delete_note"),
+    path('favorites/', favorites, name='favorites')
 ]

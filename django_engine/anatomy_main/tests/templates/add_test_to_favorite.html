@@ -1,6 +1,7 @@
+{% load static %}
 <label>
     <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ test.id }}">
-        {% if is_favorite %}❤{% else %}🤍{% endif %}
+        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="18px" height="18px">{% endif %}
     </button>
 </label>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -13,6 +14,7 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $('.favorite-button ').click(function() {
             var button = $(this);
             var testId = button.data('item-id');
+            var oldIcon = document.getElementById('test')
             $.ajax({
                 url: '/tests/toggle_favorite_test/' + testId + '/',
                 type: 'POST',
@@ -21,9 +23,21 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 },
                 success: function(response) {
                     if (response.action === 'added') {
-                        button.text('❤')
+                        var newIcon = document.createElement('img')
+                        newIcon.setAttribute('width', '18px')
+                        newIcon.setAttribute('height', '18px')
+                        newIcon.setAttribute('id', 'test')
+                        newIcon.setAttribute('src', "{% static 'icons/star_black.svg' %}")
+                        oldIcon.parentNode.replaceChild(newIcon, oldIcon)
+                        console.log(response.action)
                     } else {
-                        button.text('🤍')
+                        var newIcon = document.createElement('img')
+                        newIcon.setAttribute('width', '18px')
+                        newIcon.setAttribute('height', '18px')
+                        newIcon.setAttribute('id', 'test')
+                        newIcon.setAttribute('src', "{% static 'icons/star.svg' %}")
+                        oldIcon.replaceWith(newIcon)
+                        console.log(response.action)
                     }
                 },
                 error: function(xhr, status, error) {
