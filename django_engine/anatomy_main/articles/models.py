@@ -12,10 +12,20 @@ from users.models import ArticleUserRel
 class Article(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     label = models.CharField(max_length=200, verbose_name='Название файла')
-    article_file = models.FileField(verbose_name='Файл статьи', upload_to='articles_storage')
+    article_file = models.FileField(verbose_name='Файл статьи',
+                                    upload_to='articles_storage',
+                                    null=True,
+                                    blank=True)
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='articles', blank=True)
-    article_photo = models.ImageField(verbose_name='Фотография статьи', upload_to='articles_storage', blank=True)
+    article_photo = models.ImageField(verbose_name='Фотография статьи',
+                                      upload_to='articles_storage',
+                                      blank=True)
+    pdf_file = models.FileField(verbose_name='PDF-файл статьи',
+                                upload_to='articles_storage',
+                                null=True,
+                                default=None,
+                                blank=True)
 
     def catalog_ids(self):
         if self.catalogs.all():

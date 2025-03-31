@@ -28,7 +28,9 @@ def main(request: HttpRequest):
 def open_article(request: HttpRequest,
                  article_id: str):
     article = get_object_or_404(Article, id=article_id)
-    file: FileField = article.article_file
+    file = article.article_file
+    pdf_file = article.pdf_file
+
     article_user_rel: ArticleUserRel = ArticleUserRel.objects.get_or_create(user=request.user,
                                                                             article_id=article_id)[0]
 
@@ -39,15 +41,18 @@ def open_article(request: HttpRequest,
     else:
         note = rel_field.note
 
-    article_content_path = os.path.join(MEDIA_ROOT, str(file))
+    article_content_path = os.path.join(MEDIA_ROOT, str(file)) if file else None
     return render(request,
                   'article.html',
                   {
+                      "pdf": pdf_file.url if pdf_file else None,
                       "article": article,
                       "is_favorite": article_user_rel.is_favorite,
                       'tests': article.get_tests_by_categories(),
                       'articles': article.get_articles_by_categories(),
-                      'article_content_path': article_content_path if os.path.exists(article_content_path) else None,
+                      'article_content_path': (article_content_path
+                                               if article_content_path and os.path.exists(article_content_path)
+                                               else None),
                       "note": note
                   })
 
