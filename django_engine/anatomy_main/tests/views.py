@@ -111,24 +111,54 @@ def test_results(request, test_id):
     answers = request.session.get('answers', {})
     total_questions = len(answers)
     score = 0
+    user_results = []
     for key, answer in answers.items():
         question_obj = Question.objects.get(id=key)
         user_answers = answer.get("answers")
         question_type = answer.get("question_type")
         if question_type == QuestionType.input_type:
             user_answers = user_answers[0].lower()
-            correct_answers = list(map(lambda x: x.variant.name.lower(), question_obj.correct_answers()))
+            correct_answers = list(map(lambda x: x.variant.name.lower(),
+                                       question_obj.correct_answers()))
+            ans_data = {
+                "qid": key,
+                "question": question_obj.label,
+                "user_answers": user_answers,
+                "correct_answers": correct_answers,
+                "is_correct": False
+            }
+            user_results.append(ans_data)
             if user_answers in correct_answers:
                 score += 1
+                ans_data['is_correct'] = True
         else:
             correct_ids = list(map(lambda x: x.variant_id, question_obj.correct_answers()))
+            ans_data = {"qid": key,
+                        "question": question_obj.label,
+                        "user_answers": user_answers,
+                        "correct_answers": correct_ids,
+                        "is_correct": False}
+
+            user_results.append(ans_data)
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
                 score += 1
+                ans_data['is_correct'] = True
+
+    questions_order = {q["id"]: i for i, q in enumerate(request.session['questions'])}
+    user_results.sort(key=lambda x: questions_order[x["qid"]])
+
     del request.session['questions']
     del request.session['answers']
     del request.session['question_user_rels']
     del request.session['test']
-    return render(request, 'test_results.html', {'test': test, 'score': score, 'total_questions': total_questions})
+    return render(request,
+                  'test_results.html',
+                  {
+                      'test': test,
+                      'score': score,
+                      'total_questions': total_questions,
+                      "user_results": user_results
+                  })
 
 
 @require_POST

@@ -2,4 +2,13 @@
 {% block content %}
     <h1>Результаты теста: {{ test.label }}</h1>
     <p>Вы ответили правильно на {{ score }} из {{ total_questions }} вопросов.</p>
+    {% for ans in user_results %}
+        <p> Вопрос{{ ans.question }}</p>
+        <br>
+        <p>Ваш ответ: {{ ans.user_answers }}</p>
+        <p>Правильные ответы: {{ ans.correct_answers }}</p>
+    {% empty %}
+
+    {% endfor %}
+
 {% endblock %}
