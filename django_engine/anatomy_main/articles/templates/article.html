@@ -23,9 +23,36 @@
                 {% include article_content_path %}
             {% elif pdf %}
                 <div>
-                    <embed style="height: 100vh" src="{% static pdf %}" type="application/pdf" width="100%" height="100%"
+                    <canvas id="pdf-canvas"></canvas>
+                    <embed style="height: 100vh" src="{% static pdf %}" type="application/pdf" width="100%"
+                           height="100%"
                            onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
                 </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const pdfUrl = "{% static 'docs/sample.pdf' %}";  // Путь к PDF в Django static
+
+                        pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                            return pdf.getPage(1);  // Загружаем первую страницу
+                        }).then(page => {
+                            const scale = 1.5;
+                            const viewport = page.getViewport({scale});
+
+                            const canvas = document.getElementById('pdf-canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.width = viewport.width;
+                            canvas.height = viewport.height;
+
+                            const renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            return page.render(renderContext).promise;
+                        }).catch(error => {
+                            console.error("Ошибка загрузки PDF:", error);
+                        });
+                    });
+                </script>
             {% else %}
                 <span>Текст недоступен</span>
             {% endif %}
