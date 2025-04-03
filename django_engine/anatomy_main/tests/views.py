@@ -145,7 +145,11 @@ def test_results(request, test_id):
                 ans_data['is_correct'] = True
 
     questions_order = {q["id"]: i for i, q in enumerate(request.session['questions'])}
+    questions_data = {q["id"]: q for q in request.session['questions']}
     user_results.sort(key=lambda x: questions_order[x["qid"]])
+    for i, val in enumerate(user_results):
+        val["question_number"] = i + 1
+        val['question_data'] = questions_data[val['qid']]
 
     del request.session['questions']
     del request.session['answers']
