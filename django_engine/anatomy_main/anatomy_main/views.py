@@ -129,6 +129,39 @@ def save_or_update_user(parsed_data):
     return None
 
 
+def build_url_from_start_param(start_param):
+    try:
+        if '_' in start_param:
+            resource_type, resource_id = start_param.split('_', 1)
+            if resource_type == 'article':
+                return reverse('open_article', args=[resource_id])
+            elif resource_type == 'test':
+                return reverse('tests:open_test', args=[resource_id])
+            elif resource_type == 'atlas':
+                return reverse('atlases:open_atlas', args=[resource_id])
+            elif resource_type == 'category':
+                return reverse('categories:open_catalog', args=[resource_id])
+            elif resource_type == 'note':
+                return reverse('delete_note', args=[resource_id])
+        else:
+            if start_param == 'profile':
+                return reverse('users:profile')
+            elif start_param == 'favorites':
+                return reverse('favorites')
+            elif start_param == 'notes':
+                return reverse('notes')
+            elif start_param == 'popular_tests':
+                return reverse('tests:list_popular_tests')
+            elif start_param == 'popular_articles':
+                return reverse('popular_articles')
+            elif start_param == 'popular_atlases':
+                return reverse('atlases:popular_atlases')
+        return None
+    except Exception as e:
+        print(f"Error building URL from start_param: {e}")
+        return None
+
+
 # Основная view для обработки данных
 def main(request):
     # Получаем данные пользователя из GET-запроса
@@ -154,9 +187,15 @@ def main(request):
 
             # Сохраняем или обновляем пользователя
             user = save_or_update_user(parsed_data)
+            start_params = parsed_data.get('start_param', None)
 
             if user:
                 login(user=user, request=request)
+                if start_params:
+                    redirect_url = build_url_from_start_param(start_params)
+                    if redirect_url:
+                        return redirect(redirect_url)
+
                 return render(request, 'main.html', context={'user': request.user,
                                                              'popular_tests': popular_tests,
                                                              'popular_atlases': popular_atlases,
