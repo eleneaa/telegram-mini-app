@@ -2,6 +2,7 @@
 {% block content %}
     <h1>Результаты теста: {{ test.label }}</h1>
     <p>Вы ответили правильно на {{ score }} из {{ total_questions }} вопросов.</p>
+
     {% for ans in user_results %}
         <div class="col-md-6 mb-4">
             <div class="card"
@@ -11,29 +12,30 @@
                 <div class="card-body"
                      style="background-color: {% if ans.is_correct %} #BCD0D1 {% else %} #FF747685 {% endif %};">
                     <p class="card-title"><strong>{{ ans.question }}</strong></p>
+
                     <hr>
                     <p class="mt-2">Ваш ответ: <strong
                             class="{% if ans.is_correct %}text-success{% else %}text-danger{% endif %}">
                         {{ ans.user_answers }}</strong></p>
-                {% if not ans.is_correct %}
-                    <ul>
-                        {% for option in ans.question_data.variants %}
-                            <li class="list-group-item"
-                                style="border-radius: 10px; color: {% if option.text in ans.correct_answers %} #388e3c {% else %} #d32f2f {% endif %};">
-                                <button type="button" class="btn btn-link"
-                                        style="background-color: transparent; border: none; color: black; text-decoration: none;"
-                                        onclick="toggleAnswerVisibility(this)">
-                                    {% if option.text in ans.correct_answers %}🏁 Правильный ответ {% else %} Вариант
-                                        {{ loop.index }} {% endif %}
-                                </button>
-                                <div class="correct-answer"
-                                     style="display: none; padding-top: 10px; color: #388e3c; font-weight: bold; padding-left: 20px;">
-                                    {{ option.text }}
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                    {% if not ans.is_correct %}
+                        <ul>
+                            {% for option in ans.correct_answers %}
+                                <li class="list-group-item"
+                                    style="border-radius: 10px; color: {% if option.text in ans.correct_answers %} #388e3c {% else %} #d32f2f {% endif %};">
+                                    <div class="correct-answer-{{ ans.question_number }}"
+                                         style="display: none; color: black; padding-top: 10px; font-weight: bold; padding-left: 20px;">
+                                        {{ option }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn btn-link"
+                                style="background-color: transparent; border: none; color: black; text-decoration: none;"
+                                onclick="toggleAnswerVisibility({{ ans.question_number }})">
+                            🏁 Правильный ответ
+                        </button>
+
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -43,12 +45,14 @@
 
     {% endfor %}
     <script>
-        function toggleAnswerVisibility(button) {
-            const answerDiv = button.nextElementSibling;
-            if (answerDiv.style.display === 'none') {
-                answerDiv.style.display = 'block'; // Показать правильный ответ
-            } else {
-                answerDiv.style.display = 'none'; // Скрыть правильный ответ
+        function toggleAnswerVisibility(aa) {
+            const answersDiv = document.getElementsByClassName(`correct-answer-${aa}`);
+            for (const answerDiv of answersDiv) {
+                if (answerDiv.style.display === 'none') {
+                    answerDiv.style.display = 'block'; // Показать правильный ответ
+                } else {
+                    answerDiv.style.display = 'none'; // Скрыть правильный ответ
+                }
             }
         }
     </script>

@@ -133,17 +133,20 @@ def test_results(request, test_id):
                 ans_data['is_correct'] = True
         else:
             correct_ids = list(map(lambda x: x.variant_id, question_obj.correct_answers()))
+            user_variants = ", ".join(
+                map(lambda x: x.name, filter(lambda x: x.id in user_answers, question_obj.answers_ids())))
+            correct_variants = list(
+                map(lambda x: x.name, filter(lambda x: x.id in correct_ids, question_obj.answers_ids())))
             ans_data = {"qid": key,
                         "question": question_obj.label,
-                        "user_answers": user_answers,
-                        "correct_answers": correct_ids,
+                        "user_answers": user_variants,
+                        "correct_answers": correct_variants,
                         "is_correct": False}
 
             user_results.append(ans_data)
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
                 score += 1
                 ans_data['is_correct'] = True
-
     questions_order = {q["id"]: i for i, q in enumerate(request.session['questions'])}
     questions_data = {q["id"]: q for q in request.session['questions']}
     user_results.sort(key=lambda x: questions_order[x["qid"]])
