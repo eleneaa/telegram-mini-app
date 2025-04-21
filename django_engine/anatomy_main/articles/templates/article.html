@@ -1,6 +1,7 @@
 {% include 'index.html' with active='articles' %}
 {% load static %}
 {% block content %}
+
     <div class="container p-0 m-0">
         <div class="container p-3 text-center">
             <a class="icon-link" style="text-decoration: none; color: black">
@@ -22,37 +23,9 @@
             {% if article_content_path and not pdf %}
                 {% include article_content_path %}
             {% elif pdf %}
-                <div>
-                    <canvas id="pdf-canvas"></canvas>
-                    <embed style="height: 100vh" src="{% static pdf %}" type="application/pdf" width="100%"
-                           height="100%"
-                           onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
-                </div>
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const pdfUrl = "{% static 'docs/sample.pdf' %}";  // Путь к PDF в Django static
-
-                        pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
-                            return pdf.getPage(1);  // Загружаем первую страницу
-                        }).then(page => {
-                            const scale = 1.5;
-                            const viewport = page.getViewport({scale});
-
-                            const canvas = document.getElementById('pdf-canvas');
-                            const context = canvas.getContext('2d');
-                            canvas.width = viewport.width;
-                            canvas.height = viewport.height;
-
-                            const renderContext = {
-                                canvasContext: context,
-                                viewport: viewport
-                            };
-                            return page.render(renderContext).promise;
-                        }).catch(error => {
-                            console.error("Ошибка загрузки PDF:", error);
-                        });
-                    });
-                </script>
+                <pinch-zoom id="pdf-zoom" style="display:block; width: 100%; height: 400px;">
+                    <canvas id="pdf-viewer" style="width: 100%; max-width: 100%;"></canvas>
+                </pinch-zoom>
             {% else %}
                 <span>Текст недоступен</span>
             {% endif %}
@@ -68,6 +41,54 @@
         {% include 'scrollable_articles_cards.html' with articles=articles %}
     </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        const url = '{% static pdf %}';
+
+        const loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(pdf => {
+            pdf.getPage(1).then(page => {
+
+                const viewport = page.getViewport({scale: 1});
+                const canvas = document.getElementById('pdf-viewer');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                page.render(renderContext);
+                container.appendChild(canvas);
+                const zoom_pdf = document.getElementById("pdf-zoom");
+                zoom_pdf.addEventListener(
+                    'pointerup', () => {
+                        const containerWidth = container.clientWidth;
+
+                        // Получаем оригинальные размеры страницы
+                        const unscaledViewport = page.getViewport({scale: 1});
+
+                        // Вычисляем нужный масштаб, чтобы влезло в контейнер
+                        const scale = containerWidth / unscaledViewport.width;
+
+                        const viewport = page.getViewport({scale: 1});
+
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+
+                        page.render(renderContext);
+                    }
+                )
+            });
+        });
+    </script>
+    <script src="https://unpkg.com/@google/pinch-zoom"></script>
 {% endblock %}
 
 
