@@ -1,34 +1,69 @@
 {% include 'index.html' with active='atlases' %}
 {% load static %}
+
+
+<style>
+    .hotspot {
+        position: absolute;
+        height: 20px;
+        width: 20px; !important;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid black;
+        border-radius: 50%;
+    }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+    }
+</style>
 {% block content %}
     <div class="container p-0 m-0">
-            <div class="container p-3 text-center">
-                <a class="icon-link" style="text-decoration: none; color: black">
-                    {% include "add_atlas_to_favorite.html" %}
-                    <b>{{ atlas.label }}</b>
-                </a>
-            </div>
-        </div>
-        <div class="p-0 m-0" style="max-height: 40vh">
-            <img class='border-top border-dark border-bottom border-2 p-0 m-0' src="{% static atlas.atlas_file %}" style="width: 100%; height: 100%; max-height: 40vh; min-height: 40vh">
-        </div>
-        <div class="container p-4">
-            <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
-                {% if atlas.description %}<span>{{ atlas.description }}</span>
-                {% else %}<span>Описание отсутствует</span>
-                {% endif %}
-            </div>
-            <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
-            <div class="container justify-content-center text-center p-2">
-                {% include "add_note_to_atlas.html" with atlas=atlas %}
-            </div>
-            <h5 class="mt-2 mb-2">Статьи и тесты по этой же теме</h5>
-            <div class="mb-3">
-                {% include 'scrollable_tests_cards.html' with tests=tests %}
-            </div>
-            {% include 'scrollable_articles_cards.html' with articles=articles %}
+        <div class="container p-3 text-center">
+            <a class="icon-link" style="text-decoration: none; color: black">
+                {% include "add_atlas_to_favorite.html" %}
+                <b>{{ atlas.label }}</b>
+            </a>
         </div>
     </div>
+    <div class="image-container p-0 m-0" style="max-height: 40vh">
+        <img class='border-top border-dark border-bottom border-2 p-0 m-0' src="{% static atlas.atlas_file %}"
+             style="width: 100%; height: 100%; max-height: 40vh; min-height: 40vh">
+        {% for id_, value in atlas.tooltips.items %}
+            <div type="button" class="hotspot" data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-title="{{ value.value }}" style="top: {{ value.top }}%; left: {{ value.left }}%"
+                    id="{{ id_ }}">
+            </div>
+        {% endfor %}
+    </div>
+    <div class="container p-4">
+        <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
+            {% if atlas.description %}<span>{{ atlas.description }}</span>
+            {% else %}<span>Описание отсутствует</span>
+            {% endif %}
+        </div>
+        <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
+        <div class="container justify-content-center text-center p-2">
+            {% include "add_note_to_atlas.html" with atlas=atlas %}
+        </div>
+        <h5 class="mt-2 mb-2">Статьи и тесты по этой же теме</h5>
+        <div class="mb-3">
+            {% include 'scrollable_tests_cards.html' with tests=tests %}
+        </div>
+        {% include 'scrollable_articles_cards.html' with articles=articles %}
+    </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            // Инициализируем tooltips
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
 {% endblock %}
 
 

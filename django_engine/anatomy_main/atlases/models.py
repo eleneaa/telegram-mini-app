@@ -12,6 +12,7 @@ class Atlas(models.Model):
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='atlases', blank=True)
     description = models.CharField(verbose_name="Текст атласа", max_length=1000, default='')
+    tooltips = models.JSONField(verbose_name='Координаты подсказок', default=dict)
 
     class Meta:
         verbose_name = 'Атлас'
