@@ -4,7 +4,7 @@
             {% for atlas in atlases %}
                 <div class="col-6 text-start d-flex justify-content-start text-center">
                     <a href="{{ atlas.get_absolute_url }}" style="text-decoration: none;">
-                        <div class="card draggable-lg border-0 shadow rounded-4">
+                        <div class="card draggable-lg border-0 rounded-4">
                             <img src="{% static atlas.atlas_file %}" class="card-img-top rounded-top-4" alt="...">
                             <div class="card-body text-truncate">
                                 <span>{{ atlas }}</span>

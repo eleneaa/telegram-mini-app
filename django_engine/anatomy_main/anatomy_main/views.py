@@ -19,6 +19,7 @@ from users.models import *
 import uuid
 
 # Дада снова токен в коде
+# )))))))))))))
 bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
 imgur_client_id = os.getenv('IMGUR_CLIENT_ID', '3dd1847a2c4f6e0')
 

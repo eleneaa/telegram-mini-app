@@ -4,8 +4,10 @@ from django.db import models
 from django.urls import reverse
 from users.models import AtlasUserRel
 
+from anatomy_main.models import BaseModel
 
-class Atlas(models.Model):
+
+class Atlas(BaseModel):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     label = models.CharField(max_length=200, verbose_name='Название файла')
     atlas_file = models.ImageField(verbose_name='Файл атласа', upload_to='atlases_storage')
@@ -54,19 +56,3 @@ class Atlas(models.Model):
 
     def __str__(self):
         return self.label
-
-    def get_tests_by_categories(self):
-        tests = set()
-        for catalog in self.catalogs.all():
-            if catalog.tests_ids():
-                tests.update(catalog.tests_ids())
-
-        return tests
-
-    def get_articles_by_categories(self):
-        articles = set()
-        for catalog in self.catalogs.all():
-            if catalog.articles_ids():
-                articles.update(catalog.tests_ids())
-
-        return articles

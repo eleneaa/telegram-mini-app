@@ -1,14 +1,14 @@
 # Create your views here.
 # views.py
+from anatomy_main import utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
-
-from anatomy_main import utils
 from users.models import QuestionUserRel, TestUserRel
+
 from .models import Test, Question, QuestionType
 
 
@@ -201,14 +201,25 @@ def open_test(request, test_id):
         note = rel_field.note
     return render(request, 'test_page.html', context={'test': test,
                                                       'is_favorite': is_favorite,
+                                                      'atlases': test.get_atlases_by_categories(),
+                                                      'articles': test.get_articles_by_categories(),
                                                       'note': note})
+
+
+def open_atlases_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_atlases_page.html", context={"atlases": test.get_atlases_by_categories()})
+
+
+def open_articles_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_articles_page.html", context={"articles": test.get_articles_by_categories()})
 
 
 def main_page(request):
     popular_tests = Test.get_popular(10)
     favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
     favorite_tests = Test.objects.filter(id__in=favorite_tests)
-    print(favorite_tests)
     return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
                                                            "favorite_tests": favorite_tests})
 
