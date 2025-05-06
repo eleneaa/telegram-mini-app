@@ -1,14 +1,14 @@
 # Create your views here.
 # views.py
+from anatomy_main import utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
-
-from anatomy_main import utils
 from users.models import QuestionUserRel, TestUserRel
+
 from .models import Test, Question, QuestionType
 
 
@@ -111,24 +111,61 @@ def test_results(request, test_id):
     answers = request.session.get('answers', {})
     total_questions = len(answers)
     score = 0
+    user_results = []
     for key, answer in answers.items():
         question_obj = Question.objects.get(id=key)
         user_answers = answer.get("answers")
         question_type = answer.get("question_type")
         if question_type == QuestionType.input_type:
             user_answers = user_answers[0].lower()
-            correct_answers = list(map(lambda x: x.variant.name.lower(), question_obj.correct_answers()))
+            correct_answers = list(map(lambda x: x.variant.name.lower(),
+                                       question_obj.correct_answers()))
+            ans_data = {
+                "qid": key,
+                "question": question_obj.label,
+                "user_answers": user_answers,
+                "correct_answers": correct_answers,
+                "is_correct": False
+            }
+            user_results.append(ans_data)
             if user_answers in correct_answers:
                 score += 1
+                ans_data['is_correct'] = True
         else:
             correct_ids = list(map(lambda x: x.variant_id, question_obj.correct_answers()))
+            user_variants = ", ".join(
+                map(lambda x: x.name, filter(lambda x: x.id in user_answers, question_obj.answers_ids())))
+            correct_variants = list(
+                map(lambda x: x.name, filter(lambda x: x.id in correct_ids, question_obj.answers_ids())))
+            ans_data = {"qid": key,
+                        "question": question_obj.label,
+                        "user_answers": user_variants,
+                        "correct_answers": correct_variants,
+                        "is_correct": False}
+
+            user_results.append(ans_data)
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
                 score += 1
+                ans_data['is_correct'] = True
+    questions_order = {q["id"]: i for i, q in enumerate(request.session['questions'])}
+    questions_data = {q["id"]: q for q in request.session['questions']}
+    user_results.sort(key=lambda x: questions_order[x["qid"]])
+    for i, val in enumerate(user_results):
+        val["question_number"] = i + 1
+        val['question_data'] = questions_data[val['qid']]
+
     del request.session['questions']
     del request.session['answers']
     del request.session['question_user_rels']
     del request.session['test']
-    return render(request, 'test_results.html', {'test': test, 'score': score, 'total_questions': total_questions})
+    return render(request,
+                  'test_results.html',
+                  {
+                      'test': test,
+                      'score': score,
+                      'total_questions': total_questions,
+                      "user_results": user_results
+                  })
 
 
 @require_POST
@@ -164,14 +201,25 @@ def open_test(request, test_id):
         note = rel_field.note
     return render(request, 'test_page.html', context={'test': test,
                                                       'is_favorite': is_favorite,
+                                                      'atlases': test.get_atlases_by_categories(),
+                                                      'articles': test.get_articles_by_categories(),
                                                       'note': note})
+
+
+def open_atlases_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_atlases_page.html", context={"atlases": test.get_atlases_by_categories()})
+
+
+def open_articles_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_articles_page.html", context={"articles": test.get_articles_by_categories()})
 
 
 def main_page(request):
     popular_tests = Test.get_popular(10)
     favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
     favorite_tests = Test.objects.filter(id__in=favorite_tests)
-    print(favorite_tests)
     return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
                                                            "favorite_tests": favorite_tests})
 

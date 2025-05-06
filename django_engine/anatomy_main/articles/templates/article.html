@@ -1,36 +1,94 @@
 {% include 'index.html' with active='articles' %}
 {% load static %}
 {% block content %}
+
     <div class="container p-0 m-0">
-            <div class="container p-3 text-center">
-                <a class="icon-link" style="text-decoration: none; color: black">
-                    {% include "add_article_to_favorite.html" %}
-                    <b>{{ article.label }}</b>
-                </a>
-            </div>
-        </div>
-        <div class="p-0 m-0" style="max-height: 40vh">
-            <img class='border-top border-dark border-bottom border-2 p-0 m-0' src="{% static article.article_photo %}" style="width: 100%; height: 100%; max-height: 40vh; min-height: 40vh" onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
-        </div>
-        <div class="container p-4">
-            <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
-                {% if article_content_path %}
-                    {% include article_content_path %}
-                {% else %}
-                    <span>Текст недоступен</span>
-                {% endif %}
-            </div>
-            <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
-            <div class="container justify-content-center text-center p-2">
-                {% include "add_note_to_article.html" with article=article %}
-            </div>
-            <h5 class="mt-2 mb-2">Статьи и тесты по этой же теме</h5>
-            <div class="mb-3">
-                {% include 'scrollable_tests_cards.html' with tests=tests %}
-            </div>
-            {% include 'scrollable_articles_cards.html' with articles=articles %}
+        <div class="container p-3 text-center">
+            <a class="icon-link" style="text-decoration: none; color: black">
+                {% include "add_article_to_favorite.html" %}
+                <b>{{ article.label }}</b>
+            </a>
         </div>
     </div>
+    <div class="p-0 m-0" style="max-height: 40vh">
+        {% if article.article_photo %}
+            <img class='border-top border-dark border-bottom border-2 p-0 m-0' src="{% static article.article_photo %}"
+                 style="width: 100%; height: 100%; max-height: 40vh; min-height: 40vh"
+                 onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
+        {% else %}
+        {% endif %}
+    </div>
+    <div class="container p-4">
+        <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
+            {% if article_content_path and not pdf %}
+                {% include article_content_path %}
+            {% elif pdf %}
+                <pinch-zoom id="pdf-zoom" style="display:block; width: 100%; height: 400px;">
+                    <canvas id="pdf-viewer" style="width: 100%; max-width: 100%;"></canvas>
+                </pinch-zoom>
+            {% else %}
+                <span>Текст недоступен</span>
+            {% endif %}
+        </div>
+        <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
+        <div class="container justify-content-center text-center p-2">
+            {% include "add_note_to_article.html" with article=article %}
+        </div>
+        <h5 class="mt-2 mb-2">Статьи и тесты по этой же теме</h5>
+        <div class="mb-3">
+            {% include 'scrollable_tests_cards.html' with tests=tests %}
+        </div>
+        {% include 'scrollable_articles_cards.html' with articles=articles %}
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        const url = '{% static pdf %}';
+
+        const loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(pdf => {
+            pdf.getPage(1).then(page => {
+
+                const viewport = page.getViewport({scale: 1});
+                const canvas = document.getElementById('pdf-viewer');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                page.render(renderContext);
+                container.appendChild(canvas);
+                const zoom_pdf = document.getElementById("pdf-zoom");
+                zoom_pdf.addEventListener(
+                    'pointerup', () => {
+                        const containerWidth = container.clientWidth;
+
+                        // Получаем оригинальные размеры страницы
+                        const unscaledViewport = page.getViewport({scale: 1});
+
+                        // Вычисляем нужный масштаб, чтобы влезло в контейнер
+                        const scale = containerWidth / unscaledViewport.width;
+
+                        const viewport = page.getViewport({scale: 1});
+
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+
+                        page.render(renderContext);
+                    }
+                )
+            });
+        });
+    </script>
+    <script src="https://unpkg.com/@google/pinch-zoom"></script>
 {% endblock %}
 
 

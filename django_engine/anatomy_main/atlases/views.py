@@ -1,12 +1,12 @@
+from anatomy_main import utils
+from categories.models import Catalog
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.db.models import ImageField, Q
-
-from anatomy_main import utils
-from .models import Atlas
 from users.models import AtlasUserRel
-from categories.models import Catalog
+
+from .models import Atlas
 
 
 def main(request: HttpRequest):
@@ -23,7 +23,6 @@ def main(request: HttpRequest):
 def open_atlas(request: HttpRequest,
                atlas_id: str):
     atlas = get_object_or_404(Atlas, id=atlas_id)
-    file: ImageField = atlas.atlas_file
     atlas_user_rel: AtlasUserRel = AtlasUserRel.objects.get_or_create(user=request.user,
                                                                       atlas_id=atlas_id)[0]
 
@@ -74,3 +73,13 @@ def find(request: HttpRequest):
     queries = request.GET
     atlases = Atlas.objects.filter(Q(label__icontains=queries.get('label', '')))
     return render(request, 'atlas_find.html', {'atlases': atlases})
+
+
+def open_articles_by_atlases(request, atlas_id: str):
+    atlas = get_object_or_404(Atlas, id=atlas_id)
+    return render(request, "list_articles_page.html", context={'articles': atlas.get_articles_by_categories()})
+
+
+def open_tests_by_atlases(request, atlas_id: str):
+    atlas = get_object_or_404(Atlas, id=atlas_id)
+    return render(request, "list_tests_page.html", context={'tests': atlas.get_tests_by_categories()})
