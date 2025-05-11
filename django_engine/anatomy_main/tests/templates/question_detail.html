@@ -16,7 +16,7 @@
                 <div class="p-0">
                     <a class="icon-link" style="text-decoration: none; color: black">
                         {% include 'add_question_favorite.html' %}
-                        {{ question.label }}
+                        {{ question_text | safe }}
 
                     </a>
                 </div>
