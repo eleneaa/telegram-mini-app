@@ -1,10 +1,19 @@
-
-<div class="input-group mb-3 mt-3" style="border-radius: 20px;">
-    <input type="text" name="note" class="form-control search-input rounded-start-pill" placeholder="Написать заметку по теме" style="border-right: none; border-color: rgb(0,0,0)" value="{{ note }}" id="textareaID">
-    <button class="btn btn-outline-secondary rounded-end-circle save-button" style="border-left: none; border-color: rgb(0,0,0)">
-        <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+<div class="input-group mb-3 mt-3 notes-component" style="border-radius: 20px;">
+    <input type="text" name="note" class="form-control search-input rounded-start-pill border border-0"
+           placeholder="Написать заметку по теме"
+           style="border-right: none; background-color: white; border-color: rgb(0,0,0)" value="{{ note }}"
+           id="textareaID">
+    <button class="btn btn-outline-secondary rounded-end-circle save-button border border-0"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-title="Добавить"
+            style="border-left: none; border-color: rgb(0,0,0); background-color: white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#113B3A"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M12 5l0 14" /><path d="M5 12l14 0" />
+            <path d="M12 5l0 14"/>
+            <path d="M5 12l14 0"/>
         </svg>
     </button>
 </div>
@@ -12,8 +21,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% csrf_token %}
 <script>
-    $(document).ready(function() {
-        $('.save-button ').click(function() {
+    $(document).ready(function () {
+        $('.save-button ').click(function () {
             var button = $(this);
             console.log(button)
             var note_text = document.getElementById('textareaID').value;
@@ -23,14 +32,18 @@
                 headers: {
                     'X-CSRFToken': csrftoken
                 },
-                success: function(response) {
+                success: function (response) {
                     console.log(response)
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Ошибка:", error);
                 }
             });
         });
     });
+</script>
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 

@@ -5,6 +5,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from users.models import TestUserRel
 
+from anatomy_main.models import BaseModel
+
+
 # Create your models here.
 class QuestionType(models.TextChoices):
     single_choice = 'radio', _("Один правильный ответ")
@@ -40,12 +43,14 @@ class Variant(models.Model):
 
 class Question(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=200, verbose_name='Описание вопроса')
+    label = models.CharField(verbose_name='Описание вопроса')
     variants = models.ManyToManyField("Variant", verbose_name="Список правильных ответов", symmetrical=False,
                                       related_name='correct_variants',
                                       through='QuestionVariantRel')
     question_type = models.CharField(choices=QuestionType.choices, verbose_name="Тип вопроса",
                                      default=QuestionType.multipy_choice, max_length=200)
+
+    points = models.IntegerField(default=1, verbose_name='Количество баллов за вопрос')
 
     def answers_ids(self):
         if self.variants.all():
@@ -65,13 +70,15 @@ class Question(models.Model):
         return self.label
 
 
-class Test(models.Model):
+class Test(BaseModel):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(max_length=200, verbose_name='Название теста')
+    label = models.CharField(verbose_name='Название теста')
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='tests', blank=True)
     test_photo = models.ImageField(verbose_name='Фотография теста', upload_to='tests_storage', blank=True)
+    time_limit = models.IntegerField(default=None, null=True, verbose_name='Время на ответ в секундах')
+
     def questions_ids(self):
         if self.questions_list.all():
             childs_array = [questions for questions in self.questions_list.all()]

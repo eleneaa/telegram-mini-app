@@ -22,4 +22,10 @@ urlpatterns = [
          name='toggle_save_note_test'),
     path("toggle_save_note_test/<str:test_id>/", views.toggle_save_note_test, name='toggle_save_note_test'),
     path("retry_last_test/", views.retry_last_test, name='retry_last_test'),
+    path('atlases/<str:test_id>', views.open_atlases_by_test, name='open_atlases_by_test'),
+    path('articles/<str:test_id>', views.open_articles_by_test, name='open_articles_by_test'),
+
+    path('code/generate/<str:test_id>/', views.generate_word_by_test, name='generate_word_by_test'),
+    path('code/run/<str:code>/', views.run_test_by_code, name='run_test_by_code'),
+    path('generate/<int:num_questions>/', views.generate_random_test, name='generate_random_test')
 ]

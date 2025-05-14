@@ -1,8 +1,14 @@
 # Create your views here.
 # views.py
+import base64
+import random
+import uuid
+from datetime import timedelta, datetime
+
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template import Context, Template
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
@@ -10,6 +16,39 @@ from django.views.generic import ListView
 from anatomy_main import utils
 from users.models import QuestionUserRel, TestUserRel
 from .models import Test, Question, QuestionType
+
+
+def generate_random_test(request: HttpRequest,
+                         num_questions: int):
+    question_ids = list(Question.objects.values_list('id', flat=True))
+    selected_ids = random.sample(question_ids, min(len(question_ids), num_questions))
+
+    test = Test.objects.create(
+        label=f'Случайный тест на {min(len(question_ids), num_questions)} вопросов',
+    )
+    test.questions_list.add(*selected_ids)
+    test.save()
+    return redirect('tests:start_test', test_id=test.id)
+
+
+def encode_uuid_to_code(u):
+    return base64.urlsafe_b64encode(u.encode('utf-8')).rstrip(b'=').decode('ascii')  # ~22 символа
+
+
+def decode_code_to_uuid(code):
+    padded = code + '=' * (-len(code) % 4)
+    return base64.urlsafe_b64decode(padded).decode("utf-8")
+
+
+def generate_word_by_test(request: HttpRequest, test_id: str):
+    return JsonResponse({
+        "code": encode_uuid_to_code(test_id)
+    })
+
+
+def run_test_by_code(request: HttpRequest, code: str):
+    test_id = decode_code_to_uuid(code)
+    return redirect('tests:start_test', test_id=test_id)
 
 
 def start_test(request, test_id):
@@ -21,15 +60,17 @@ def start_test(request, test_id):
     request.session['test'] = {
         'id': test.id,
         'label': test.label,
-        'question_count': len(test.questions_list.all())
+        'question_count': len(test.questions_list.all()),
+        'time_stop': (timedelta(seconds=test.time_limit) + timezone.now()).isoformat() if test.time_limit else None
     }
 
-    questions = list(test.questions_list.all())
+    questions: list[Question] = list(test.questions_list.all())
     request.session['questions'] = [
         {
             'id': q.id,
             'question_type': q.question_type,
             'label': q.label,
+            'points': q.points,
             'variants': [
                 {
                     'id': v.id,
@@ -86,6 +127,21 @@ def question_detail(request, test_id, question_id):
     if question_user:
         is_favorite = question_user['is_favorite']
 
+    question_text = question['label']
+    label_context = Context({
+        'test': test,
+        'question': question,
+        'variants': question['variants'],
+        'is_favorite': is_favorite,
+        "question_type": question['question_type'],
+        'question_index': question_id + 1,
+        'all_questions_count': len(request.session["questions"]),
+        'time_stop': test.get('time_stop'),
+        'question_text': question_text
+    })
+    label_template = Template(question_text)
+    question_text = label_template.render(label_context)
+
     return render(request, 'question.html',
                   {
                       'test': test,
@@ -95,6 +151,8 @@ def question_detail(request, test_id, question_id):
                       "question_type": question['question_type'],
                       'question_index': question_id + 1,
                       'all_questions_count': len(request.session["questions"]),
+                      'time_stop': test.get('time_stop'),
+                      'question_text': question_text
                   })
 
 
@@ -125,11 +183,12 @@ def test_results(request, test_id):
                 "question": question_obj.label,
                 "user_answers": user_answers,
                 "correct_answers": correct_answers,
-                "is_correct": False
+                "is_correct": False,
+                'question_obj': question_obj
             }
             user_results.append(ans_data)
             if user_answers in correct_answers:
-                score += 1
+                score += question_obj.points
                 ans_data['is_correct'] = True
         else:
             correct_ids = list(map(lambda x: x.variant_id, question_obj.correct_answers()))
@@ -141,11 +200,12 @@ def test_results(request, test_id):
                         "question": question_obj.label,
                         "user_answers": user_variants,
                         "correct_answers": correct_variants,
-                        "is_correct": False}
+                        "is_correct": False,
+                        'question_obj': question_obj}
 
             user_results.append(ans_data)
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
-                score += 1
+                score += question_obj.points
                 ans_data['is_correct'] = True
     questions_order = {q["id"]: i for i, q in enumerate(request.session['questions'])}
     questions_data = {q["id"]: q for q in request.session['questions']}
@@ -157,14 +217,25 @@ def test_results(request, test_id):
     del request.session['questions']
     del request.session['answers']
     del request.session['question_user_rels']
+    time_stop = request.session['test'].get('time_stop')
     del request.session['test']
+
+    if time_stop is not None and timezone.now() > datetime.fromisoformat(time_stop):
+        score = 0
+
+    test_total_points = 0
+    for question in test.questions_list.all():
+        test_total_points += question.points
+
     return render(request,
                   'test_results.html',
                   {
                       'test': test,
                       'score': score,
                       'total_questions': total_questions,
-                      "user_results": user_results
+                      "user_results": user_results,
+                      "time_stop": time_stop,
+                      "test_total_points": test_total_points
                   })
 
 
@@ -201,14 +272,25 @@ def open_test(request, test_id):
         note = rel_field.note
     return render(request, 'test_page.html', context={'test': test,
                                                       'is_favorite': is_favorite,
+                                                      'atlases': test.get_atlases_by_categories(),
+                                                      'articles': test.get_articles_by_categories(),
                                                       'note': note})
+
+
+def open_atlases_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_atlases_page.html", context={"atlases": test.get_atlases_by_categories()})
+
+
+def open_articles_by_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    return render(request, "list_articles_page.html", context={"articles": test.get_articles_by_categories()})
 
 
 def main_page(request):
     popular_tests = Test.get_popular(10)
     favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
     favorite_tests = Test.objects.filter(id__in=favorite_tests)
-    print(favorite_tests)
     return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
                                                            "favorite_tests": favorite_tests})
 

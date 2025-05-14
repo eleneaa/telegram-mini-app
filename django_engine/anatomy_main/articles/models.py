@@ -1,15 +1,15 @@
 import uuid
 
+from anatomy_main.models import BaseModel
 from django.db import models
 from django.urls import reverse
-
 from users.models import ArticleUserRel
 
 
 # Create your models here.
 
 
-class Article(models.Model):
+class Article(BaseModel):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
     label = models.CharField(max_length=200, verbose_name='Название файла')
     article_file = models.FileField(verbose_name='Файл статьи',
@@ -62,22 +62,6 @@ class Article(models.Model):
             .filter(user=user, is_favorite=True)
             .values('article_id')
         )
-
-    def get_tests_by_categories(self):
-        tests = set()
-        for catalog in self.catalogs.all():
-            if catalog.tests_ids():
-                tests.update(catalog.tests_ids())
-
-        return tests
-
-    def get_articles_by_categories(self):
-        articles = set()
-        for catalog in self.catalogs.all():
-            if catalog.articles_ids():
-                articles.update(catalog.tests_ids())
-
-        return articles
 
     class Meta:
         verbose_name = 'Статья'
