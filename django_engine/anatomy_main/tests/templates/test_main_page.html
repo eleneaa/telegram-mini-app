@@ -1,30 +1,52 @@
 {% include 'index.html' with active='tests' %}
 {% load static %}
+
 {% block content %}
     <div class="container p-4 pt-3">
         <form action="{% url 'tests:find' %}">
-            <div class="input-group mb-3 mt-3" style="border-radius: 20px; position: relative;">
-                <input name="label__icontains" type="text"
-                       class="form-control search-input rounded-start-pill"
-                       placeholder="Найти тест"
-                       style="border-right: none; border-color: rgb(0,0,0)">
-                <button class="btn btn-outline-secondary rounded-end-circle"
-                        style="border-left: none; border-color: rgb(0,0,0)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-search"
-                         viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                </button>
+            <div class="input-group mb-3 mt-3"
+                 style="border-radius: 20px; position: relative;">
+                <div class='input-group' style="position: relative; overflow: hidden; margin-bottom: -10px; !important">
+                    <input name="label__icontains" type="text"
+                           class="form-control search-input custom-focus rounded-start-pill notes-component"
+                           placeholder="Найти тест"
+                           style="border-right: none; background-color: white"
+                           autocomplete="off">
+                    <button class="btn btn-outline-secondary rounded-end-circle notes-component"
+                            style="border-left: none; background-color: white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                             stroke="#113B3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-search">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
+                            <path d="M21 21l-6 -6"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Выпадающее меню результатов -->
+                <ul class="dropdown-menu w-100 shadow-lg" id="search-dropdown"
+                    style="display: none; max-height: 200px; overflow-y: auto; margin-top: -10px; z-index: 1;">
+                    <div id="search-results"></div>
+                </ul>
             </div>
         </form>
-
-        <div class="spinner-border text-primary me-5 d-none pt-2"
-                     id="loading-spinner" role="status" style="width: 1.5rem; height: 1.5rem;">
-                    <span class="visually-hidden">Loading...</span>
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'categories:open_catalogs_list' %}">
+                <button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg">
+                    <span class='m-2' style="margin-right: 1px !important">Искать по темам</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="icon icon-tabler icons-tabler-outline icon-tabler-list-search">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M15 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/>
+                        <path d="M18.5 18.5l2.5 2.5"/>
+                        <path d="M4 6h16"/>
+                        <path d="M4 12h4"/>
+                        <path d="M4 18h4"/>
+                    </svg>
+                </button>
+            </a>
         </div>
-
-        <!-- Превью результатов поиска -->
-        <div id="search-results" class="pt-2"></div>
 
         {% if objects is not None %}
             <div class="row text-center justify-content-between">
@@ -48,9 +70,20 @@
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.querySelector(".search-input");
             const resultsContainer = document.querySelector("#search-results");
-            const loadingSpinner = document.querySelector("#loading-spinner");
+            const searchDropdown = document.querySelector("#search-dropdown");
 
-            // Функция дебаунсинга
+            // Функция для показа/скрытия выпадающего меню
+            function toggleDropdown(show) {
+                searchDropdown.style.display = show ? "block" : "none";
+            }
+
+            // Закрытие меню при клике вне области
+            document.addEventListener("click", function (e) {
+                if (!e.target.closest(".input-group")) {
+                    toggleDropdown(false);
+                }
+            });
+
             function debounce(func, delay) {
                 let timeout;
                 return function (...args) {
@@ -59,46 +92,48 @@
                 };
             }
 
-            // Основная логика поиска
             function performSearch() {
                 const query = searchInput.value.trim();
 
-                // Очистка результатов при пустом запросе
                 if (!query) {
                     resultsContainer.innerHTML = "";
-                    loadingSpinner.classList.add("d-none");
+                    toggleDropdown(false);
                     return;
                 }
 
-                // Показать индикатор загрузки
-                loadingSpinner.classList.remove("d-none");
+                toggleDropdown(true);
 
-                // Отправить запрос
                 fetch(`find_preview/?label__icontains=${encodeURIComponent(query)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.text(); // Получаем HTML как текст
-                })
-                .then(html => {
-                    loadingSpinner.classList.add("d-none");
-                    resultsContainer.innerHTML = html; // Вставляем готовую разметку
-                })
-                .catch(() => {
-                    loadingSpinner.classList.add("d-none");
-                    resultsContainer.innerHTML = `
-                        <div class="text-center text-danger">
-                            <p>Произошла ошибка. Попробуйте снова.</p>
-                        </div>`;
-                });
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network response was not ok");
+                        return response.text();
+                    })
+                    .then(html => {
+                        resultsContainer.innerHTML = html;
+
+                        // Добавляем обработчики для элементов меню
+                        document.querySelectorAll("#search-dropdown .dropdown-item").forEach(item => {
+                            item.addEventListener("click", function () {
+                                toggleDropdown(false);
+                            });
+                        });
+                    })
+                    .catch(() => {
+                        resultsContainer.innerHTML = `
+                    <div class="dropdown-item text-danger">
+                        Произошла ошибка. Попробуйте снова.
+                    </div>`;
+                    });
             }
 
-            // Обёртка performSearch с дебаунсингом
-            const debouncedSearch = debounce(performSearch, 500);
+            const debouncedSearch = debounce(performSearch, 300);
 
-            // Обработчик события ввода
             searchInput.addEventListener("input", debouncedSearch);
+            searchInput.addEventListener("focus", function () {
+                if (searchInput.value.trim() && resultsContainer.innerHTML) {
+                    toggleDropdown(true);
+                }
+            });
         });
     </script>
 

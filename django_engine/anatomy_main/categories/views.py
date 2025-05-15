@@ -1,14 +1,10 @@
+from anatomy_main import utils
+from categories.models import Catalog
 from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-
-from anatomy_main import utils
-from categories.models import Catalog
 from users.models import CatalogUserRel
-
-
-from users.models import AtlasUserRel
 
 
 def main(request: HttpRequest):
@@ -45,4 +41,6 @@ def toggle_favorite(request, catalog_id: str):
                                  "catalog_id")
 
 
-
+def open_catalogs_list(request):
+    root_catalogs = Catalog.objects.filter(is_main=True)
+    return render(request, 'category_menu.html', {'catalogs': root_catalogs})

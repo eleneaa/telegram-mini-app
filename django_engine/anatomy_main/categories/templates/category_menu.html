@@ -1,0 +1,39 @@
+{% include 'index.html' with active='categories' %}
+{% load static %}
+
+<style>
+    .accordion-button:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    .accordion {
+        --bs-accordion-active-bg: #113B3A33;
+        --bs-accordion-border-color: #F7F5EE;
+        --bs-accordion-btn-bg: #F7F5EE;
+        --bs-accordion-border-width: none;
+        --bs-accordion-bg: #F7F5EE;
+        border: none;
+    }
+    .accordion-button {
+        justify-content: start !important;
+    }
+
+</style>
+
+{% block content %}
+    <div class="accordion" id="accordionExample">
+        {% for catalog in catalogs %}
+            <div class="accordion-item collapsed">
+                <h2 class="accordion-header">
+                    <button class="accordion-button rounded-0" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseOne_{{ catalog.id }}" aria-controls="#collapseOne_{{ catalog.id }}">
+                        {{ catalog }}
+                    </button>
+                </h2>
+                <div id="collapseOne_{{ catalog.id }}" class="accordion-collapse collapse">
+                    {% include "category_item.html" with catalogs=catalog.child.all indent=20 %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

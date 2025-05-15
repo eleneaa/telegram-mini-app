@@ -43,7 +43,7 @@ class Variant(models.Model):
 
 class Question(models.Model):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(verbose_name='Описание вопроса')
+    label = models.CharField(verbose_name='Описание вопроса', max_length=500)
     variants = models.ManyToManyField("Variant", verbose_name="Список правильных ответов", symmetrical=False,
                                       related_name='correct_variants',
                                       through='QuestionVariantRel')
@@ -72,7 +72,7 @@ class Question(models.Model):
 
 class Test(BaseModel):
     id = models.CharField(max_length=100, default=uuid.uuid4, primary_key=True)
-    label = models.CharField(verbose_name='Название теста')
+    label = models.CharField(verbose_name='Название теста', max_length=200)
     questions_list = models.ManyToManyField("Question", verbose_name='Список вопросов')
     catalogs = models.ManyToManyField("categories.Catalog", verbose_name="Принадлежит каталогам",
                                       related_name='tests', blank=True)

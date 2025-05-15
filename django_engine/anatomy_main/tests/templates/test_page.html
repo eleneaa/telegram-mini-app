@@ -14,13 +14,8 @@
                 </a>
             </div>
         </div>
-        <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
-            {% if test.description %}<span>{{ atlas.description }}</span>
-            {% else %}<span>Описание отсутствует</span>
-            {% endif %}
-        </div>
-        <a href="{% url 'tests:start_test' test_id=test.id %}" class='btn btn-success rounded-pill my-2 col-12 p-2' style="background-color: #335B5A" >Пройти тест</a>
         <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
+        <div class="container justify-content-center text-center"><a href="{% url 'tests:start_test' test_id=test.id %}" class='btn btn-primary rounded-pill my-2 col-12 p-2'>Пройти тест</a></div>
         <div class="container justify-content-center text-center p-2">
             {% include "add_note_to_test.html" with test=test %}
         </div>
