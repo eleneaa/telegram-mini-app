@@ -1,18 +1,40 @@
 {% include 'index.html' with active='tests' %}
+
+<style>
+    .active-question {
+        background: #F5F7AD !important;
+        color: #113B3A;
+    }
+
+    .inactive-question {
+        background: white !important;
+        color: #113B3A;
+    }
+
+</style>
 {% block content %}
-    <div class="vh-100-m d-flex justify-content-center align-items-center">
-        <div class="container p-4 pt-3">
-            <div class="row d-flex justify-content-center">
-                <div class="col-12">
-                    <div class="card card-bg">
-                        <div class="card-body p-4">
-                            <section>
-                                {% include 'question_detail.html' %}
-                            </section>
-                        </div>
-                    </div>
+    <div class="container p-4 pt-3">
+        <div class="container p-3 pt-0 text-center">
+            <a class="icon-link" style="text-decoration: none; color: black">
+                {% include "add_test_to_favorite.html" with is_favorite=is_favorite_test %}
+                <h1 style="margin: 0; padding: 0"><b>{{ test.label }}</b></h1>
+            </a>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="card card-bg">
+                <div class="card-body p-4">
+                    <section>
+                        {% include 'question_detail.html' %}
+                    </section>
                 </div>
             </div>
+        </div>
+        <div class="row g-2 p-3 justify-content-center">
+            {% for quest_id, i in questions_range %}
+                <div class="col-2">
+                    <a href="{% url 'tests:question_detail' test_id=test.id question_id=i %}"><button class="btn btn-primary {% if i|add:'1' == question_index %} active-question {% else %} {% if not quest_id in answered_questions %} inactive-question {% endif %} {% endif %}">{{ i|add:'1' }}</button></a>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

@@ -39,16 +39,28 @@ class Article(BaseModel):
 
     @classmethod
     def get_popular(cls,
-                    count: int):
+                    count: int, current_category=None):
+
+        if current_category:
+            exp = f"""WITH article_results AS (SELECT articles_article.* 
+                                          FROM articles_article_catalogs 
+                                          LEFT JOIN articles_article ON articles_article_catalogs.article_id = articles_article.id
+                                          WHERE articles_article_catalogs.catalog_id = '{current_category.id}')
+                                          SELECT article_results.*
+                                          FROM article_results
+                """
+        else:
+            exp = """SELECT article_results.*
+                         FROM articles_article AS article_results"""
+        
         res = cls.objects.raw(
-            """
-            select articles_article.*
-            from articles_article
+            f"""
+            {exp}
             left join (select articles_user.article_id,
                          count(articles_user.article_id) as fav_count
                   from articles_user
                   where articles_user.is_favorite
-                  group by articles_user.article_id) as F on F.article_id = articles_article.id
+                  group by articles_user.article_id) as F on F.article_id = article_results.id
             order by F.fav_count DESC 
             """
         )

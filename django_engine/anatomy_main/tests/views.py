@@ -2,9 +2,10 @@
 # views.py
 import base64
 import random
-import uuid
 from datetime import timedelta, datetime
 
+from anatomy_main import utils
+from anatomy_main.utils import get_current_category
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,10 +13,33 @@ from django.template import Context, Template
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
-
-from anatomy_main import utils
 from users.models import QuestionUserRel, TestUserRel
+
 from .models import Test, Question, QuestionType
+
+
+def is_in_favorite_and_noted(request, test):
+    try:
+        rel_field = TestUserRel.objects.get(test=test, user=request.user)
+    except TestUserRel.DoesNotExist:
+        is_favorite = False
+        note = ''
+    else:
+        is_favorite = rel_field.is_favorite
+        note = rel_field.note
+
+    return is_favorite, note
+
+
+def is_in_favorite_question(request, question):
+    try:
+        rel_field = QuestionUserRel.objects.get(question=question, user=request.user)
+    except QuestionUserRel.DoesNotExist:
+        is_favorite = False
+    else:
+        is_favorite = rel_field.is_favorite
+    print(question, is_favorite)
+    return is_favorite
 
 
 def generate_random_test(request: HttpRequest,
@@ -100,6 +124,8 @@ def question_detail(request, test_id, question_id):
         return redirect('tests:start_test', test_id=test_id)
 
     test = request.session['test']
+    is_favorite_test, _ = is_in_favorite_and_noted(request, test['id'])
+    answered_questions = request.session.get('answers', {})
 
     try:
         question = request.session["questions"][question_id]
@@ -113,7 +139,7 @@ def question_detail(request, test_id, question_id):
                                                                      'question_type': question['question_type']}
         request.session.modified = True
 
-        its_last_question = question_id + 1 >= len(request.session["questions"])
+        its_last_question = len(answered_questions) == len(request.session["questions"])
 
         if its_last_question:
             return redirect('tests:test_results', test_id=test_id)
@@ -141,6 +167,9 @@ def question_detail(request, test_id, question_id):
     })
     label_template = Template(question_text)
     question_text = label_template.render(label_context)
+    answer = answered_questions.get(question['id'], {}).get("answers", [])
+    if len(answer) == 1:
+        answer = answer[0]
 
     return render(request, 'question.html',
                   {
@@ -148,9 +177,14 @@ def question_detail(request, test_id, question_id):
                       'question': question,
                       'variants': question['variants'],
                       'is_favorite': is_favorite,
+                      'is_favorite_test': is_favorite_test,
                       "question_type": question['question_type'],
                       'question_index': question_id + 1,
+                      'questions_range': list(zip(map(lambda x: x['id'], request.session["questions"]),
+                                                  range(len(request.session["questions"])))),
                       'all_questions_count': len(request.session["questions"]),
+                      'answered_questions': request.session.get('answers', {}).keys(),
+                      "answer": answer,
                       'time_stop': test.get('time_stop'),
                       'question_text': question_text
                   })
@@ -161,6 +195,9 @@ def test_results(request, test_id):
         return redirect('tests:start_test', test_id=test_id)
 
     test = get_object_or_404(Test, id=test_id)
+
+    is_favorite, noted = is_in_favorite_and_noted(request, test)
+
     # Сохраняем запись, что тест завершен
     entity, created = TestUserRel.objects.get_or_create(test_id=test_id, user=request.user)
     entity.is_completed = True
@@ -184,7 +221,8 @@ def test_results(request, test_id):
                 "user_answers": user_answers,
                 "correct_answers": correct_answers,
                 "is_correct": False,
-                'question_obj': question_obj
+                'question_obj': question_obj,
+                'in_favorite': is_in_favorite_question(request, question_obj)
             }
             user_results.append(ans_data)
             if user_answers in correct_answers:
@@ -201,7 +239,9 @@ def test_results(request, test_id):
                         "user_answers": user_variants,
                         "correct_answers": correct_variants,
                         "is_correct": False,
-                        'question_obj': question_obj}
+                        'question_obj': question_obj,
+                        'in_favorite': is_in_favorite_question(request, question_obj)
+                        }
 
             user_results.append(ans_data)
             if all(map(lambda x: x in correct_ids, user_answers)) and len(user_answers) == len(correct_ids):
@@ -235,7 +275,8 @@ def test_results(request, test_id):
                       'total_questions': total_questions,
                       "user_results": user_results,
                       "time_stop": time_stop,
-                      "test_total_points": test_total_points
+                      "test_total_points": test_total_points,
+                      "is_favorite_test": is_favorite
                   })
 
 
@@ -262,14 +303,7 @@ def toggle_save_note_test(request, test_id, note_text=''):
 
 def open_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
-    try:
-        rel_field = TestUserRel.objects.get(test=test, user=request.user)
-    except TestUserRel.DoesNotExist:
-        is_favorite = False
-        note = ''
-    else:
-        is_favorite = rel_field.is_favorite
-        note = rel_field.note
+    is_favorite, note = is_in_favorite_and_noted(request, test)
     return render(request, 'test_page.html', context={'test': test,
                                                       'is_favorite': is_favorite,
                                                       'atlases': test.get_atlases_by_categories(),
@@ -288,11 +322,14 @@ def open_articles_by_test(request, test_id):
 
 
 def main_page(request):
-    popular_tests = Test.get_popular(10)
+    current_category = get_current_category(request)
+
+    popular_tests = Test.get_popular(10, current_category=current_category)
     favorite_tests = [test_id.test_id for test_id in request.user.favorite_tests_ids()]
     favorite_tests = Test.objects.filter(id__in=favorite_tests)
     return render(request, "test_main_page.html", context={"popular_tests": popular_tests,
-                                                           "favorite_tests": favorite_tests})
+                                                           "favorite_tests": favorite_tests,
+                                                           'category': current_category})
 
 
 def list_favorite_tests(request):
@@ -300,7 +337,12 @@ def list_favorite_tests(request):
 
 
 def list_popular_tests(request):
-    return render(request, 'list_tests_page.html', context={"tests": Test.get_popular()})
+    current_category = get_current_category(request)
+
+    return render(request,
+                  'list_tests_page.html',
+                  context={"tests": Test.get_popular(current_category=current_category),
+                           'category': current_category})
 
 
 class TestsView(ListView):

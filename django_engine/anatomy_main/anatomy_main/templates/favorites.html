@@ -1,18 +1,40 @@
 {% include 'index.html' %}
 {% load static %}
 {% block content %}
-    <div class="container p-4 pt-3">
-        <h1 class="p-1">Избранные тесты</h1>
-        <div class="row text-center justify-content-between p-1">
-            {% include 'grid_tests_cards.html' with tests=tests %}
+    {% if tests or atlases or articles %}
+        <div class="container p-4 pt-3">
+            <h1 class="p-1">Избранные тесты</h1>
+            <div class="row text-center justify-content-between p-1">
+                {% include 'grid_tests_cards.html' with tests=tests %}
+            </div>
+            <h1 class="p-1">Избранные атласы</h1>
+            <div class="row text-center justify-content-between p-1">
+                {% include 'grid_atlases_cards.html' with atlases=atlases %}
+            </div>
+            <h1 class="p-1">Избранные статьи</h1>
+            <div class="row text-center justify-content-between p-1">
+                {% include 'grid_articles_cards.html' with articles=articles %}
+            </div>
         </div>
-        <h1 class="p-1">Избранные атласы</h1>
-        <div class="row text-center justify-content-between p-1">
-            {% include 'grid_atlases_cards.html' with atlases=atlases %}
+    {% else %}
+        <div class="container p-4 mt-4 mb-4 text-center">
+            <h1 style="font-size: 36px !important;">У вас пока нет избранного(</h1>
         </div>
-        <h1 class="p-1">Избранные статьи</h1>
-        <div class="row text-center justify-content-between p-1">
-            {% include 'grid_articles_cards.html' with articles=articles %}
+        <div class="d-flex pt-3 p-4 mt-4 pb-0 justify-content-center">
+            <img src="{% static 'icons/empty.svg' %}"/>
         </div>
-    </div>
+        <div class="d-flex p-2 m-2 pt-0 justify-content-center">
+            <a href="{% url 'main' %}">
+                <button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2'
+                                                                                      style="margin-right: 1px !important">Открыть главную</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                         fill="currentColor"
+                         class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z"/>
+                    </svg>
+                </button>
+            </a>
+        </div>
+    {% endif %}
 {% endblock %}

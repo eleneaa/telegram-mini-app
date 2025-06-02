@@ -1,11 +1,10 @@
 import uuid
 
+from anatomy_main.models import BaseModel
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from users.models import TestUserRel
-
-from anatomy_main.models import BaseModel
 
 
 # Create your models here.
@@ -113,16 +112,27 @@ class Test(BaseModel):
 
     @classmethod
     def get_popular(cls,
-                    count: int = None):
-        res = cls.objects.raw(
+                    count: int = None, current_category=None):
+        if current_category:
+            exp = f"""WITH tests_results AS (SELECT tests_test.* 
+                                      FROM tests_test_catalogs 
+                                      LEFT JOIN tests_test ON tests_test_catalogs.test_id = tests_test.id
+                                      WHERE tests_test_catalogs.catalog_id = '{current_category.id}')
+                                      SELECT tests_results.*
+                                      FROM tests_results
             """
-            select tests_test.*
-            from tests_test
+        else:
+            exp = """SELECT tests_results.*
+                     FROM tests_test AS tests_results
+                  """
+        res = cls.objects.raw(
+            f"""
+            {exp}
             left join (select tests_user.test_id,
                          count(tests_user.test_id) as fav_count
                   from tests_user
                   where tests_user.is_favorite
-                  group by tests_user.test_id) as F on F.test_id = tests_test.id
+                  group by tests_user.test_id) as F on F.test_id = tests_results.id
             order by F.fav_count DESC 
             """
         )

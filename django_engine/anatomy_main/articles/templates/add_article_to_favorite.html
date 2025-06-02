@@ -1,7 +1,7 @@
 {% load static %}
 <label>
     <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ article.id }}">
-        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="18px" height="18px">{% endif %}
+        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" class="star-icon">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" class="star-icon">{% endif %}
     </button>
 </label>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -24,16 +24,14 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 success: function(response) {
                     if (response.action === 'added') {
                         var newIcon = document.createElement('img')
-                        newIcon.setAttribute('width', '18px')
-                        newIcon.setAttribute('height', '18px')
+                        newIcon.setAttribute('class', 'star-icon')
                         newIcon.setAttribute('id', 'test')
                         newIcon.setAttribute('src', "{% static 'icons/star_black.svg' %}")
                         oldIcon.parentNode.replaceChild(newIcon, oldIcon)
                         console.log(response.action)
                     } else {
                         var newIcon = document.createElement('img')
-                        newIcon.setAttribute('width', '18px')
-                        newIcon.setAttribute('height', '18px')
+                        newIcon.setAttribute('class', 'star-icon')
                         newIcon.setAttribute('id', 'test')
                         newIcon.setAttribute('src', "{% static 'icons/star.svg' %}")
                         oldIcon.replaceWith(newIcon)

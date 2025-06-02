@@ -7,16 +7,22 @@ from django.views.decorators.http import require_POST
 from users.models import AtlasUserRel
 
 from .models import Atlas
+from anatomy_main.utils import get_current_category
 
 
 def main(request: HttpRequest):
-    popular_atlases = Atlas.get_popular(10)
+
+    current_category = get_current_category(request)
+
+    popular_atlases = Atlas.get_popular(10, current_category=current_category)
     favorite_atlases = Atlas.get_favorite_atlases(request.user)
+
     categories = Catalog.objects.all()
     return render(request, 'atlases_main_page.html', {
         'popular_atlases': popular_atlases,
         'favorite_atlases': favorite_atlases,
-        'categories': categories
+        'categories': categories,
+        'category': current_category
     })
 
 
@@ -66,7 +72,13 @@ def list_favorite_atlases(request):
 
 
 def list_popular_atlases(request):
-    return render(request, 'list_atlases_page.html', context={"atlases": Atlas.get_popular(count=10)})
+
+    current_category = get_current_category(request)
+
+    return render(request,
+                  'list_atlases_page.html',
+                  context={"atlases": Atlas.get_popular(count=10, current_category=current_category),
+                           'category': current_category})
 
 
 def find(request: HttpRequest):

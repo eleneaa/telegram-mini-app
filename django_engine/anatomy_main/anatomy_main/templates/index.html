@@ -26,7 +26,13 @@
             --primary-color: #335B5A; /* Ваш новый цвет */
             --bs-body-color: #113B3A; /* Изменяет основной цвет текста */
             --bs-body-color-rgb: rgba(17, 59, 58, 1); /* RGB значение для того же цвета */
-            --bs-heading-color: #113B3A
+            --bs-heading-color: #113B3A;
+            --bs-card-border-color: #335B5A !important;
+            --bs-btn-disabled-border-color: #113B3A
+        }
+
+        .card {
+            --bs-card-border-color: #335B5A
         }
 
         .btn-primary {
@@ -34,12 +40,17 @@
             --bs-btn-active-border-color: #335B5A;
             --bs-btn-hover-border-color: #335B5A;
             --bs-btn-hover-bg: #335B5A;
+            --bs-btn-disabled-border-color: #113B3A;
             background-color: var(--primary-color);
         !important;
             background: linear-gradient(to bottom, #123030, #335B5A) !important;
             border-color: var(--primary-color);
         !important;
-        {#color: #E4E1D8;#}
+        }
+
+        .text-bg-primary {
+            background-color: rgba(17, 59, 58, 0.2) !important;
+            color: rgba(17, 59, 58, 1) !important
         }
 
         .navbar {
@@ -83,8 +94,8 @@
         .content-box {
             min-height: 100vh;
             position: relative;
-            background: #F7F5EE;
-            margin-top: -35px; /* Поднимаем контейнер, чтобы он перекрывал изображение */
+            background: rgba(247, 245, 238, 1);
+            margin-top: -55px; /* Поднимаем контейнер, чтобы он перекрывал изображение */
             z-index: 1;
         }
 
@@ -97,6 +108,7 @@
             margin-bottom: -55px;
         !important; /* Часть изображения зайдет под следующий контейнер */
         }
+
 
         .hotspot {
             position: absolute;
@@ -123,8 +135,7 @@
             font-optical-sizing: auto;
             font-weight: normal;
             font-style: normal;
-            {#font-size: 20px;#}
-            line-height: 16px;
+        {#font-size: 20px;#} line-height: 16px;
             background-color: #F7F5EE;
         }
     </style>
@@ -204,10 +215,16 @@
         .custom-focus {
             --bs-focus-border-color: rgba(17, 59, 58, 0.8);
             --bs-focus-box-shadow: 0 0 0 0.25rem rgba(17, 59, 58, 0);
+            border-color: var(--bs-focus-border-color);
 
             &:focus {
                 border-color: var(--bs-focus-border-color);
                 box-shadow: var(--bs-focus-box-shadow);
+            }
+
+            &:checked {
+                border-color: var(--bs-focus-border-color);
+                background-color: var(--bs-focus-border-color);
             }
         }
 

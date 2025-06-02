@@ -4,7 +4,7 @@
 {% block content %}
     <div class="image-container p-0 m-0">
         <img class='p-0 m-0' src="{% static atlas.atlas_file %}"
-             style="width: 100%; height: 100%; min-height: 35vh; max-height: 65vh;">
+             style="width: 100%; height: 100%; max-height: 35vh; min-height: 35vh">
         {% for id_, value in atlas.tooltips.items %}
             <button type="button"
                     class="hotspot popover-trigger"
@@ -34,7 +34,7 @@
             <div class="container p-3 text-center">
                 <a class="icon-link" style="text-decoration: none; color: black">
                     {% include "add_atlas_to_favorite.html" %}
-                    <h1 style="margin: 0; padding: 0"><b>{{ atlas.label }}</b></h1>
+                    <h1 style="margin: 0; padding: 0" class="text-break"><b>{{ atlas.label }}</b></h1>
                 </a>
             </div>
         </div>

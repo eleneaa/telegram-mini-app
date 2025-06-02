@@ -3,14 +3,14 @@
 {% block content %}
     <div class="image-container p-0 m-0">
         <img class='p-0 m-0' src="{% static test.test_photo %}"
-             style="width: 100%; height: 100%; max-height: 65vh; min-height: 35vh">
+             style="width: 100%; height: 100%; max-height: 35vh; min-height: 35vh">
     </div>
     <div class="container p-4 content-box rounded-top-5 shadow-lg" style="padding-top: 0 !important;">
         <div class="container p-0 m-0">
             <div class="container p-3 text-center">
                 <a class="icon-link" style="text-decoration: none; color: black">
                     {% include "add_test_to_favorite.html" %}
-                    <h1 style="margin: 0; padding: 0"><b>{{ test.label }}</b></h1>
+                    <h1 style="margin: 0; padding: 0" class="text-break"><b>{{ test.label }}</b></h1>
                 </a>
             </div>
         </div>

@@ -1,27 +1,30 @@
 import os
 
-from django.db.models import FileField, Q
+from anatomy_main import utils
+from anatomy_main.settings import MEDIA_ROOT
+from anatomy_main.utils import get_current_category
+from articles.models import Article
+from categories.models import Catalog
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-
-from anatomy_main import utils
-from articles.models import Article
-from categories.models import Catalog
 from users.models import ArticleUserRel
-from anatomy_main.settings import MEDIA_ROOT
 
 
 # Create your views here.
 
 def main(request: HttpRequest):
-    popular_articles = Article.get_popular(10)
+    current_category = get_current_category(request)
+
+    popular_articles = Article.get_popular(10, current_category=current_category)
     favorite_articles = Article.get_favorite_articles(request.user)
     categories = Catalog.objects.all()
     return render(request, 'articles_main_page.html', {
         'popular_articles': popular_articles,
         'favorite_articles': favorite_articles,
-        'categories': categories
+        'categories': categories,
+        'category': current_category
     })
 
 
@@ -83,3 +86,13 @@ def list_favorite_articles(request):
 
 def list_popular_articles(request):
     return render(request, 'list_articles_page.html', context={"articles": Article.get_popular(count=10)})
+
+
+def open_atlases_by_article(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
+    return render(request, "list_atlases_page.html", context={"atlases": article.get_atlases_by_categories()})
+
+
+def open_tests_by_article(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
+    return render(request, "list_tests_page.html", context={"tests": article.get_tests_by_categories()})

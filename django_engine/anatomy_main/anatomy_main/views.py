@@ -1,22 +1,22 @@
 import hashlib
 import hmac
-import urllib.parse
 import json
-import time
 import os
-import requests
+import time
+import urllib.parse
 
-from django.contrib.auth import login
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.conf import settings
-from django.http import JsonResponse
-from users.models import User
-from tests.models import Test
-from atlases.models import Atlas
+import requests
 from articles.models import Article
+from atlases.models import Atlas
+from categories.models import Catalog
+from django.contrib.auth import login
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from tests.models import Test
 from users.models import *
-import uuid
+from users.models import User
+from anatomy_main.utils import get_current_category
 
 # Дада снова токен в коде
 # )))))))))))))
@@ -168,14 +168,17 @@ def main(request):
     # Получаем данные пользователя из GET-запроса
     init_data = request.GET.get('user_data')
 
-    popular_tests = Test.get_popular(count=6)
-    popular_atlases = Atlas.get_popular(count=6)
-    popular_articles = Article.get_popular(count=6)
+    category = get_current_category(request)
+
+    popular_tests = Test.get_popular(count=6, current_category=category)
+    popular_atlases = Atlas.get_popular(count=6, current_category=category)
+    popular_articles = Article.get_popular(count=6, current_category=category)
     if not init_data and request.user.is_authenticated:
         return render(request, 'main.html', context={'user': request.user,
                                                      'popular_tests': popular_tests,
                                                      'popular_atlases': popular_atlases,
-                                                     'popular_articles': popular_articles})
+                                                     'popular_articles': popular_articles,
+                                                     'category': category})
 
     if init_data:
         # Проверяем подпись Telegram

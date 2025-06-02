@@ -15,4 +15,6 @@ urlpatterns = [
     path('favorite_articles/', views.list_favorite_articles, name='favorite_articles'),
     path('toggle_favorite_article/<str:article_id>/', views.toggle_favorite, name='add_to_favorite'),
     path('toggle_save_note/<str:article_id>/<str:note_text>/', views.toggle_save_note, name='toggle_save_note'),
+    path('atlases/<str:article_id>', views.open_atlases_by_article, name='open_atlases_by_article'),
+    path('articles/<str:article_id>', views.open_tests_by_article, name='open_tests_by_article')
 ]

@@ -1,38 +1,65 @@
-<div class="container-fluid p-0">
-        <div class="row d-flex justify-content-between">
-            <div class="col-6">
-                <h1>{{ test.label }}</h1>
-            </div>
-            <div class="col-6 d-flex align-items-center">
-                <div class="container p-0 d-flex justify-content-end pt-auto"><label class="p-auto">Вопрос {{ question_index }} из {{ all_questions_count }}</label></div>
-
-            </div>
-        </div>
+<div class="container-fluid p-0 mb-2">
+    <div class="p-0">
+        <span>{{ question_text | safe }}</span>
+    </div>
 </div>
 <hr class="hr"/>
-<div class="card card-bg container-fluid p-0 mb-2">
-        <div class="card-body">
-            <div class="row row-cols-auto d-flex justify-content-start align-items-center">
-                <div class="p-0">
-                    <a class="icon-link" style="text-decoration: none; color: black">
-                        {% include 'add_question_favorite.html' %}
-                        {{ question_text | safe }}
-
-                    </a>
-                </div>
-
-            </div>
-        </div>
-</div>
-<form method="post" class="form-ensurance-control">
+<form method="post" class="form-ensurance-control mt-3" id="question-form">
     {% csrf_token %}
     {% if question.question_type == 'input' %}
-        <input type="text" name="answer[]" class="input-group pt-2"/>
+        <input type="text" name="answer[]" class="form-control input-group mb-3 rounded-4 custom-focus"
+               placeholder="Ответ" value="{% if answer %}{{ answer }}{% endif %}"/>
     {% else %}
         {% for variant in variants %}
-            <input class="form-check-input" type="{{ question.question_type }}" name="answer[]" value="{{ variant.id }}">{{ variant.text }}<br/>
+            <div class="form-check">
+                <input class="form-check-input custom-focus" type="{{ question.question_type }}" name="answer[]"
+                       value="{{ variant.id }}"
+                       id="checkDefault{{ variant.id }}" {% if variant.id in answer %} checked {% endif %}>
+                <label class="form-check-label" for="checkDefault{{ variant.id }}">
+                    {{ variant.text }}
+                </label>
+            </div>
         {% endfor %}
     {% endif %}
-    <button type="submit" class='btn btn-success rounded-pill my-2 col-12 p-2'>Ответить</button>
 </form>
+<div class="d-flex justify-content-between">
 
+    {% if question_index != 1 %}
+        <a href="{% url 'tests:question_detail' test_id=test.id question_id=question_index|add:"-2" %}">
+            <button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left mb-1">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l14 0"/>
+                    <path d="M5 12l6 6"/>
+                    <path d="M5 12l6 -6"/>
+                </svg>
+                <span class='m-2' style="margin-left: 1px !important">Назад</span>
+            </button>
+        </a>
+    {% else %}
+            <button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg disabled">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left mb-1">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l14 0"/>
+                    <path d="M5 12l6 6"/>
+                    <path d="M5 12l6 -6"/>
+                </svg>
+                <span class='m-2' style="margin-left: 1px !important">Назад</span>
+            </button>
+    {% endif %}
+    <button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg" type="submit" form="question-form">
+        <span class='m-2' style="margin-right: 1px !important">Далее</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-narrow-right mb-1">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M5 12l14 0"/>
+            <path d="M15 16l4 -4"/>
+            <path d="M15 8l4 4"/>
+        </svg>
+    </button>
+</div>

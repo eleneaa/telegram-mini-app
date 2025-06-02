@@ -1,7 +1,7 @@
 {% load static %}
 <label>
-    <button class="favorite-button btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ question.id }}">
-        {% if is_favorite %}<img id="test" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test' src="{% static 'icons/star.svg' %}" width="18px" height="18px">{% endif %}
+    <button class="favorite-button-question-{{ question_id }} btn-link p-0 m-0 w-100" style="border: 0; text-decoration: none; background: none" data-item-id="{{ question.id }}">
+        {% if is_favorite %}<img id="test_question_{{ question_id }}" src="{% static 'icons/star_black.svg' %}" width="18px" height="18px">{% else %}<img id='test_question_{{ question_id }}' src="{% static 'icons/star.svg' %}" width="18px" height="18px">{% endif %}
     </button>
 </label>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -11,10 +11,10 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 </script>
 <script>
     $(document).ready(function() {
-        $('.favorite-button ').click(function() {
+        $('.favorite-button-question-{{ question_id }}').click(function() {
             var button = $(this);
             var questionId = button.data('item-id');
-            var oldIcon = document.getElementById('test')
+            var oldIcon = document.getElementById('test_question_{{ question_id }}')
             $.ajax({
                 url: '/tests/favorite/' + questionId + '/',
                 type: 'POST',
@@ -26,7 +26,7 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                         var newIcon = document.createElement('img')
                         newIcon.setAttribute('width', '18px')
                         newIcon.setAttribute('height', '18px')
-                        newIcon.setAttribute('id', 'test')
+                        newIcon.setAttribute('id', 'test_question_{{ question_id }}')
                         newIcon.setAttribute('src', "{% static 'icons/star_black.svg' %}")
                         oldIcon.parentNode.replaceChild(newIcon, oldIcon)
                         console.log(response.action)
@@ -34,7 +34,7 @@ const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                         var newIcon = document.createElement('img')
                         newIcon.setAttribute('width', '18px')
                         newIcon.setAttribute('height', '18px')
-                        newIcon.setAttribute('id', 'test')
+                        newIcon.setAttribute('id', 'test_question_{{ question_id }}')
                         newIcon.setAttribute('src', "{% static 'icons/star.svg' %}")
                         oldIcon.replaceWith(newIcon)
                         console.log(response.action)

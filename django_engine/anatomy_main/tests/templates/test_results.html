@@ -3,48 +3,54 @@
     <div class="container mt-4" style="overflow: hidden;">
         <div class="container p-3 text-center">
             <a class="icon-link" style="text-decoration: none; color: black">
-                {% include "add_test_to_favorite.html" %}
+                {% include "add_test_to_favorite.html" with is_favorite=is_favorite_test %}
                 <h1 style="margin: 0; padding: 0"><b>{{ test.label }}</b></h1>
             </a>
         </div>
         <p class="text-center">Результат теста - <strong>{{ score }}/{{ test_total_points }}</strong></p>
-
+        <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
         {% for ans in user_results %}
             <div class="col-md-12 mb-4">
-                <div class="card rounded"
-                     style="background-color: {% if ans.is_correct %} #BCD0D1 {% else %} #FF747685 {% endif %};
+                <div class="card rounded-4 shadow"
+                     style="background-color: {% if not ans.is_correct %} rgba(51, 91, 90, 0.23) {% else %} #F7F5EE {% endif %};
                              border-color: #123030;">
-                    <div class="card-body rounded"
-                         style="background-color: {% if ans.is_correct %} #BCD0D1 {% else %} #FF747685 {% endif %};">
-                        <p class="card-title">
-                        <div class="d-flex justify-content-between">
-                            <strong>{{ ans.question }}</strong>
+                    <div class="card-body rounded-4"
+                         style="background-color: {% if not ans.is_correct %} rgba(51, 91, 90, 0.23) {% else %} #F7F5EE {% endif %};">
+                        <p class="card-title text-break">
+                        <div class="d-flex justify-content-between text-break">
+                            <span><strong>{{ ans.question }}</strong></span>
                             <a class="icon-link" style="text-decoration: none; color: black">
-                                {% include 'add_question_favorite.html' %}
+                                {% include 'add_question_favorite.html' with is_favorite=ans.in_favorite question=ans.question_obj question_id=ans.question_obj.id %}
                             </a>
                         </div>
                         </p>
                         <hr>
-                        <p class="mt-2">Ваш ответ: <strong
-                                class="{% if ans.is_correct %}text-success{% else %}text-danger{% endif %}">
-                            {{ ans.user_answers }}</strong></p>
+                        <p class="mt-2"><b>Ваш ответ:</b> {{ ans.user_answers }}</p>
                         {% if not ans.is_correct %}
-                            <ul>
+                            <div style="display: inline-flex; align-items: center; gap: 4px;">
+                                <button type="button" class="btn btn-link m-0 p-0"
+                                        style="background-color: transparent; border: none; color: #113B3A; text-decoration: none;"
+                                        onclick="toggleAnswerVisibility({{ ans.question_number }})">
+                                    <b>Показать ответ</b>
+                                </button>
+                                <div id="icon-container" style="display: inline-flex;"
+                                     onclick="toggleAnswerVisibility({{ ans.question_number }})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                         fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round"
+                                         class="icon icon-tabler icons-tabler-outline icon-tabler-caret-down">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M6 10l6 6l6 -6h-12"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="correct-answer-{{ ans.question_number }} pt-3"
+                                 style="display: none; font-weight: bold;">
+                                <hr class="hr"/>
                                 {% for option in ans.correct_answers %}
-                                    <li class="list-group-item"
-                                        style="border-radius: 10px; color: {% if option.text not in ans.correct_answers %} #335B5A6E {% endif %};">
-                                        <div class="correct-answer-{{ ans.question_number }}"
-                                             style="display: none; color: black; padding-top: 10px; font-weight: bold; padding-left: 20px;">
-                                            {{ option }}
-                                        </div>
-                                    </li>
+                                    <p>{{ option }}</p>
                                 {% endfor %}
-                            </ul>
-                            <button type="button" class="btn btn-link m-0 p-0"
-                                    style="background-color: transparent; border: none; color: black; text-decoration: none;"
-                                    onclick="toggleAnswerVisibility({{ ans.question_number }})">
-                                Показать ответ
-                            </button>
+                            </div>
 
                         {% endif %}
                     </div>
@@ -88,12 +94,36 @@
     </div>
     <script>
         function toggleAnswerVisibility(aa) {
+
+            const container = document.getElementById('icon-container');
+
+            // Очищаем контейнер
+            container.innerHTML = '';
+
             const answersDiv = document.getElementsByClassName(`correct-answer-${aa}`);
             for (const answerDiv of answersDiv) {
                 if (answerDiv.style.display === 'none') {
                     answerDiv.style.display = 'block'; // Показать правильный ответ
+
+                    // Добавляем новую иконку
+                    container.innerHTML = `
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                           fill="currentColor" stroke="currentColor" stroke-width="2"
+                           stroke-linecap="round" stroke-linejoin="round"
+                           class="icon icon-tabler icons-tabler-outline icon-tabler-caret-up">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M18 14l-6 -6l-6 6h12"/>
+                      </svg>
+                    `;
                 } else {
                     answerDiv.style.display = 'none'; // Скрыть правильный ответ
+                    container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                         fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round"
+                                         class="icon icon-tabler icons-tabler-outline icon-tabler-caret-down">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M6 10l6 6l6 -6h-12"/>
+                                    </svg>`
                 }
             }
         }

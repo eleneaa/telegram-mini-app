@@ -7,8 +7,11 @@
                     {{ catalog }}
                 </button>
             </h2>
-            <div id="collapseOne_{{ catalog.id }}" class="accordion-collapse collapse">
-                {% include "category_item.html" with catalogs=catalog.child.all indent=indent|add:'20' %}
+            <div id="collapseOne_{{ catalog.id }}" class="accordion-collapse collapse border container p-2">
+                <a href="{{ catalog.get_absolute_url }}">
+                    <button class='btn btn-primary' style="margin-left: 20px; margin-bottom: 20px">Открыть</button>
+                </a>
+                {% include "category_item.html" with catalogs=catalog.child.all indent=20 %}
             </div>
         </div>
     {% endfor %}
