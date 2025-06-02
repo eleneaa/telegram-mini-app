@@ -1,10 +1,23 @@
 {% load static %}
 {% block find_preview_atlas %}
-    <div class="mb-3 text-center">
+    <div class="mt-3 text-start">
         {% if objects|length > 0 %}
-            {% include "scrollable_atlases_cards.html" with atlases=objects %}
+            {% for atlas in objects %}
+            <li>
+                <a class='dropdown-item' href="{{ atlas.get_absolute_url }}" style="text-decoration: none;">
+                    <h4>{{ atlas }}</h4>
+                    {% if atlas.description %}
+                        {{ atlas.description|truncatechars:25 }}
+                    {% else %}
+                        <span>Описание отсутствует</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% endfor %}
         {% else %}
-            <p>Ничего не найдено</p>
+            <div class="text-center mt-4">
+                <p>Ничего не найдено</p>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

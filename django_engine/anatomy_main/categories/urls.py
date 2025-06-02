@@ -13,4 +13,7 @@ urlpatterns = [
     path('favorite/<str:catalog_id>/', views.toggle_favorite, name='add_to_favorite'),
     path('open/<str:catalog_id>/', views.open_catalog, name='open_catalog'),
     path('favorite_catalogs/', views.favorite_catalogs, name='favorite_catalogs'),
+    path('open_catalogs_list/', views.open_catalogs_list, name='open_catalogs_list'),
+    path("set_current_category/<str:category_id>/", views.set_current_category, name='set_current_category'),
+    path("unset_current_category/<str:current_path_name>", views.unset_current_category, name='unset_current_category')
 ]

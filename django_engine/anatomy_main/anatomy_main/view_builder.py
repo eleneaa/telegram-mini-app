@@ -1,6 +1,5 @@
 from django.db.models import Q
 from django.shortcuts import render
-from django.http import JsonResponse
 
 
 def find(model, template_name: str, limit: int = 0):

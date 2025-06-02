@@ -1,10 +1,9 @@
 import uuid
 
+from anatomy_main.models import BaseModel
 from django.db import models
 from django.urls import reverse
 from users.models import AtlasUserRel
-
-from anatomy_main.models import BaseModel
 
 
 class Atlas(BaseModel):
@@ -37,18 +36,30 @@ class Atlas(BaseModel):
         )
 
     @classmethod
-    def get_popular(cls, count: int):
-        res = cls.objects.raw(
+    def get_popular(cls, count: int, current_category=None):
+        if current_category:
+            exp = f"""WITH atlas_results AS (SELECT atlases_atlas.* 
+                                      FROM atlases_atlas_catalogs 
+                                      LEFT JOIN atlases_atlas ON atlases_atlas_catalogs.atlas_id = atlases_atlas.id
+                                      WHERE atlases_atlas_catalogs.catalog_id = '{current_category.id}')
+                                      SELECT atlas_results.*
+                                      FROM atlas_results
             """
-            SELECT atlases_atlas.*
-            FROM atlases_atlas
+        else:
+            exp = """SELECT atlas_results.*
+                     FROM atlases_atlas AS atlas_results
+                  """
+
+        res = cls.objects.raw(
+            f"""
+            {exp}
             LEFT JOIN (
                 SELECT atlas_user.atlas_id,
                        COUNT(atlas_user.atlas_id) AS fav_count
                 FROM atlas_user
                 WHERE atlas_user.is_favorite
                 GROUP BY atlas_user.atlas_id
-            ) AS F ON F.atlas_id = atlases_atlas.id
+            ) AS F ON F.atlas_id = atlas_results.id
             ORDER BY F.fav_count DESC
             """
         )

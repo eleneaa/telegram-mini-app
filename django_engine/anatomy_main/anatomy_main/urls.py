@@ -25,7 +25,7 @@ urlpatterns = [
     path("tests/", include('tests.urls')),
     path("categories/", include('categories.urls')),
     path("articles/", include('articles.urls')),
-    path('atlases/', include('atlases.urls')),
+    path('atlases/', include('atlases.urls'), name='atlases'),
     path("user/", include('users.urls')),
     path("notes/", notes, name='notes'),
     path('notes/delete_note/<str:object_id>', delete_note, name="delete_note"),

@@ -1,0 +1,18 @@
+{% load static %}
+{% if category %}
+    <div class="text-start pb-3">
+        <h6>Тема - <strong>{{ category }}</strong>
+            <span class="badge rounded-pill text-bg-primary" style="font-size: 16px !important;">{{ active }}</span>
+            <a class="link" href="{% url 'categories:unset_current_category' request.resolver_match.view_name %}"
+               style="color: #335B5A">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 33 33" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="icon icon-tabler icons-tabler-outline icon-tabler-x text-center justify-content-center">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M18 6l-12 12"/>
+                    <path d="M6 6l12 12"/>
+                </svg>
+            </a>
+        </h6>
+    </div>
+{% endif %}

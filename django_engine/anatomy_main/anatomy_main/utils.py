@@ -2,6 +2,9 @@ from django.db import models
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 from django.utils.html import format_html
+from django.shortcuts import get_object_or_404
+
+from categories.models import Catalog
 
 
 def links_to_catalogs(objects):
@@ -141,3 +144,11 @@ def toggle_save_note(request: HttpRequest,
         action = "added"
 
     return JsonResponse({'action': action})
+
+
+def get_current_category(request: HttpRequest):
+    current_category = request.session.get("current_category", None)
+    if current_category:
+        current_category = get_object_or_404(Catalog, id=current_category)
+
+    return current_category
