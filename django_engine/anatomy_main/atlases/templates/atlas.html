@@ -2,40 +2,201 @@
 {% load static %}
 
 {% block content %}
-    <div class="image-container p-0 m-0">
-        <img class='p-0 m-0' src="{% static atlas.atlas_file %}"
-             style="width: 100%; height: 100%; max-height: 35vh; min-height: 35vh">
-        {% for id_, value in atlas.tooltips.items %}
-            <button type="button"
-                    class="hotspot popover-trigger"
-                    id="popoverButton{{ id_ }}"
-                    data-bs-modal-id="Modal{{ id_ }}"
-                    data-bs-content="{{ value.value }}"
-                    style="top: {{ value.top }}%; left: {{ value.left }}%">
-            </button>
+    <style>
+        .pan-zoom-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 35vh;
+            touch-action: none;
+            cursor: grab;
+        }
 
-            <div class="modal fade" id="Modal{{ id_ }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ value.value }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            {{ value.description }}
-                        </div>
+        .pan-zoom-container.fullscreen-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1050;
+            background: white;
+        }
+
+        .pan-zoom-content {
+            position: absolute;
+            transform-origin: 0 0;
+            transition: transform 0.1s ease;
+        }
+
+        .pan-zoom-content.flipped {
+            transform: rotate(180deg) !important;
+        }
+
+        .pan-zoom-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .zoom-slider-container {
+            position: absolute;
+            bottom: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-slider {
+            width: 150px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c3e50;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .hotspot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 50, 50, 0.5);
+            border: 2px solid white;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hotspot:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            background: rgba(255, 0, 0, 0.8);
+        }
+    </style>
+
+    <!-- Основной контейнер для атласа -->
+    <div id="pan-zoom-container" class="pan-zoom-container">
+        <div class="pan-zoom-controls">
+            <button class="control-btn" id="fullscreen-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
+            <button class="control-btn" id="rotate-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 6V3l4 4-4 4V7a5 5 0 1 0 5 5"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="zoom-slider-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <input type="range" min="10" max="300" value="100" class="zoom-slider" id="zoom-slider">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+            </svg>
+        </div>
+
+        <div class="pan-zoom-content" id="pan-zoom-content">
+            <img src="{% static atlas.atlas_file %}"
+                 class="img-fluid"
+                 id="atlas-image"
+                 style="display: block; max-width: none;">
+
+            {% for id_, value in atlas.tooltips.items %}
+                <button type="button"
+                        class="hotspot popover-trigger"
+                        id="popoverButton{{ id_ }}"
+                        data-bs-modal-id="Modal{{ id_ }}"
+                        data-bs-content="{{ value.value }}"
+                        style="top: {{ value.top }}%; left: {{ value.left }}%;">
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Модальные окна для тултипов -->
+    {% for id_, value in atlas.tooltips.items %}
+        <div class="modal fade" id="Modal{{ id_ }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ value.value }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ value.description }}
                     </div>
                 </div>
             </div>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
+
     <div class="container p-4 content-box rounded-top-5 shadow-lg" style="padding-top: 0 !important;">
+
         <div class="container p-0 m-0">
             <div class="container p-3 text-center">
                 <a class="icon-link" style="text-decoration: none; color: black">
                     {% include "add_atlas_to_favorite.html" %}
                     <h1 style="margin: 0; padding: 0" class="text-break"><b>{{ atlas.label }}</b></h1>
                 </a>
+                <!-- Кнопка поделиться с модальным окном -->
+                <button class="btn btn-primary btn-sm mt-3 rounded-4 shadow-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#shareModal">
+                    <i class="bi bi-share"></i> Поделиться
+                </button>
             </div>
         </div>
         <div class="row text-wrap text-break" style="line-height: 20px; padding-bottom: 20px">
@@ -57,9 +218,227 @@
             {% include 'scrollable_articles_cards.html' with articles=articles %}
             <a href="{% url 'atlases:open_articles_by_atlases' atlas_id=atlas.id %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
         </div>
-
     </div>
+    <!-- Модальное окно для выбора способа шаринга -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Поделиться атласом</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+
+                        <!-- Кнопка для системного шаринга -->
+                        <button class="btn btn-primary shadow-lg" onclick="shareViaSystem()">
+                            <i class="bi bi-share"></i> Через приложения
+                        </button>
+
+                        <!-- Кнопка для копирования ссылки -->
+                        <button class="btn btn-primary shadow-lg"
+                                onclick="copyLink(); $('#shareModal').modal('hide')">
+                            <i class="bi bi-link-45deg"></i> Скопировать ссылку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Генерация ссылки для шаринга
+        function generateShareLink() {
+            const atlasId = "{{ atlas.id }}";
+            return `https://t.me/vet_irit_bot?startapp=atlas_${atlasId}`;
+        }
+
+        // Системный шаринг через Web Share API
+        function shareViaSystem() {
+            const shareData = {
+                title: '{{ atlas.label }}',
+                text: 'Посмотрите этот атлас:',
+                url: generateShareLink()
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                copyLink();
+                alert('Ссылка скопирована в буфер обмена');
+            }
+        }
+
+        // Копирование ссылки
+        function copyLink() {
+            const link = generateShareLink();
+            navigator.clipboard.writeText(link).then(() => {
+                if (window.Telegram && Telegram.WebApp) {
+                    Telegram.WebApp.showAlert('Ссылка скопирована!');
+                }
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('share-link').value = generateShareLink();
+        });
+    </script>
 {% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Элементы управления
+        const container = document.getElementById('pan-zoom-container');
+        const content = document.getElementById('pan-zoom-content');
+        const image = document.getElementById('atlas-image');
+        const zoomSlider = document.getElementById('zoom-slider');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const rotateBtn = document.getElementById('rotate-btn');
+
+        // Параметры трансформации
+        let scale = 1;
+        let posX = 0;
+        let posY = 0;
+        let isDragging = false;
+        let startX, startY;
+        let isFlipped = false;
+
+        // Инициализация размеров
+        let containerWidth = container.offsetWidth;
+        let containerHeight = container.offsetHeight;
+        let imageWidth = image.offsetWidth;
+        let imageHeight = image.offsetHeight;
+
+        // Центрирование изображения
+        function centerImage() {
+            posX = (containerWidth - imageWidth * scale) / 2;
+            posY = (containerHeight - imageHeight * scale) / 2;
+            updateTransform();
+        }
+
+        // Обновление трансформации
+        function updateTransform() {
+            content.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+
+        // Обработчик изменения масштаба
+        zoomSlider.addEventListener('input', function() {
+            const oldScale = scale;
+            scale = zoomSlider.value / 100;
+
+            // Корректировка позиции при изменении масштаба
+            const containerRect = container.getBoundingClientRect();
+            const centerX = containerRect.width / 2;
+            const centerY = containerRect.height / 2;
+
+            const relX = (centerX - posX) / oldScale;
+            const relY = (centerY - posY) / oldScale;
+
+            posX = centerX - relX * scale;
+            posY = centerY - relY * scale;
+
+            updateTransform();
+        });
+
+        // Обработчики перемещения
+        content.addEventListener('mousedown', startDrag);
+        content.addEventListener('touchstart', startDrag, { passive: false });
+
+        function startDrag(e) {
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX || e.touches[0].clientX;
+            startY = e.clientY || e.touches[0].clientY;
+            container.style.cursor = 'grabbing';
+        }
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            if (clientX === undefined || clientY === undefined) return;
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            startX = clientX;
+            startY = clientY;
+
+            posX += dx;
+            posY += dy;
+
+            updateTransform();
+        }
+
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+
+        function endDrag() {
+            isDragging = false;
+            container.style.cursor = 'grab';
+        }
+
+        // Полноэкранный режим
+        fullscreenBtn.addEventListener('click', function() {
+            container.classList.toggle('fullscreen-mode');
+
+            if (container.classList.contains('fullscreen-mode')) {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                    </svg>
+                `;
+                containerWidth = window.innerWidth;
+                containerHeight = window.innerHeight;
+            } else {
+                fullscreenBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                `;
+                containerWidth = container.offsetWidth;
+                containerHeight = container.offsetHeight;
+            }
+
+            centerImage();
+        });
+
+        // Переворот атласа
+        rotateBtn.addEventListener('click', function() {
+            isFlipped = !isFlipped;
+            content.classList.toggle('flipped');
+        });
+
+        // Центрирование при загрузке и ресайзе
+        window.addEventListener('load', centerImage);
+        window.addEventListener('resize', function() {
+            if (!container.classList.contains('fullscreen-mode')) {
+                containerWidth = container.offsetWidth;
+                containerHeight = container.offsetHeight;
+                centerImage();
+            }
+        });
+
+        // Инициализация popovers
+        {% for id_, value in atlas.tooltips.items %}
+            new bootstrap.Popover(
+                document.getElementById('popoverButton{{ id_ }}'), {
+                    container: 'body',
+                    trigger: 'click',
+                    html: true,
+                    content: document.querySelector('#Modal{{ id_ }} .modal-content').outerHTML
+                }
+            );
+        {% endfor %}
+    });
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

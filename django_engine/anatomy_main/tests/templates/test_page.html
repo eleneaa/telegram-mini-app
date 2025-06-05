@@ -12,6 +12,12 @@
                     {% include "add_test_to_favorite.html" %}
                     <h1 style="margin: 0; padding: 0" class="text-break"><b>{{ test.label }}</b></h1>
                 </a>
+                <!-- Кнопка поделиться с модальным окном -->
+                <button class="btn btn-primary btn-sm mt-3 rounded-4 shadow-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#shareModal">
+                    <i class="bi bi-share"></i> Поделиться
+                </button>
             </div>
         </div>
         <hr class="hr-vet rounded" style="margin-bottom: 20px"/>
@@ -51,4 +57,70 @@
         </div>
 
     </div>
+
+    <!-- Модальное окно для выбора способа шаринга -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Поделиться тестом</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+
+                        <!-- Кнопка для системного шаринга -->
+                        <button class="btn btn-primary shadow-lg" onclick="shareViaSystem()">
+                            <i class="bi bi-share"></i> Через приложения
+                        </button>
+
+                        <!-- Кнопка для копирования ссылки -->
+                        <button class="btn btn-primary shadow-lg"
+                                onclick="copyLink(); $('#shareModal').modal('hide')">
+                            <i class="bi bi-link-45deg"></i> Скопировать ссылку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Генерация ссылки для шаринга
+        function generateShareLink() {
+            const testId = "{{ test.id }}";
+            return `https://t.me/vet_irit_bot?startapp=test_${testId}`;
+        }
+
+        // Системный шаринг через Web Share API
+        function shareViaSystem() {
+            const shareData = {
+                title: '{{ test.label }}',
+                text: 'Посмотрите этот тест:',
+                url: generateShareLink()
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                copyLink();
+                alert('Ссылка скопирована в буфер обмена');
+            }
+        }
+
+        // Копирование ссылки
+        function copyLink() {
+            const link = generateShareLink();
+            navigator.clipboard.writeText(link).then(() => {
+                if (window.Telegram && Telegram.WebApp) {
+                    Telegram.WebApp.showAlert('Ссылка скопирована!');
+                }
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('share-link').value = generateShareLink();
+        });
+    </script>
 {% endblock %}

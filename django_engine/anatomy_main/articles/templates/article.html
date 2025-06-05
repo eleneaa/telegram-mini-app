@@ -14,6 +14,12 @@
                     {% include "add_article_to_favorite.html" %}
                     <h1 style="margin: 0; padding: 0" class="text-break"><b>{{ article.label }}</b></h1>
                 </a>
+                <!-- Кнопка поделиться с модальным окном -->
+                <button class="btn btn-primary btn-sm mt-3 rounded-4 shadow-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#shareModal">
+                    <i class="bi bi-share"></i> Поделиться
+                </button>
             </div>
         </div>
 
@@ -44,6 +50,72 @@
                 <a href="{% url 'articles:open_atlases_by_article' article_id=article.id %}"><button class="btn btn-primary btn-sm mt-2 rounded-4 shadow-lg"><span class='m-2' style="margin-right: 1px !important">Посмотреть все</span> <svg  xmlns="http://www.w3.org/2000/svg"  width="18"  height="18"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-circle-arrow-up-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-2 4.66h-6l-.117 .007a1 1 0 0 0 -.883 .993l.007 .117a1 1 0 0 0 .993 .883h3.584l-4.291 4.293l-.083 .094a1 1 0 0 0 1.497 1.32l4.293 -4.293v3.586l.007 .117a1 1 0 0 0 1.993 -.117v-6l-.007 -.117l-.029 -.149l-.035 -.105l-.054 -.113l-.071 -.111a1.01 1.01 0 0 0 -.097 -.112l-.09 -.08l-.096 -.067l-.098 -.052l-.11 -.044l-.112 -.03l-.126 -.017l-.075 -.003z" /></svg></button></a>
             </div>
     </div>
+
+    <!-- Модальное окно для выбора способа шаринга -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Поделиться статьей</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+
+                        <!-- Кнопка для системного шаринга -->
+                        <button class="btn btn-primary shadow-lg" onclick="shareViaSystem()">
+                            <i class="bi bi-share"></i> Через приложения
+                        </button>
+
+                        <!-- Кнопка для копирования ссылки -->
+                        <button class="btn btn-primary shadow-lg"
+                                onclick="copyLink(); $('#shareModal').modal('hide')">
+                            <i class="bi bi-link-45deg"></i> Скопировать ссылку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Генерация ссылки для шаринга
+        function generateShareLink() {
+            const articleId = "{{ article.id }}";
+            return `https://t.me/vet_irit_bot?startapp=article_${articleId}`;
+        }
+
+        // Системный шаринг через Web Share API
+        function shareViaSystem() {
+            const shareData = {
+                title: '{{ article.label }}',
+                text: 'Посмотрите эту статью:',
+                url: generateShareLink()
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                copyLink();
+                alert('Ссылка скопирована в буфер обмена');
+            }
+        }
+
+        // Копирование ссылки
+        function copyLink() {
+            const link = generateShareLink();
+            navigator.clipboard.writeText(link).then(() => {
+                if (window.Telegram && Telegram.WebApp) {
+                    Telegram.WebApp.showAlert('Ссылка скопирована!');
+                }
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('share-link').value = generateShareLink();
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         const url = '{% static pdf %}';
