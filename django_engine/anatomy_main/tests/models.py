@@ -97,6 +97,8 @@ class Test(BaseModel):
     def get_favorite_tests(cls, user):
         return cls.objects.filter(
             id__in=TestUserRel.objects.filter(user=user, is_favorite=True).values('test_id')
+        ).annotate(
+            is_favorite=models.Value(True, output_field=models.BooleanField())
         )
 
     @classmethod

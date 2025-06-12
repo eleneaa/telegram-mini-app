@@ -3,21 +3,27 @@
 {% block content %}
     {% if tests or atlases or articles %}
         <div class="container p-4 pt-3">
+            {% if tests %}
             <h1 class="p-1">Избранные тесты</h1>
             <div class="row text-center justify-content-between p-1">
-                {% include 'grid_tests_cards.html' with tests=tests %}
+                {% include 'favorite_grid_tests_cards.html' with tests=tests %}
             </div>
+            {% endif %}
+            {% if atlases %}
             <h1 class="p-1">Избранные атласы</h1>
             <div class="row text-center justify-content-between p-1">
                 {% include 'grid_atlases_cards.html' with atlases=atlases %}
             </div>
+            {% endif %}
+            {% if articles %}
             <h1 class="p-1">Избранные статьи</h1>
             <div class="row text-center justify-content-between p-1">
                 {% include 'grid_articles_cards.html' with articles=articles %}
             </div>
+            {% endif %}
         </div>
     {% else %}
-        <div class="container p-4 mt-4 mb-4 text-center">
+    <div class="container p-4 mt-4 mb-4 text-center">
             <h1 style="font-size: 36px !important;">У вас пока нет избранного(</h1>
         </div>
         <div class="d-flex pt-3 p-4 mt-4 pb-0 justify-content-center">

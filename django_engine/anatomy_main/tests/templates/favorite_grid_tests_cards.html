@@ -1,0 +1,149 @@
+{% load static %}
+{% block content %}
+    {% for test in tests %}
+      <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
+        <div class="card draggable-lg border-0 shadow rounded-4 position-relative overflow-hidden">
+          <a href="{{ test.get_absolute_url }}" style="text-decoration: none;">
+            <img src="{% static test.test_photo %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
+          </a>
+
+          <!-- Кнопки действий -->
+          <div class="action-buttons position-absolute bottom-0 end-0 d-flex p-2 gap-1">
+            <!-- Избранное -->
+            <button class="favorite-button btn p-1 d-flex align-items-center justify-content-center"
+                    data-item-id="{{ test.id }}"
+                    style="background-color: #345; border-radius: 0.5rem; width: 32px; height: 32px;">
+{#            <img src="{% static 'icons/star_off.svg' %}" class="w-100 h-100 object-fit-contain" alt="★">#}
+              {% if test.is_favorite %}
+                <img src="{% static 'icons/star_off.svg' %}" class="w-100 h-100 object-fit-contain" alt="★">
+              {% else %}
+                <img src="{% static 'icons/star.svg' %}" class="w-100 h-100 object-fit-contain" alt="☆">
+              {% endif %}
+            </button>
+
+            <!-- Поделиться -->
+            <button class="share-button btn p-1 d-flex align-items-center justify-content-center"
+                    style="background-color: #345; border-radius: 0.5rem; width: 32px; height: 32px;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#shareModal"
+                    data-test-id="{{ test.id }}"
+                    data-test-label="{{ test.label|escapejs }}">
+              <img src="{% static 'icons/share.svg' %}" class="w-100 h-100 object-fit-contain" alt="Share">
+            </button>
+          </div>
+
+          <div class="card-body text-truncate">
+            <span>{{ test }}</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <!-- Модальное окно для выбора способа шаринга -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Поделиться тестом</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+
+                        <!-- Кнопка для системного шаринга -->
+                        <button class="btn btn-primary shadow-lg" onclick="shareViaSystem()">
+                            <i class="bi bi-share"></i> Через приложения
+                        </button>
+
+                        <!-- Кнопка для копирования ссылки -->
+                        <button class="btn btn-primary shadow-lg"
+                                onclick="copyLink(); $('#shareModal').modal('hide')">
+                            <i class="bi bi-link-45deg"></i> Скопировать ссылку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  $(document).ready(function () {
+    $('.favorite-button').on('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const button = $(this);
+      const testId = button.data('item-id');
+      var oldIcon = document.getElementById('test')
+
+      // Запрос на добавление или удаление из избранного
+      $.ajax({
+        url: '/tests/toggle_favorite_test/' + testId + '/',
+        type: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken
+        },
+        success: function (response) {
+          const icon = button.find('img');
+
+          if (response.action === 'added') {
+            icon.attr('src', "{% static 'icons/star_off.svg' %}");
+          } else {
+            icon.attr('src', "{% static 'icons/star.svg' %}");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Ошибка:", error);
+        }
+      });
+    });
+  });
+</script>
+<script>
+    let currentTestId = null;
+    let currentTestLabel = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Обработчик нажатия на любую кнопку share-button
+        document.querySelectorAll('.share-button').forEach(button => {
+            button.addEventListener('click', function () {
+                currentTestId = this.getAttribute('data-test-id');
+                currentTestLabel = this.getAttribute('data-test-label');
+            });
+        });
+    });
+
+    // Генерация ссылки
+    function generateShareLink() {
+        return `https://t.me/vet_irit_bot?startapp=test_${currentTestId}`;
+    }
+
+    // Системный шаринг через Web Share API
+    function shareViaSystem() {
+        const shareData = {
+            title: currentTestLabel || 'Тест',
+            text: 'Посмотрите этот тест:',
+            url: generateShareLink()
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData);
+        } else {
+            copyLink();
+            alert('Ссылка скопирована в буфер обмена');
+        }
+    }
+
+    // Копирование ссылки
+    function copyLink() {
+        const link = generateShareLink();
+        navigator.clipboard.writeText(link).then(() => {
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.showAlert('Ссылка скопирована!');
+            }
+        });
+    }
+</script>
+{% endblock %}
