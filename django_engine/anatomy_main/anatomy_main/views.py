@@ -20,7 +20,7 @@ from anatomy_main.utils import get_current_category
 
 # Дада снова токен в коде
 # )))))))))))))
-bot_token = os.getenv('BOT_TOKEN', '7887662113:AAH4eB61DIivFoXCYV3vivRk9-7iBDvjEKU')
+bot_token = os.getenv('BOT_TOKEN', '')
 imgur_client_id = os.getenv('IMGUR_CLIENT_ID', '3dd1847a2c4f6e0')
 
 
@@ -135,7 +135,7 @@ def build_url_from_start_param(start_param):
         if '_' in start_param:
             resource_type, resource_id = start_param.split('_', 1)
             if resource_type == 'article':
-                return reverse('open_article', args=[resource_id])
+                return reverse('articles:open_article', args=[resource_id])
             elif resource_type == 'test':
                 return reverse('tests:open_test', args=[resource_id])
             elif resource_type == 'atlas':
