@@ -73,6 +73,8 @@ class Article(BaseModel):
             .objects
             .filter(user=user, is_favorite=True)
             .values('article_id')
+        ).annotate(
+            is_favorite=models.Value(True, output_field=models.BooleanField())
         )
 
     class Meta:

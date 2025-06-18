@@ -33,6 +33,8 @@ class Atlas(BaseModel):
     def get_favorite_atlases(cls, user):
         return cls.objects.filter(
             id__in=AtlasUserRel.objects.filter(user=user, is_favorite=True).values('atlas_id')
+        ).annotate(
+            is_favorite=models.Value(True, output_field=models.BooleanField())
         )
 
     @classmethod

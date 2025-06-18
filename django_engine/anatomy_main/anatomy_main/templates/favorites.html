@@ -12,13 +12,13 @@
             {% if atlases %}
             <h1 class="p-1">Избранные атласы</h1>
             <div class="row text-center justify-content-between p-1">
-                {% include 'grid_atlases_cards.html' with atlases=atlases %}
+                {% include 'favorite_grid_atlases_cards.html' with atlases=atlases %}
             </div>
             {% endif %}
             {% if articles %}
             <h1 class="p-1">Избранные статьи</h1>
             <div class="row text-center justify-content-between p-1">
-                {% include 'grid_articles_cards.html' with articles=articles %}
+                {% include 'favorite_grid_articles_cards.html' with articles=articles %}
             </div>
             {% endif %}
         </div>

@@ -1,20 +1,20 @@
 {% load static %}
 {% block content %}
-    {% for test in tests %}
+    {% for article in articles %}
       <div class="col-6 p-1 text-start d-flex justify-content-center text-center">
         <div class="card draggable-lg border-0 shadow rounded-4 position-relative overflow-hidden">
-          <a href="{{ test.get_absolute_url }}" style="text-decoration: none;">
-            <img src="{% static test.test_photo %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
+          <a href="{{ article.get_absolute_url }}" style="text-decoration: none;">
+            <img src="{% static article.article_file %}" class="card-img-top rounded-top-4" alt="..." onerror="this.src='{% static "alternate_imgs/kotek.png" %}'; this.onerror=null;">
           </a>
 
           <!-- Кнопки действий -->
           <div class="action-buttons position-absolute bottom-25 start-0 w-100 d-flex justify-content-end gap-2 px-2" style="z-index: 2; bottom: 60px">
             <!-- Избранное -->
-            <button class="favorite-test-button btn p-1 d-flex align-items-center justify-content-center"
-                    data-item-id="{{ test.id }}"
+            <button class="favorite-article-button btn p-1 d-flex align-items-center justify-content-center"
+                    data-item-id="{{ article.id }}"
                     style="background-color: #345; border-radius: 0.5rem; width: 32px; height: 32px;">
 {#            <img src="{% static 'icons/star_off.svg' %}" class="w-100 h-100 object-fit-contain" alt="★">#}
-              {% if test.is_favorite %}
+              {% if article.is_favorite %}
                 <img src="{% static 'icons/star_off.svg' %}" class="w-100 h-100 object-fit-contain" alt="★">
               {% else %}
                 <img src="{% static 'icons/star.svg' %}" class="w-100 h-100 object-fit-contain" alt="☆">
@@ -22,41 +22,41 @@
             </button>
 
             <!-- Поделиться -->
-            <button class="share-test-button btn p-1 d-flex align-items-center justify-content-center"
+            <button class="share-article-button btn p-1 d-flex align-items-center justify-content-center"
                     style="background-color: #345; border-radius: 0.5rem; width: 32px; height: 32px;"
                     data-bs-toggle="modal"
-                    data-bs-target="#shareTestModal"
-                    data-test-id="{{ test.id }}"
-                    data-test-label="{{ test.label|escapejs }}">
+                    data-bs-target="#shareArticleModal"
+                    data-article-id="{{ article.id }}"
+                    data-article-label="{{ article.label|escapejs }}">
               <img src="{% static 'icons/share.svg' %}" class="w-100 h-100 object-fit-contain" alt="Share">
             </button>
           </div>
 
           <div class="card-body text-truncate">
-            <span>{{ test }}</span>
+            <span>{{ article }}</span>
           </div>
         </div>
       </div>
     {% endfor %}
     <!-- Модальное окно для выбора способа шаринга -->
-    <div class="modal fade" id="shareTestModal" tabindex="-1" aria-labelledby="shareTestModalLabel" aria-hidden="true">
+    <div class="modal fade" id="shareArticleModal" tabindex="-1" aria-labelledby="shareArticleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="shareTestModalLabel">Поделиться тестом</h5>
+                    <h5 class="modal-title" id="shareArticleModalLabel">Поделиться статьей</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="d-grid gap-2">
 
                         <!-- Кнопка для системного шаринга -->
-                        <button class="btn btn-primary shadow-lg" onclick="shareViaSystem()">
+                        <button class="btn btn-primary shadow-lg" onclick="shareArticleViaSystem()">
                             <i class="bi bi-share"></i> Через приложения
                         </button>
 
                         <!-- Кнопка для копирования ссылки -->
                         <button class="btn btn-primary shadow-lg"
-                                onclick="copyLink(); $('#shareTestModal').modal('hide')">
+                                onclick="copyArticleLink(); $('#shareArticleModal').modal('hide')">
                             <i class="bi bi-link-45deg"></i> Скопировать ссылку
                         </button>
                     </div>
@@ -70,22 +70,22 @@
   const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
   $(document).ready(function () {
-    $('.favorite-test-button').on('click', function (e) {
+    $('.favorite-article-button').on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
 
-      const buttonTest = $(this);
-      const testId = buttonTest.data('item-id');
+      const buttonAtlas = $(this);
+      const articleId = buttonAtlas.data('item-id');
 
       // Запрос на добавление или удаление из избранного
       $.ajax({
-        url: '/tests/toggle_favorite_test/' + testId + '/',
+        url: '/articlees/toggle_favorite_article/' + articleId + '/',
         type: 'POST',
         headers: {
           'X-CSRFToken': csrftoken
         },
         success: function (response) {
-          const icon = buttonTest.find('img');
+          const icon = buttonAtlas.find('img');
 
           if (response.action === 'added') {
             icon.attr('src', "{% static 'icons/star_off.svg' %}");
@@ -101,29 +101,30 @@
   });
 </script>
 <script>
-    let currentTestId = null;
-    let currentTestLabel = null;
+    let currentAtlasId = null;
+    let currentAtlasLabel = null;
 
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.share-test-button').forEach(button => {
+        // Обработчик нажатия на любую кнопку share-button
+        document.querySelectorAll('.share-article-button').forEach(button => {
             button.addEventListener('click', function () {
-                currentTestId = this.getAttribute('data-test-id');
-                currentTestLabel = this.getAttribute('data-test-label');
+                currentAtlasId = this.getAttribute('data-article-id');
+                currentAtlasLabel = this.getAttribute('data-article-label');
             });
         });
     });
 
     // Генерация ссылки
-    function generateShareLink() {
-        return `https://t.me/vet_irit_bot?startapp=test_${currentTestId}`;
+    function generateArticleShareLink() {
+        return `https://t.me/vet_irit_bot?startapp=article_${currentAtlasId}`;
     }
 
     // Системный шаринг через Web Share API
-    function shareViaSystem() {
+    function shareArticleViaSystem() {
         const shareData = {
-            title: currentTestLabel || 'Тест',
-            text: 'Посмотрите этот тест:',
-            url: generateShareLink()
+            title: currentAtlasLabel || 'Статья',
+            text: 'Посмотрите эту статью:',
+            url: generateArticleShareLink()
         };
 
         if (navigator.share) {
@@ -135,8 +136,8 @@
     }
 
     // Копирование ссылки
-    function copyLink() {
-        const link = generateShareLink();
+    function copyArticleLink() {
+        const link = generateArticleShareLink();
         navigator.clipboard.writeText(link).then(() => {
             if (window.Telegram && Telegram.WebApp) {
                 Telegram.WebApp.showAlert('Ссылка скопирована!');

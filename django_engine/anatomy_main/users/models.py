@@ -195,14 +195,47 @@ class User(AbstractUser):
         return (timezone.now() - self.date_joined).days
 
     def get_notes(self):
-        notes = dict()
+        notes = {
+            'tests': [],
+            'questions': [],
+            'articles': [],
+            'atlases': [],
+        }
 
-        notes['tests'] = [test for test in TestUserRel.objects.filter(user_id=self.telegram_id) if test.note]
-        notes['questions'] = [question for question in QuestionUserRel.objects.filter(user_id=self.telegram_id) if
-                              question.note]
-        notes['atlases'] = [atlas for atlas in AtlasUserRel.objects.filter(user_id=self.telegram_id) if atlas.note]
-        notes['articles'] = [article for article in ArticleUserRel.objects.filter(user_id=self.telegram_id) if
-                             article.note]
+        # Тесты
+        test_rels = TestUserRel.objects.select_related('test').filter(user_id=self.telegram_id)
+        for rel in test_rels:
+            if rel.note:
+                test = rel.test
+                print(rel.test)
+                print(rel.test.test_photo)
+                test.note = rel.note
+                notes['tests'].append(test)
+
+        # Вопросы
+        question_rels = QuestionUserRel.objects.select_related('question').filter(user_id=self.telegram_id)
+        for rel in question_rels:
+            if rel.note:
+                question = rel.question
+                question.note = rel.note
+                notes['questions'].append(question)
+
+        # Статьи
+        article_rels = ArticleUserRel.objects.select_related('article').filter(user_id=self.telegram_id)
+        for rel in article_rels:
+            if rel.note:
+                article = rel.article
+                article.note = rel.note
+                notes['articles'].append(article)
+
+        # Атласы
+        atlas_rels = AtlasUserRel.objects.select_related('atlas').filter(user_id=self.telegram_id)
+        for rel in atlas_rels:
+            if rel.note:
+                atlas = rel.atlas
+                print(rel.atlas.atlas_file)
+                atlas.note = rel.note
+                notes['atlases'].append(atlas)
 
         return notes
 
