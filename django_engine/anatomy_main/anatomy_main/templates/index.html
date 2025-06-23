@@ -100,7 +100,6 @@
         }
 
         .image-container {
-            max-height: 65vh;
             position: relative;
             display: inline-block;
             width: 100%;
@@ -109,6 +108,10 @@
         !important; /* Часть изображения зайдет под следующий контейнер */
         }
 
+        .image-container img {
+            max-height: 50vh;
+            min-height: 50vh;
+        }
 
         .hotspot {
             position: absolute;
@@ -245,6 +248,12 @@
                 width: calc(1.375rem + 1.5vw);
                 height: calc(1.375rem + 1.5vw);
             }
+
+            .image-container img {
+                max-height: 35vh;
+                min-height: 35vh;
+            }
+
         }
 
         @media screen and (max-width: 768px) {
@@ -272,6 +281,11 @@
             .star-icon {
                 width: 24px;
                 height: 24px;
+            }
+
+            .image-container img {
+                max-height: 35vh;
+                min-height: 35vh;
             }
         }
 
@@ -303,6 +317,11 @@
                 width: 22px;
                 height: 22px;
             }
+
+            .image-container img {
+                max-height: 35vh;
+                min-height: 35vh;
+            }
         }
 
         @media screen and (max-width: 320px) {
@@ -332,6 +351,11 @@
             .star-icon {
                 width: 18px;
                 height: 18px;
+            }
+
+            .image-container img {
+                max-height: 35vh;
+                min-height: 35vh;
             }
         }
 

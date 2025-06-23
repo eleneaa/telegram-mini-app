@@ -3,8 +3,6 @@
 {% block content %}
     <div class="container p-4">
 
-        {% include 'current_category_label.html' with active='Атласы' %}
-
         <form action="{% url 'atlases:find' %}">
             <div class="input-group mb-3"
                  style="border-radius: 20px; position: relative;">
@@ -33,7 +31,11 @@
             </div>
         </form>
 
-        {% include "open_categories_button.html" %}
+        {% if category %}
+            {% include 'current_category_label.html' with active='Атласы' %}
+        {% else %}
+            {% include "open_categories_button.html" %}
+        {% endif %}
 
         {% if objects  is not None %}
 

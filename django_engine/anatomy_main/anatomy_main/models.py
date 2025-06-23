@@ -27,9 +27,9 @@ class BaseModel(models.Model):
 
     def get_atlases_by_categories(self):
         """ Получение списка атласов по категориям """
-        articles = set()
+        atlases = set()
         for catalog in self.catalogs.all():
             if catalog.atlases_ids():
-                articles.update(catalog.atlases_ids())
+                atlases.update(catalog.atlases_ids())
 
-        return articles
+        return atlases

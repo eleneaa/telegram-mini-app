@@ -276,7 +276,9 @@ def test_results(request, test_id):
                       "user_results": user_results,
                       "time_stop": time_stop,
                       "test_total_points": test_total_points,
-                      "is_favorite_test": is_favorite
+                      "is_favorite_test": is_favorite,
+                      'atlases': test.get_atlases_by_categories(),
+                      'articles': test.get_articles_by_categories()
                   })
 
 
